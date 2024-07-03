@@ -1,13 +1,12 @@
-_commit: 0.0.72
+_commit: 0.0.75
 _src_path: gh:mapp-metabolomics-unit/mapp-repo-copier-template
-author: MAPP Metabolomics Unit
 email: pierre-marie.allard@unifr.ch
 github_username: earth-metabolome-initiative
 gnps_job_id: ''
-mapp_batch: emi_batch_00001
+mapp_batch: cuso_batch_00001
 mapp_batch_description: Untargeted metabolomics of DBGI CUSO samples - test mzmine
     batch
-mapp_project: emi_project_00001
+mapp_project: dbgi_project_00002
 repository_name: mzmine-batch-mode-sandbox
 target_variable: source_taxon
 recorded_setup: true
@@ -15,7 +14,7 @@ recorded_repository_name: "mzmine-batch-mode-sandbox"
 recorded_author: "MAPP Metabolomics Unit"
 recorder_email: "pierre-marie.allard@unifr.ch"
 recorded_github_username: "earth-metabolome-initiative"
-recorded_mapp_project: "emi_project_00001"
-recorded_mapp_batch: "emi_batch_00001"
+recorded_mapp_project: "dbgi_project_00002"
+recorded_mapp_batch: "cuso_batch_00001"
 
 

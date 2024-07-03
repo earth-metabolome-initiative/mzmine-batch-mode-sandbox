@@ -92,7 +92,7 @@
             <parameter name="Denormalize fragment scans (traps)">true</parameter>
         </parameter>
         <parameter name="Metadata file" selected="true">
-            <current_file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/docs/emi_project_00001/emi_batch_00001/metadata/treated/emi_batch_00001_metadata.tsv</current_file>
+            <current_file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/docs/dbgi_project_00002/cuso_batch_00001/metadata/treated/cuso_batch_00001_metadata.tsv</current_file>
             <last_file>/home/allardpm/git_repos/DBGI/dbgi-metabolomics/docs/dbgi_project_00001/dbgi_batch_00001/metadata/treated/dbgi_batch_00001_metadata.tsv</last_file>
             <last_file>/home/allardpm/git_repos/DBGI/dbgi-metabolomics/docs/dbgi_project_00001/dbgi_batch_00001/metadata/treated/dbgi_batch_00001_metadata_fully_resolved.csv</last_file>
             <last_file>/home/allardpm/git_repos/mapp-metabolomics-unit/adria-leboeuf-group/docs/mapp_project_00014/mapp_batch_00074/metadata/treated/mapp_batch_00074_metadata.tsv</last_file>
@@ -392,7 +392,7 @@
     <batchstep method="io.github.mzmine.modules.io.export_features_gnps.fbmn.GnpsFbmnExportAndSubmitModule" parameter_version="2">
         <parameter name="Feature lists" type="BATCH_LAST_FEATURELISTS"/>
         <parameter name="Filename">
-            <current_file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/docs/emi_project_00001/emi_batch_00001/results/mzmine/emi_batch_00001/{}</current_file>
+            <current_file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/docs/dbgi_project_00002/cuso_batch_00001/results/mzmine/{}</current_file>
             <last_file>/tmp/cli/dbgi_batch_00001/{}</last_file>
         </parameter>
         <parameter name="Merge MS/MS (experimental)" selected="false">
@@ -426,7 +426,7 @@
     <batchstep method="io.github.mzmine.modules.io.export_features_sirius.SiriusExportModule" parameter_version="1">
         <parameter name="Feature lists" type="BATCH_LAST_FEATURELISTS"/>
         <parameter name="Filename">
-            <current_file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/docs/emi_project_00001/emi_batch_00001/results/mzmine/emi_batch_00001/{}_sirius</current_file>
+            <current_file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/docs/dbgi_project_00002/cuso_batch_00001/results/mzmine/{}_sirius</current_file>
             <last_file>/tmp/cli/dbgi_batch_00001/{}_sirius</last_file>
             <last_file>/home/allardpm/git_repos/mapp-metabolomics-unit/adria-leboeuf-group/docs/mapp_project_00014/mapp_batch_00074/results/mzmine/mapp_batch_00074_sirius.mgf</last_file>
         </parameter>
