@@ -70,7 +70,7 @@ fn main() -> Result<()> {
 
     let File_content = XMLFileInput::new("gen_parameters.mzbatch", "4.1.0", input_files, batch_steps_vector);
 
-// - - - - - - - - - - - - Test custom XML - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - Write XML - - - - - - - - - - - - - - - - - - - - -
 
     // Create XML file
     let mut file = File::create(File_content.output_file_name)?;

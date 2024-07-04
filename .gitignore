@@ -1,2 +1,4 @@
 .DS_Store
 target/
+data/mzml/gen_parameters.mzbatch
+gen_parameters.mzbatch
