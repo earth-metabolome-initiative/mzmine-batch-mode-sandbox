@@ -5,6 +5,22 @@ use simple_xml_builder::XMLElement;
 
 use std::fs;
 
+// local batchsteps module definition
+mod batchsteps;
+
+mod io {
+    pub mod export_features_gnps;
+}
+
+mod export_features_gnps {
+    pub mod fbmn;
+}
+
+mod fbmn {
+    pub mod GnpsFBmnExportAndSubmitModule;
+}
+
+
 struct Batchstep{
     //The XML file is constructed of multiple batchsteps, in which we find parameters and other attributes
     name: String,
@@ -46,6 +62,8 @@ impl XMLFileInput{
 }
 
 fn main() -> Result<()> {
+
+    batchsteps::io::export_features_gnps::fbmn::GnpsFBmnExportAndSubmitModule::greet();
 
     //Define input_files path in a String vector
 
