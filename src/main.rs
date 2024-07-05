@@ -1,13 +1,11 @@
 use std::fs::File;
 use std::io::Result;
 use std::fs;
-
 use std::env;
 
 use simple_xml_builder::XMLElement;
 
 mod batchsteps;
-use batchsteps::FileList;
 
 fn parse_args(args: Vec<String>) -> Vec<Vec<String>> {
     let mut parsed_args: Vec<Vec<String>> = Vec::new();
@@ -36,6 +34,7 @@ fn get_input_files(flags: Vec<(usize, String)>, parsed_args: Vec<Vec<String>>) -
     let mut tmp_file_list: Vec<String> = Vec::new();
 
     let paths = fs::read_dir(parsed_args[i_index][1].clone()).unwrap();
+    println!("{}", parsed_args[i_index][1].clone());
 
     for path in paths {
         tmp_file_list.push(path.unwrap().path().display().to_string());
@@ -53,8 +52,6 @@ fn main() -> Result<()> {
     } else {
         eprintln!("Failed to get current working directory");
     }
-
-
 
 
     // Get all the parameters inputted, each input is represented as a vector with the command in first place 
@@ -88,17 +85,23 @@ fn main() -> Result<()> {
 
 
 
-    let mut file_list = FileList::new(get_input_files(flags.clone(), parsed_args.clone())).gen_XML_element();
+    let mut xml_file_list = batchsteps::file_list::FileList::default();
+    xml_file_list.files = get_input_files(flags.clone(), parsed_args.clone());
+
+    let obj_xml_file_list = xml_file_list.gen_XML_element();
+
+
     //println!("{:?}", file_list.files);
     //println!("{}", file_list.number_of_files);
 
-    batch.add_child(file_list);
+    batch.add_child(obj_xml_file_list);
 
 
 
 
     // Possible match cases:
-    // - -i /--input -> for inputting the file list
+            // - -i / --input -> for inputting the file list        // Already used (mandatory)
+            // - -o / --output -> name output parameter file        // Already used (mandatory)
     // - -md / --massdetection 
     // - -cb // --chromatogrambuilder 
     // - -s // --smoothing 
