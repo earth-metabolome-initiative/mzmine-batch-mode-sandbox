@@ -3,13 +3,9 @@ use std::io::Result;
 use std::fs;
 use std::env;
 
-use quick_xml;
-use serde::{Serialize, Deserialize};
 use simple_xml_builder::XMLElement;
 
 mod batchsteps;
-
-const MZMINE_VERSION: &str = "4.1.0";
 
 fn parse_args(args: Vec<String>) -> Vec<Vec<String>> {
     let mut parsed_args: Vec<Vec<String>> = Vec::new();
@@ -47,59 +43,6 @@ fn get_input_files(flags: Vec<(usize, String)>, parsed_args: Vec<Vec<String>>) -
     tmp_file_list
 }
 
-/// Enum of all available modules
-#[derive(Serialize, Deserialize)]
-pub enum Modules{
-    AllSpectralDataImportModule(batchsteps::all_spectral_data_import_module::AllSpectralDataImportModule),
-
-    // A vector since we have at least two (idk if more) -> MS1, MS2?
-    MassDetectionModule(Vec<batchsteps::mass_detection_module::MassDetectionModule>),
-
-    ModularADAPChromatogramBuilderModule(batchsteps::modular_adap_chromatogram_builder_module::ModularADAPChromatogramBuilderModule),
-
-    SmoothinModule(batchsteps::smoothing_module::SmoothingModule),
-
-    MinimumSearchFeatureResolverModule(batchsteps::minimum_search_feature_resolver_module::MinimumSearchFeatureResolverModule),
-
-    IsotopeGrouper(batchsteps::isotope_grouper_module::IsotopeGrouper),
-
-    RowsFilterModule(batchsteps::rows_filter_module::RowsFilterModule),
-
-    RowsFilterModule2(batchsteps::rows_filter_module_2::RowsFilterModule2),
-
-    GnpsFbmnExportAndSubmitModule(batchsteps::gnps_fbmn_export_and_submit_module::GnpsFbmnExportAndSubmitModule),
-
-    SiriusExportModule(batchsteps::sirius_export_module::SiriusExportModule)
-}
-
-#[derive(Default, Serialize, Deserialize)]
-pub struct Batch{
-    mzmine_version: &'static str,
-    batchsteps: Vec<Modules>,
-}
-
-// #[derive(Deserialize, Serialize, PartialEq, Debug)]
-// struct AnyName {
-//     #[serde(rename = "$text")]
-//     field: Vec<usize>,
-// }
-// 
-// let obj = AnyName { field: vec![1, 2, 3] };
-// let xml = to_string(&obj).unwrap();
-// assert_eq!(xml, "<AnyName>1 2 3</AnyName>");
-// 
-// let object: AnyName = from_str(&xml).unwrap();
-// assert_eq!(object, obj);
-
-
-/// Create batch XML element which contains all batchsteps selected
-fn batch_builder(mzmine_version: &str) -> XMLElement{
-    let mut batch = XMLElement::new("batch");
-    batch.add_attribute("mzmine_version", mzmine_version);
-    batch
-}
-
-
 
 fn main() -> Result<()> {
 
@@ -136,23 +79,26 @@ fn main() -> Result<()> {
 
     let mut file = File::create(parsed_args[o_index][1].clone())?;
 
-    let batch = batch_builder(MZMINE_VERSION);
+
+    let mut batch = XMLElement::new("batch");
+    batch.add_attribute("mzmine_version", "4.0.1");
 
 
-    // let mut xml_file_list = batchsteps::file_list::FileList::default();
-    // xml_file_list.files = get_input_files(flags.clone(), parsed_args.clone());
-// 
-    // let obj_xml_file_list = xml_file_list.gen_XML_element();
-// 
-// 
-    // //println!("{:?}", file_list.files);
-    // //println!("{}", file_list.number_of_files);
-// 
-    // batch.add_child(obj_xml_file_list);
-// 
-// 
-// 
-// 
+
+    let mut xml_file_list = batchsteps::file_list::FileList::default();
+    xml_file_list.files = get_input_files(flags.clone(), parsed_args.clone());
+
+    let obj_xml_file_list = xml_file_list.gen_XML_element();
+
+
+    //println!("{:?}", file_list.files);
+    //println!("{}", file_list.number_of_files);
+
+    batch.add_child(obj_xml_file_list);
+
+
+
+
     // Possible match cases:
             // - -i / --input -> for inputting the file list        // Already used (mandatory)
             // - -o / --output -> name output parameter file        // Already used (mandatory)

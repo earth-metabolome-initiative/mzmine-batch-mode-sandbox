@@ -1,12 +1,13 @@
 use simple_xml_builder::XMLElement;
 
+#[derive(Clone)]
 struct Scan_filter {
     selected: bool,
     scan_number: bool,
     base_iltering_integer: bool,
     retention_time: bool,
     mobility: bool,
-    ms_level_filter: bool,
+    ms_level_filter: u8,
     scan_definition: bool,
     polarity: String,
     spectrum_type: String,
@@ -20,7 +21,7 @@ impl Default for Scan_filter {
             base_iltering_integer: false,
             retention_time: false,
             mobility: false,
-            ms_level_filter: false,
+            ms_level_filter: 1,
             scan_definition: false,
             polarity: String::from("ANY"),
             spectrum_type: String::from("ANY"),
