@@ -1,50 +1,65 @@
-use std::ops::Sub;
-
-use simple_xml_builder::XMLElement;
-use quick_xml;
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize)]
-pub struct AllSpectralDataImportModule{
-    #[serde(rename = "method")]
+#[derive(Serialize, Deserialize, PartialEq)]
+#[serde(default, rename_all = "lowercase")] // rinominare oggetto come lo vogliamo stampato
+pub struct AllSpectralDataImportModule {
+    #[serde(rename = "@method")]
     method: String,
-    #[serde(rename = "parameter_version")]
-    parameter_version: String,
+
+    #[serde(rename = "@parameter_version")]
+    parameter_version: u8,
+
     parameter: Vec<Parameter>,
 }
 
-#[derive(Default, Serialize, Deserialize)]
-pub struct Parameter{
-    #[serde(rename = "name")]
-    name: String,
-
-    #[serde(rename = "$value")]
-    value: Option<String>,
-
-    #[serde(rename = "parameter", skip_serializing_if = "Option::is_none")]
-    nested_parameters: Option<Vec<SubParameters>>,
-
-    #[serde(rename = "file", skip_serializing_if = "Option::is_none")]
-    files: Option<Vec<String>>,
-
-    #[serde(rename = "module", skip_serializing_if = "Option::is_none")]
-    modules: Option<Vec<Module>>,
+impl Default for AllSpectralDataImportModule {
+    fn default() -> Self {
+        AllSpectralDataImportModule {
+            method: "io.github.mzmine.modules.io.import_rawdata_all.AllSpectralDataImportModule".to_owned(),
+            parameter_version: 1,
+            parameter: vec![
+                Parameter::FileNames(FileNames::default()),
+            ],
+        }
+    }
 }
 
-#[derive(Default, Serialize, Deserialize)]
-pub struct SubParameters{
-    #[serde(rename = "name")]
-    name: String,
-    #[serde(rename = "$value")]
-    value: String,
-    #[serde(rename = "parameter", skip_serializing_if = "Option::is_none")]
-    nested_parameters: Option<Vec<SubParameters>>,
+#[derive(Serialize, Deserialize, PartialEq)]
+#[serde(untagged)]
+enum Parameter {
+    FileNames(FileNames),
 }
 
-#[derive(Default, Serialize, Deserialize)]
-pub struct Module{
-    #[serde(rename = "name")]
+#[derive(Serialize, Deserialize, PartialEq)]
+#[serde(default, rename_all = "lowercase")]
+struct FileNames {
+    #[serde(rename = "@name")]
     name: String,
-    #[serde(rename = "parameter", skip_serializing_if = "Option::is_none")]
-    parameters: Option<Vec<SubParameters>>,
+    //#[serde(rename = "@file")]
+    file: Vec<File>,
+}
+
+impl Default for FileNames {
+    fn default() -> Self {
+        FileNames {
+            name: "File names".to_owned(),
+            file: vec![File::default(),File::default()],
+        }
+    }
+}
+
+
+#[derive(Serialize, Deserialize, PartialEq)]
+#[serde(default, rename = "file", rename_all = "lowercase")]
+struct File {
+    #[serde(rename = "$text")]
+    name: String
+}
+
+impl Default for File {
+    fn default() -> Self {
+        File {
+            name: "File_name".to_owned(),
+        }
+    }
 }

@@ -1,9 +1,9 @@
 [package]
-name = "XML-rust"
+name = "mzbatch-generator"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
-quick-xml = "0.36.0"
-simple-xml-builder = "1.1.0"
+serde_derive = "1.0"  
+quick-xml = {version="0.36.0", features = ["serialize", "serde-types"]}
