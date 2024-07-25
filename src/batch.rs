@@ -1,6 +1,3 @@
-use std::fs::File;
-use std::io::Write;
-
 use crate::prelude::*;
 use serde::{Deserialize, Serialize}; // Import serde macros
 
@@ -30,7 +27,13 @@ pub struct Batch {
 }
 
 impl Batch {
-    fn set_name(&mut self, mzmine_version: String) {
+    fn new(mzmine_version: String, batchstep: Vec<Modules>) -> Self {
+        Batch {
+            mzmine_version,
+            batchstep,
+        }
+    }
+    fn set_version(&mut self, mzmine_version: String) {
         self.mzmine_version = mzmine_version;
     }
 
@@ -63,3 +66,31 @@ impl Batch {
 // 
 //     Ok(())
 // }
+
+#[cfg(test)]
+mod tests {
+    use crate::prelude::*;
+
+    use super::*;
+
+    #[test]
+    fn test_mzmine_version_setter() {
+        let mut batch = Batch::new("".to_string(), vec![]);
+        batch.set_version("1.0.0".to_string());
+        assert_eq!("1.0.0", batch.mzmine_version);
+    }
+
+    #[test]
+    fn test_add_batchsteps() {
+        let mut batch = Batch::new("1.0.1".to_string(), vec![]);
+        batch.add_batchstep(Modules::AllSpectralDataImportModule(AllSpectralDataImportModule::default()));
+        assert_eq!(batch.batchstep.len(), 1);
+    }
+
+    #[test]
+    fn test_file_names_creation() {
+        let batch = Batch::default();
+        assert_eq!(batch.mzmine_version, "");
+        assert!(batch.batchstep.is_empty());
+    }
+}
