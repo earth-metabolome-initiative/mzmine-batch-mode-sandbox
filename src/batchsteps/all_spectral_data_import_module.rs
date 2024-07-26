@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use crate::prelude::*;
 
-#[derive(Serialize, Deserialize, PartialEq)]
+#[derive(Default, Serialize, Deserialize, PartialEq)]
 #[serde(default, rename_all = "lowercase")]
 pub struct AllSpectralDataImportModule {
     #[serde(rename = "@method")]
@@ -10,19 +10,20 @@ pub struct AllSpectralDataImportModule {
     #[serde(rename = "@parameter_version")]
     parameter_version: u8,
 
-    parameter: Vec<Parameter>,
+    parameters: Vec<Parameter>,
 }
 
-impl Default for AllSpectralDataImportModule {
-    fn default() -> Self {
-        AllSpectralDataImportModule {
+impl AllSpectralDataImportModule{
+    pub fn new() -> Self{
+        AllSpectralDataImportModule{
             method: "io.github.mzmine.modules.io.import_rawdata_all.AllSpectralDataImportModule".to_owned(),
             parameter_version: 1,
-            parameter: vec![
-                Parameter::FileNames(FileNames::default()),
-                Parameter::AdvancedImport(AdvancedImport::default()),
-            ],
+            parameters: Vec::new(),
         }
+    }
+
+    pub fn add_parameter(&mut self, parameter:Parameter){
+        self.parameters.push(parameter);
     }
 }
 
@@ -31,8 +32,8 @@ impl Default for AllSpectralDataImportModule {
 enum Parameter {
     FileNames(FileNames),
     AdvancedImport(AdvancedImport),
-    // MetadataFile(MetadataFile),
-    // SpectralLibraryFiles(SpectralLibraryFiles),
+    MetadataFile(MetaData),
+    SpectralLibraryFiles(SpectralLibrary),
 }
 
 #[cfg(test)]
@@ -40,8 +41,18 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_default(){
-        let all_spectral_data_import_module = AllSpectralDataImportModule::default();
-        assert_eq!(all_spectral_data_import_module.parameter.len(), 2)
+    fn test_all_spectral_data_import_module_initialization(){
+        let all_spectral_data_import_module_obj = AllSpectralDataImportModule::new();
+        assert_eq!(all_spectral_data_import_module_obj.method, "io.github.mzmine.modules.io.import_rawdata_all.AllSpectralDataImportModule");
+        assert_eq!(all_spectral_data_import_module_obj.parameter_version, 1);
+        assert_eq!(all_spectral_data_import_module_obj.parameters.len(), 0);
+    }
+
+    #[test]
+    fn test_all_spectral_data_import_module_add_parameter(){
+        let mut all_spectral_data_import_module_obj = AllSpectralDataImportModule::new();
+        assert_eq!(all_spectral_data_import_module_obj.parameters.len(), 0);
+        all_spectral_data_import_module_obj.add_parameter(Parameter::FileNames(FileNames::new()));
+        assert_eq!(all_spectral_data_import_module_obj.parameters.len(), 1);       
     }
 }

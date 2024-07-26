@@ -1,12 +1,12 @@
 use serde::{Serialize, Deserialize};
 
-enum Value {
+pub enum Value {
     Single(Option<f32>),
     Vector(Vec<Option<f32>>),
 }
 
 
-#[derive(Serialize, Deserialize, PartialEq)]
+#[derive(Default, Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
 pub struct AdvancedImport{
     #[serde(rename = "@name")]
@@ -18,18 +18,17 @@ pub struct AdvancedImport{
      parameters: Vec<AdvancedImportParameters>
  }
 
- impl Default for AdvancedImport {
-    fn default() -> Self {
+ impl AdvancedImport {
+    pub fn new() -> Self {
         AdvancedImport {
             name: "Advanced import".to_owned(),
             selected: false,
-            parameters: vec![
-                AdvancedImportParameters::ScanFilter(ScanFilter::default()),
-                AdvancedImportParameters::CropMS1mz(CropMS1mz::default()),
-                AdvancedImportParameters::MSDetectorAdvanced(MSDetectorAdvanced::default()) //MS1
-                //AdvancedImportParameters::MS2DetectorAdvanced(MS2DetectorAdvanced::default())  //MS2
-            ],
+            parameters: Vec::new(),
         }
+    }
+
+    pub fn add_parameter(&mut self, parameter:AdvancedImportParameters){
+        self.parameters.push(parameter);
     }
 }
 
@@ -46,40 +45,35 @@ pub struct AdvancedImport{
 
 // ### ### ### ### ### ### ###     Scan Filter     ### ### ### ### ### ### ### ### ### ###
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
- struct ScanFilter{
+struct ScanFilter{
     #[serde(rename = "@name")]
     name: String,
 
     #[serde(rename = "@selected")]
     selected: bool,
 
-    parameter: Vec<ScanFilterParameters>,
+    parameters: Vec<ScanFilterParameters>,
  }
 
-impl Default for ScanFilter {
-    fn default() -> Self {
+impl ScanFilter {
+    fn new() -> Self {
         ScanFilter {
             name: "Scan filters".to_owned(),
             selected: true,
-            parameter: vec![
-                ScanFilterParameters::ScanNumber(ScanNumber::default()),
-                ScanFilterParameters::BaseFilteringInteger(BaseFilteringInteger::default()),
-                ScanFilterParameters::RetentionTime(RetentionTime::default()),
-                ScanFilterParameters::Mobility(Mobility::default()),
-                ScanFilterParameters::MSLevelFilter(MSLevelFilter::default()),
-                ScanFilterParameters::ScanDefinition(ScanDefinition::default()),
-                ScanFilterParameters::Polarity(Polarity::default()),
-                ScanFilterParameters::SpectrumType(SpectrumType::default())
-            ],
+            parameters: Vec::new(),
         }
+    }
+
+    fn add_parameter(&mut self, parameter:ScanFilterParameters){
+        self.parameters.push(parameter)
     }
 }
 
  #[derive(Serialize, Deserialize, PartialEq)]
  #[serde(untagged)]
- enum ScanFilterParameters{
+enum ScanFilterParameters{
     ScanNumber(ScanNumber),
     BaseFilteringInteger(BaseFilteringInteger),
     RetentionTime(RetentionTime),
@@ -90,9 +84,9 @@ impl Default for ScanFilter {
     SpectrumType(SpectrumType),
  }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
- struct ScanNumber{
+struct ScanNumber{
     #[serde(rename = "@name")]
     name: String,
 
@@ -100,18 +94,26 @@ impl Default for ScanFilter {
     value: Option<u8>,
  }
 
- impl Default for ScanNumber {
-    fn default() -> Self {
+ impl ScanNumber {
+    fn new() -> Self {
         ScanNumber {
             name: "Scan number".to_owned(),
             value: None,
         }
     }
+
+    fn set_value(&mut self, value:Option<u8>){
+        self.value = value;
+    }
+
+    fn get_value(&self) -> Option<u8>{
+        self.value
+    }
 }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
- struct BaseFilteringInteger{
+struct BaseFilteringInteger{
     #[serde(rename = "@name")]
     name: String,
 
@@ -119,18 +121,26 @@ impl Default for ScanFilter {
     value: Option<u8>,
  }
 
- impl Default for BaseFilteringInteger {
-    fn default() -> Self {
+ impl BaseFilteringInteger {
+    fn new() -> Self {
         BaseFilteringInteger {
             name: "Base Filtering Integer".to_owned(),
             value: None,
         }
     }
+
+    fn set_value(&mut self, value:Option<u8>){
+        self.value = value;
+    }
+
+    fn get_value(&self) -> Option<u8>{
+        self.value
+    }
 }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
- struct RetentionTime{
+struct RetentionTime{
     #[serde(rename = "@name")]
     name: String,
 
@@ -138,18 +148,26 @@ impl Default for ScanFilter {
     value: Option<u8>,
  }
 
-impl Default for RetentionTime {
-    fn default() -> Self {
+impl RetentionTime {
+    fn new() -> Self {
         RetentionTime {
             name: "Retention time".to_owned(),
             value: None,
         }
     }
+
+    fn set_value(&mut self, value:Option<u8>){
+        self.value = value;
+    }
+
+    fn get_value(&self) -> Option<u8>{
+        self.value
+    }
 }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
- struct Mobility{
+struct Mobility{
     #[serde(rename = "@name")]
     name: String,
 
@@ -157,18 +175,26 @@ impl Default for RetentionTime {
     value: Option<u8>,
  }
 
- impl Default for Mobility {
-    fn default() -> Self {
+ impl Mobility {
+    fn new() -> Self {
         Mobility {
             name: "Mobility".to_owned(),
             value: None,
         }
     }
+
+    fn set_value(&mut self, value:Option<u8>){
+        self.value = value;
+    }
+
+    fn get_value(&self) -> Option<u8>{
+        self.value
+    }
 }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
- struct MSLevelFilter{
+struct MSLevelFilter{
     #[serde(rename = "@name")]
     name: String,
 
@@ -176,21 +202,29 @@ impl Default for RetentionTime {
     selected: String,
 
     #[serde(rename = "$text")]
-    value: u8,
+    value: Option<u8>,
  }
 
- impl Default for MSLevelFilter {
-    fn default() -> Self {
+ impl MSLevelFilter {
+    fn new() -> Self {
         MSLevelFilter {
             name: "MS level filter".to_owned(),
             selected: "All MS levels".to_owned(),
-            value: 1,
+            value: Some(1),
         }
+    }
+
+    fn set_value(&mut self, value: Option<u8>){
+        self.value = value;
+    }
+
+    fn get_value(&self) -> Option<u8>{
+        self.value
     }
 }
 
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
  struct ScanDefinition{
     #[serde(rename = "@name")]
@@ -200,18 +234,27 @@ impl Default for RetentionTime {
     value: Option<u8>,
  }
 
- impl Default for ScanDefinition {
-    fn default() -> Self {
+ impl ScanDefinition {
+    fn new() -> Self {
         ScanDefinition {
             name: "Scan definition".to_owned(),
             value: None,
         }
     }
+
+    fn set_value(&mut self, value: Option<u8>){
+        self.value = value;
+    }
+
+    fn get_value(&self) -> Option<u8>{
+        self.value
+    }
 }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
- struct Polarity{
+ 
+struct Polarity{
     #[serde(rename = "@name")]
     name: String,
 
@@ -219,18 +262,26 @@ impl Default for RetentionTime {
     value: String,
  }
 
- impl Default for Polarity {
-    fn default() -> Self {
+ impl Polarity {
+    fn new() -> Self {
         Polarity {
             name: "Polarity".to_owned(),
             value: "Any".to_owned(),
         }
     }
+
+    fn set_value(&mut self, value: String){
+        self.value = value;
+    }
+
+    fn get_value(&self) -> String{
+        self.value.clone()
+    }
 }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
- struct SpectrumType{
+struct SpectrumType{
     #[serde(rename = "@name")]
     name: String,
 
@@ -238,39 +289,54 @@ impl Default for RetentionTime {
     value: String,
  }
 
- impl Default for SpectrumType {
-    fn default() -> Self {
+ impl SpectrumType {
+    fn new() -> Self {
         SpectrumType {
             name: "Spectrum type".to_owned(),
             value: "ANY".to_owned(),
         }
+    }
+
+    fn set_value(&mut self, value: String){
+        self.value = value;
+    }
+
+    fn get_value(&self) -> String{
+        self.value.clone()
     }
 }
 
 
 // Package of Crop MS1 m/z and its subparameters
 
-#[derive(Serialize, Deserialize, PartialEq)]
+#[derive(Default, Serialize, Deserialize, PartialEq)]
 #[serde(default, rename_all = "lowercase")]
 struct CropMS1mz{
     #[serde(rename = "@name")]
     name: String,
     #[serde(rename = "@selected")]
     selected: bool,
+
+    value: Option<u8>
 }
 
-impl Default for CropMS1mz {
-    fn default() -> Self {
+impl CropMS1mz {
+    fn new() -> Self {
         CropMS1mz {
             name: "Crop MS1 m/z".to_owned(),
             selected: false,
+            value: None
         }
     }
+
+    fn set_selected(&mut self, value: Option<u8>){
+        self.value = value;
+    }
+
+    fn get_value(&self) -> Option<u8>{
+        self.value
+    }
 }
-
-
-
-// ### ### ### ### ### ### ###     MS Advanced     ### ### ### ### ### ### ### ### ### ###
 
 
 
@@ -328,7 +394,7 @@ impl MSDetectorAdvanced {
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 #[serde(untagged)]
-enum MSDetectorAdvancedModules {
+pub enum MSDetectorAdvancedModules {
     FactorOfLowestSignal(FactorOfLowestSignal),
     Auto(Auto),
     Centroid(Centroid),
@@ -340,7 +406,7 @@ enum MSDetectorAdvancedModules {
 
 impl MSDetectorAdvancedModules {
     // Returns an Option<f32> since not all variants may have a value
-    fn get_value(&self) -> Option<f32> {
+    pub fn get_value(&self) -> Option<f32> {
         match self {
             MSDetectorAdvancedModules::FactorOfLowestSignal(f) => f.get_value(),
             MSDetectorAdvancedModules::Auto(f) => f.get_value(),
@@ -353,7 +419,7 @@ impl MSDetectorAdvancedModules {
         }
     }
 
-    fn set_value(&mut self, value: Option<f32>){
+    pub fn set_value(&mut self, value: Option<f32>){
         match self {
             MSDetectorAdvancedModules::FactorOfLowestSignal(f) => f.set_value(value),
             MSDetectorAdvancedModules::Auto(f) => f.set_value(value),
@@ -365,13 +431,12 @@ impl MSDetectorAdvancedModules {
             _ => (),
         }
     }
-
 }
 
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug)]
 #[serde(default, rename_all = "lowercase")]
-struct FactorOfLowestSignal{
+pub struct FactorOfLowestSignal{
     #[serde(rename = "@name")]
     name: String,
 
@@ -386,18 +451,18 @@ impl FactorOfLowestSignal{
         }
     }
 
-    fn set_value(&mut self, value:Option<f32>){
+    pub fn set_value(&mut self, value:Option<f32>){
         self.parameter.set_value(value);
     }
 
-    fn get_value(& self) -> Option<f32>{
+    pub fn get_value(& self) -> Option<f32>{
         self.parameter.get_value()
     }
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 #[serde(default, rename_all = "lowercase")]
-struct ParameterFactorOfLowestSignal{
+pub struct ParameterFactorOfLowestSignal{
     #[serde(rename = "@name")]
     name: String,
     #[serde(rename = "$text")]
@@ -431,7 +496,7 @@ impl ParameterFactorOfLowestSignal {
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug)]
 #[serde(default, rename_all = "lowercase")]
-struct Auto{
+pub struct Auto{
     #[serde(rename = "@name")]
     name: String,
 
@@ -484,7 +549,7 @@ impl ParameterAuto{
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug)]
 #[serde(default, rename_all = "lowercase")]
-struct Centroid{
+pub struct Centroid{
     #[serde(rename = "@name")]
     name: String,
 
@@ -537,7 +602,7 @@ impl ParameterCentroid{
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug)]
 #[serde(default, rename_all = "lowercase")]
-struct ExactMass{
+pub struct ExactMass{
     #[serde(rename = "@name")]
     name: String,
 
@@ -589,7 +654,7 @@ impl ParameterExactMass{
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug)]
 #[serde(default, rename_all = "lowercase")]
-struct LocalMaxima{
+pub struct LocalMaxima{
     #[serde(rename = "@name")]
     name: String,
 
@@ -641,7 +706,7 @@ impl ParameterLocalMaxima{
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug)]
 #[serde(default, rename_all = "lowercase")]
-struct RecursiveThreshold{
+pub struct RecursiveThreshold{
     #[serde(rename = "@name")]
     name: String,
 
@@ -649,18 +714,18 @@ struct RecursiveThreshold{
 }
 
 impl RecursiveThreshold{
-    pub fn new() -> Self{
+    fn new() -> Self{
         RecursiveThreshold{
             name: "Recursive threshold".to_owned(),
             parameters: Vec::new(),
         }
     }
 
-    pub fn add_parameter(&mut self, parameter: RecursiveThresholdParameters){
+    fn add_parameter(&mut self, parameter: RecursiveThresholdParameters){
         self.parameters.push(parameter);
     }   
 
-    pub fn set_parameter_value(&mut self, target: String, value: Option<f32>){
+    fn set_parameter_value(&mut self, target: String, value: Option<f32>){
         for param in &mut self.parameters {
             match param {
                 RecursiveThresholdParameters::RTNoiseLevel(rt) if target == "RTNoiseLevel" => return rt.set_value(value),
@@ -671,7 +736,7 @@ impl RecursiveThreshold{
         }
     }
 
-    pub fn get_parameter_value(&self, target: String) -> Option<f32>{
+    fn get_parameter_value(&self, target: String) -> Option<f32>{
         for param in &self.parameters {
             match param {
                 RecursiveThresholdParameters::RTNoiseLevel(rt) if target == "RTNoiseLevel" => return rt.get_value(),
@@ -693,7 +758,7 @@ enum RecursiveThresholdParameters{
 }
 
 impl RecursiveThresholdParameters{
-    pub fn get_value(&self) -> Option<f32>{
+    fn get_value(&self) -> Option<f32>{
         match self{
             RecursiveThresholdParameters::RTNoiseLevel(f) => f.get_value(),
             RecursiveThresholdParameters::MinMZPeakWidth(f) => f.get_value(),
@@ -701,7 +766,7 @@ impl RecursiveThresholdParameters{
         }
     }
 
-    pub fn set_value(&mut self, value: Option<f32>){
+    fn set_value(&mut self, value: Option<f32>){
         match self{
             RecursiveThresholdParameters::RTNoiseLevel(f) => f.set_value(value),
             RecursiveThresholdParameters::MinMZPeakWidth(f) => f.set_value(value),
@@ -720,18 +785,18 @@ struct RTNoiseLevel{
 }
 
 impl RTNoiseLevel{
-    pub fn new() -> Self{
+    fn new() -> Self{
         RTNoiseLevel{
             name: "Noise level".to_owned(),
             value: None,
         }
     }
 
-    pub fn set_value(&mut self, value: Option<f32>){
+    fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<f32>{
+    fn get_value(&self) -> Option<f32>{
         self.value
     }
 }
@@ -746,18 +811,18 @@ struct MinMZPeakWidth{
 }
 
 impl MinMZPeakWidth{
-    pub fn new() -> Self {
+    fn new() -> Self {
         MinMZPeakWidth{
             name: "Min m/z peak width".to_owned(),
             value: None,
         }
     }
 
-    pub fn set_value(&mut self, value: Option<f32>){
+    fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<f32>{
+    fn get_value(&self) -> Option<f32>{
         self.value
     }
 }
@@ -772,25 +837,25 @@ struct MaxMZPeakWidth{
 }
 
 impl MaxMZPeakWidth {
-    pub fn new() -> Self {
+    fn new() -> Self {
         MaxMZPeakWidth {
             name: "Max m/z peak width".to_owned(),
             value: None,
         }
     }
 
-    pub fn set_value(&mut self, value:Option<f32>){
+    fn set_value(&mut self, value:Option<f32>){
         self.value = value;
     }
     
-    pub fn get_value(&self) -> Option<f32>{
+    fn get_value(&self) -> Option<f32>{
         self.value
     }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug)]
 #[serde(default, rename_all = "lowercase")]
-struct WaveletTransform{
+pub struct WaveletTransform{
     #[serde(rename = "@name")]
     name: String,
 
@@ -798,18 +863,18 @@ struct WaveletTransform{
 }
 
 impl WaveletTransform {
-    pub fn new() -> Self {
+    fn new() -> Self {
         WaveletTransform {
             name: "Wavelet transform".to_owned(),
             parameters: Vec::new(),
         }
     }
 
-    pub fn get_value(&self, index: usize) -> Option<f32>{
+    fn get_value(&self, index: usize) -> Option<f32>{
         self.parameters[index].get_value()
     }
 
-    pub fn set_value(&mut self, index:usize, value:Option<f32>){
+    fn set_value(&mut self, index:usize, value:Option<f32>){
         self.parameters[index].set_value(value);
     }
 }
@@ -823,7 +888,7 @@ enum WaveletTransformParameters{
 }
 
 impl WaveletTransformParameters{
-    pub fn get_value(&self) -> Option<f32> {
+    fn get_value(&self) -> Option<f32> {
         match self{
             WaveletTransformParameters::WTNoiseLevel(f) => f.get_value(),
             WaveletTransformParameters::ScaleLevel(f) => f.get_value(),
@@ -831,7 +896,7 @@ impl WaveletTransformParameters{
         }
     }
 
-    pub fn set_value(&mut self, value: Option<f32>){
+    fn set_value(&mut self, value: Option<f32>){
         match self{
             WaveletTransformParameters::WTNoiseLevel(f) => f.set_value(value),
             WaveletTransformParameters::ScaleLevel(f) => f.set_value(value),
@@ -850,18 +915,18 @@ struct WTNoiseLevel{
 }
 
 impl WTNoiseLevel {
-    pub fn new() -> Self {
+    fn new() -> Self {
         WTNoiseLevel {
             name: "Noise level".to_owned(),
             value: None,
         }
     }
 
-    pub fn get_value(&self) -> Option<f32>{
+    fn get_value(&self) -> Option<f32>{
         self.value
     }
 
-    pub fn set_value(&mut self, value:Option<f32>){
+    fn set_value(&mut self, value:Option<f32>){
         self.value = value;
     }
 }
@@ -876,18 +941,18 @@ struct ScaleLevel{
 }
 
 impl ScaleLevel {
-    pub fn new() -> Self {
+    fn new() -> Self {
         ScaleLevel {
             name: "Scale level".to_owned(),
             value: None,
         }
     }
 
-    pub fn get_value(&self) -> Option<f32>{
+    fn get_value(&self) -> Option<f32>{
         self.value
     }
 
-    pub fn set_value(&mut self, value: Option<f32>){
+    fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
 }
@@ -902,18 +967,18 @@ struct WaveletWindowSize{
 }
 
 impl WaveletWindowSize {
-    pub fn new() -> Self {
+    fn new() -> Self {
         WaveletWindowSize {
             name: "Wavelet window size (%)".to_owned(),
             value: None,
         }
     }
 
-    pub fn get_value(&self) -> Option<f32>{
+    fn get_value(&self) -> Option<f32>{
         self.value
     }
 
-    pub fn set_value(&mut self, value: Option<f32>){
+    fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
 }
