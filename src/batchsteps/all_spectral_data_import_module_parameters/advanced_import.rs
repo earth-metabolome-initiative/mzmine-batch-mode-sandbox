@@ -1,5 +1,11 @@
 use serde::{Serialize, Deserialize};
 
+enum Value {
+    Single(Option<f32>),
+    Vector(Vec<Option<f32>>),
+}
+
+
 #[derive(Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase")]
 pub struct AdvancedImport{
@@ -9,7 +15,7 @@ pub struct AdvancedImport{
      #[serde(rename = "@selected")]
      selected: bool,
  
-     parameter: Vec<AdvancedImportParameters>
+     parameters: Vec<AdvancedImportParameters>
  }
 
  impl Default for AdvancedImport {
@@ -17,10 +23,10 @@ pub struct AdvancedImport{
         AdvancedImport {
             name: "Advanced import".to_owned(),
             selected: false,
-            parameter: vec![
+            parameters: vec![
                 AdvancedImportParameters::ScanFilter(ScanFilter::default()),
                 AdvancedImportParameters::CropMS1mz(CropMS1mz::default()),
-                AdvancedImportParameters::MS1DetectorAdvanced(MSDetectorAdvanced::default()) //MS1
+                AdvancedImportParameters::MSDetectorAdvanced(MSDetectorAdvanced::default()) //MS1
                 //AdvancedImportParameters::MS2DetectorAdvanced(MS2DetectorAdvanced::default())  //MS2
             ],
         }
@@ -34,11 +40,9 @@ pub struct AdvancedImport{
  enum AdvancedImportParameters{
     ScanFilter(ScanFilter),
     CropMS1mz(CropMS1mz),
-    MS1DetectorAdvanced(MSDetectorAdvanced),
-    // MS2DetectorAdvanced(MS2DetectorAdvanced),
+    MSDetectorAdvanced(MSDetectorAdvanced),
     // DenormalizeFragmentScansTraps(DenormalizeFragmentScansTraps),
  }
-
 
 // ### ### ### ### ### ### ###     Scan Filter     ### ### ### ### ### ### ### ### ### ###
 
@@ -293,7 +297,7 @@ impl MSDetectorAdvanced {
         }
     }
 
-    fn set_ms1(&mut self, value: f32) {
+    fn set_ms1(&mut self, value: Option<f32>) {
         self.name = "MS1 detector (Advanced)".to_owned();
         for module in &mut self.modules {
             match module {
@@ -305,7 +309,7 @@ impl MSDetectorAdvanced {
         }
     }
 
-    fn set_ms2(&mut self, value: f32) {
+    fn set_ms2(&mut self, value: Option<f32>) {
         self.name = "MS2 detector (Advanced)".to_owned();
         for module in &mut self.modules {
             match module {
@@ -338,15 +342,34 @@ impl MSDetectorAdvancedModules {
     // Returns an Option<f32> since not all variants may have a value
     fn get_value(&self) -> Option<f32> {
         match self {
-            MSDetectorAdvancedModules::FactorOfLowestSignal(f) => Some(f.get_value()),
+            MSDetectorAdvancedModules::FactorOfLowestSignal(f) => f.get_value(),
+            MSDetectorAdvancedModules::Auto(f) => f.get_value(),
+            MSDetectorAdvancedModules::Centroid(f) => f.get_value(),
+            MSDetectorAdvancedModules::ExactMass(f) => f.get_value(),
+            MSDetectorAdvancedModules::LocalMaxima(f) => f.get_value(),
+
             // Handle other variants if needed, or return None
             _ => None,
         }
     }
+
+    fn set_value(&mut self, value: Option<f32>){
+        match self {
+            MSDetectorAdvancedModules::FactorOfLowestSignal(f) => f.set_value(value),
+            MSDetectorAdvancedModules::Auto(f) => f.set_value(value),
+            MSDetectorAdvancedModules::Centroid(f) => f.set_value(value),
+            MSDetectorAdvancedModules::ExactMass(f) => f.set_value(value),
+            MSDetectorAdvancedModules::LocalMaxima(f) => f.set_value(value),
+
+            // Handle other variants if needed, or return None
+            _ => (),
+        }
+    }
+
 }
 
 
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
+#[derive(Default, Serialize, Deserialize, PartialEq, Debug)]
 #[serde(default, rename_all = "lowercase")]
 struct FactorOfLowestSignal{
     #[serde(rename = "@name")]
@@ -355,28 +378,19 @@ struct FactorOfLowestSignal{
     parameter: ParameterFactorOfLowestSignal,
 }
 
-impl Default for FactorOfLowestSignal {
-    fn default() -> Self {
-        FactorOfLowestSignal {
-            name: "Factor of lowest signal".to_owned(),
-            parameter: ParameterFactorOfLowestSignal::default(),
-        }
-    }
-}
-
 impl FactorOfLowestSignal{
-    pub fn new(value:f32) -> Self{
+    pub fn new(value:Option<f32>) -> Self{
         FactorOfLowestSignal{
             name: "Factor of lowest signal".to_owned(),
             parameter: ParameterFactorOfLowestSignal::new(value)
         }
     }
 
-    fn set_value(&mut self, value:f32){
+    fn set_value(&mut self, value:Option<f32>){
         self.parameter.set_value(value);
     }
 
-    fn get_value(& self) -> f32{
+    fn get_value(& self) -> Option<f32>{
         self.parameter.get_value()
     }
 }
@@ -387,30 +401,30 @@ struct ParameterFactorOfLowestSignal{
     #[serde(rename = "@name")]
     name: String,
     #[serde(rename = "$text")]
-    value: f32,
+    value: Option<f32>,
 }
 impl Default for ParameterFactorOfLowestSignal {
     fn default() -> Self {
         ParameterFactorOfLowestSignal{
             name: "Factor of lowest signal".to_owned(),
-            value: 5.0,
+            value: Some(5.0),
         }
     }
 }
 
 impl ParameterFactorOfLowestSignal {
-    fn new(value: f32) -> Self{
+    fn new(value: Option<f32>) -> Self{
         ParameterFactorOfLowestSignal{
             name: "Factor of lowest signal".to_owned(),
             value: value,
         }
     }
 
-    fn set_value(&mut self, value: f32){
+    fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
 
-    fn get_value(& self) -> f32{
+    fn get_value(& self) -> Option<f32>{
         self.value
     }
 }
@@ -431,11 +445,11 @@ impl Auto{
             parameter: ParameterAuto::new() }
     }
 
-    pub fn get_value(&self) -> f32{
+    pub fn get_value(&self) -> Option<f32>{
         self.parameter.get_value()
     }
 
-    pub fn set_value(&mut self, value:f32){
+    pub fn set_value(&mut self, value:Option<f32>){
         self.parameter.set_value(value);
     }
 }
@@ -447,7 +461,7 @@ struct ParameterAuto{
     name: String,
 
     #[serde(rename = "$text")]
-    value: f32,
+    value: Option<f32>,
 }
 
 
@@ -455,15 +469,15 @@ impl ParameterAuto{
     pub fn new() -> Self{
         ParameterAuto{
             name: "Noise level".to_owned(),
-            value: 1000.0,
+            value: Some(1000.0),
         }
     }
 
-    fn get_value(& self)->f32{
+    fn get_value(& self)->Option<f32>{
         self.value
     }
 
-    fn set_value(&mut self, value:f32){
+    fn set_value(&mut self, value:Option<f32>){
         self.value = value;
     }
 }
@@ -646,12 +660,27 @@ impl RecursiveThreshold{
         self.parameters.push(parameter);
     }   
 
-    pub fn set_parameter_value(&mut self, index: usize, value: Option<f32>){
-        self.parameters[index].set_value(value);
+    pub fn set_parameter_value(&mut self, target: String, value: Option<f32>){
+        for param in &mut self.parameters {
+            match param {
+                RecursiveThresholdParameters::RTNoiseLevel(rt) if target == "RTNoiseLevel" => return rt.set_value(value),
+                RecursiveThresholdParameters::MinMZPeakWidth(min_mz) if target == "MinMZPeakWidth" => return min_mz.set_value(value),
+                RecursiveThresholdParameters::MaxMZPeakWidth(max_mz) if target == "MaxMZPeakWidth" => return max_mz.set_value(value),
+                _ => continue,
+            }
+        }
     }
 
-    pub fn get_parameter_value(&self, index: usize) -> Option<f32>{
-        self.parameters[index].get_value()
+    pub fn get_parameter_value(&self, target: String) -> Option<f32>{
+        for param in &self.parameters {
+            match param {
+                RecursiveThresholdParameters::RTNoiseLevel(rt) if target == "RTNoiseLevel" => return rt.get_value(),
+                RecursiveThresholdParameters::MinMZPeakWidth(min_mz) if target == "MinMZPeakWidth" => return min_mz.get_value(),
+                RecursiveThresholdParameters::MaxMZPeakWidth(max_mz) if target == "MaxMZPeakWidth" => return max_mz.get_value(),
+                _ => continue,
+            }
+        }
+        None
     }
 }
 
@@ -901,13 +930,13 @@ mod tests {
     fn test_ms1_content(){
         let mut ms_detector = MSDetectorAdvanced::new();
         assert_eq!(ms_detector.name, "");                                                                                    //test it has been initialized correctly
-        ms_detector.set_ms1(0.0);
+        ms_detector.set_ms1(Some(0.0));
         assert_eq!(ms_detector.name, "MS1 detector (Advanced)");                                                             //test it has the correct name
-        ms_detector.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(0.0))); 
+        ms_detector.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(Some(0.0)))); 
         assert_eq!(ms_detector.modules.len(), 1);                                                                            //test something has been inserted
-        assert_eq!(ms_detector.modules[0], MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(0.0))); //test that it is in fact this type of object
+        assert_eq!(ms_detector.modules[0], MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(Some(0.0)))); //test that it is in fact this type of object
 
-        ms_detector.set_ms1(7.0);
+        ms_detector.set_ms1(Some(7.0));
         assert_eq!(ms_detector.modules[0].get_value(), Some(7.0));
     }
 
@@ -915,13 +944,13 @@ mod tests {
     fn test_ms2_content(){
         let mut ms_detector = MSDetectorAdvanced::new();
         assert_eq!(ms_detector.name, "", "NOT empty");                                                                                    //test it has been initialized correctly
-        ms_detector.set_ms2(0.0);
+        ms_detector.set_ms2(Some(0.0));
         assert_eq!(ms_detector.name, "MS2 detector (Advanced)", "NOT same name");                                                             //test it has the correct name
-        ms_detector.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(0.0))); 
+        ms_detector.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(Some(0.0)))); 
         assert_eq!(ms_detector.modules.len(), 1, "NOT 1 element pushed");                                                                            //test something has been inserted
-        assert_eq!(ms_detector.modules[0], MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(0.0)), "NOT good type inserted"); //test that it is in fact this type of object
+        assert_eq!(ms_detector.modules[0], MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(Some(0.0))), "NOT good type inserted"); //test that it is in fact this type of object
 
-        ms_detector.set_ms2(1000.0);
+        ms_detector.set_ms2(Some(1000.0));
         assert_eq!(ms_detector.modules[0].get_value(), Some(1000.0), "NOT matching value");
     }
 
@@ -934,8 +963,8 @@ mod tests {
     #[test]
     fn test_auto_set_value(){
         let mut auto_obj = Auto::new();
-        auto_obj.set_value(17.0);
-        assert_eq!(auto_obj.parameter.get_value(), 17.0);
+        auto_obj.set_value(Some(17.0));
+        assert_eq!(auto_obj.parameter.get_value(), Some(17.0));
     }
 
     #[test]
@@ -947,15 +976,15 @@ mod tests {
     #[test]
     fn test_parameter_auto_set_value(){
         let mut parameter_auto_obj = ParameterAuto::new();
-        assert_eq!(parameter_auto_obj.value, 1000.0, "NOT initialized correctely");
-        parameter_auto_obj.set_value(28.4);
-        assert_eq!(parameter_auto_obj.value, 28.4, "NOT setted correctely");
+        assert_eq!(parameter_auto_obj.value, Some(1000.0), "NOT initialized correctely");
+        parameter_auto_obj.set_value(Some(28.4));
+        assert_eq!(parameter_auto_obj.value, Some(28.4), "NOT setted correctely");
     }
 
     #[test]
     fn test_parameter_auto_get_value(){
         let mut parameter_auto_obj = ParameterAuto::new();
-        assert_eq!(parameter_auto_obj.get_value(), 1000.0, "NOT the right value");
+        assert_eq!(parameter_auto_obj.get_value(), Some(1000.0), "NOT the right value");
     }
 
     #[test]
@@ -1093,8 +1122,6 @@ mod tests {
         assert_eq!(par_local_maxima_obj.get_value(), Some(45.6));
     }
 
-    // // //
-
     #[test]
     fn test_Recursive_Threshold_initialization(){
         let recursive_thr_obj = RecursiveThreshold::new();
@@ -1110,21 +1137,3 @@ mod tests {
     }
 
 }
-
-
-//
-//  FactorOfLowestSignal(FactorOfLowestSignal),
-//  Auto(Auto),
-//  Centroid(Centroid),
-//  ExactMass(ExactMass),
-//  LocalMaxima(LocalMaxima),
-//  RecursiveThreshold(RecursiveThreshold),
-//  WaveletTransform(WaveletTransform)
-//
-
-
-// enum RecursiveThresholdParameters{
-//     RTNoiseLevel(RTNoiseLevel),
-//     MinMZPeakWidth(MinMZPeakWidth),
-//     MaxMZPeakWidth(MaxMZPeakWidth),
-// }
