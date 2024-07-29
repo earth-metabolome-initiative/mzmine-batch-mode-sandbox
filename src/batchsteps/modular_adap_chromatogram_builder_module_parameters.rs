@@ -1,0 +1,6 @@
+mod allow_single_scan_chromatogram;
+mod minimum_absolute_height;
+mod minimum_consecutive_scans;
+mod minimum_intensity_for_consecutive_scans;
+mod mz_tolerance_scan_to_scan;
+mod suffix;

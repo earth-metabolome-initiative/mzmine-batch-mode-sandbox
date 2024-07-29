@@ -6,8 +6,8 @@ use serde::{Deserialize, Serialize}; // Import serde macros
 #[serde(untagged)] // uses only content of the batchstep themselves and not serializes this enum
 pub enum Modules {
     AllSpectralDataImportModule(AllSpectralDataImportModule),
-    // MassDetectionModule(Vec<batchsteps::mass_detection_module::MassDetectionModule>),
-    // ModularADAPChromatogramBuilderModule(batchsteps::modular_adap_chromatogram_builder_module::ModularADAPChromatogramBuilderModule),
+    MassDetectionModule(Vec<MassDetectionModule>),
+    ModularADAPChromatogramBuilderModule(ModularADAPChromatogramBuilderModule),
     // SmoothinModule(batchsteps::smoothing_module::SmoothingModule),
     // MinimumSearchFeatureResolverModule(batchsteps::minimum_search_feature_resolver_module::MinimumSearchFeatureResolverModule),
     // IsotopeGrouper(batchsteps::isotope_grouper_module::IsotopeGrouper),
