@@ -8,7 +8,7 @@ use crate::prelude::MinimumConsecutiveScans;
 use crate::prelude::MinimumIntensityForConsecutiveScans;
 use crate::prelude::MinimumAbsoluteHeight;
 use crate::prelude::MzToleranceScanToScan;
-use crate::prelude::Suffix;
+use crate::prelude::ADAPSuffix;
 
 #[derive(Default, Serialize, Deserialize, PartialEq)]
 #[serde(default, rename_all = "lowercase")]
@@ -44,7 +44,7 @@ enum ModularADAPChromatogramBuilderModuleParameter{
     MinimumIntensityForConsecutiveScans(MinimumIntensityForConsecutiveScans),
     MinimumAbsoluteHeight(MinimumAbsoluteHeight),
     MzToleranceScanToScan(MzToleranceScanToScan),
-    Suffix(Suffix),
+    Suffix(ADAPSuffix),
     AllowSingleScanChromatograms(AllowSingleScanChromatograms),
 }
 

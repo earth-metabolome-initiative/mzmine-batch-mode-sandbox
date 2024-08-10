@@ -8,7 +8,7 @@ pub enum Modules {
     AllSpectralDataImportModule(AllSpectralDataImportModule),
     MassDetectionModule(Vec<MassDetectionModule>),
     ModularADAPChromatogramBuilderModule(ModularADAPChromatogramBuilderModule),
-    // SmoothinModule(batchsteps::smoothing_module::SmoothingModule),
+    SmoothinModule(SmoothingModule),
     // MinimumSearchFeatureResolverModule(batchsteps::minimum_search_feature_resolver_module::MinimumSearchFeatureResolverModule),
     // IsotopeGrouper(batchsteps::isotope_grouper_module::IsotopeGrouper),
     // RowsFilterModule(batchsteps::rows_filter_module::RowsFilterModule),
@@ -22,22 +22,22 @@ pub enum Modules {
 #[serde(default, rename = "batch", rename_all = "lowercase")]
 pub struct Batch {
     #[serde(rename = "@mzmine_version")]
-    mzmine_version: String,
-    batchstep: Vec<Modules>,
+    pub mzmine_version: String,
+    pub batchstep: Vec<Modules>,
 }
 
 impl Batch {
-    fn new(mzmine_version: String, batchstep: Vec<Modules>) -> Self {
+    pub fn new(mzmine_version: String, batchstep: Vec<Modules>) -> Self {
         Batch {
             mzmine_version,
             batchstep,
         }
     }
-    fn set_version(&mut self, mzmine_version: String) {
+    pub fn set_version(&mut self, mzmine_version: String) {
         self.mzmine_version = mzmine_version;
     }
 
-    fn add_batchstep(&mut self, module: Modules){
+    pub fn add_batchstep(&mut self, module: Modules){
         self.batchstep.push(module)
     }
 }
@@ -66,31 +66,3 @@ impl Batch {
 // 
 //     Ok(())
 // }
-
-#[cfg(test)]
-mod tests {
-    use crate::prelude::*;
-
-    use super::*;
-
-    #[test]
-    fn test_mzmine_version_setter() {
-        let mut batch = Batch::new("".to_string(), vec![]);
-        batch.set_version("1.0.0".to_string());
-        assert_eq!("1.0.0", batch.mzmine_version);
-    }
-
-    #[test]
-    fn test_add_batchsteps() {
-        let mut batch = Batch::new("1.0.1".to_string(), vec![]);
-        batch.add_batchstep(Modules::AllSpectralDataImportModule(AllSpectralDataImportModule::default()));
-        assert_eq!(batch.batchstep.len(), 1);
-    }
-
-    #[test]
-    fn test_file_names_creation() {
-        let batch = Batch::default();
-        assert_eq!(batch.mzmine_version, "");
-        assert!(batch.batchstep.is_empty());
-    }
-}

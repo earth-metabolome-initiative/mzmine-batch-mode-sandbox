@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
+#[derive(Default, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(default, rename_all = "lowercase")]
 pub struct RawDataFiles {
     #[serde(rename = "@name")]
@@ -22,19 +22,40 @@ impl RawDataFiles {
         }
     }
 
-    pub fn add_file(&mut self, file:RDFiles){
-        self.files.push(file);
+    pub fn get_name(&self) -> String{
+        self.name.clone()
+    }
+
+    pub fn get_type(&self) -> String{
+        self._type.clone()
     }
 
     pub fn set_type(&mut self, _type: String){
         self._type = _type;
     }
+
+    pub fn add_file(&mut self, file:RDFiles){
+        self.files.push(file);
+    }
+
+    pub fn get_file(&self, target: &str) -> Result<&RDFiles, &'static str>{
+        for file in &self.files{
+            if file.get_file_name() == target{
+                return Ok(file);
+            }
+        }
+        Err("File not found")
+    }   
+
+    pub fn get_files_length(&self) -> usize{
+        self.files.len()
+    }
 }
 
 //still not used but supposed to look something like this if will ever be the case
- #[derive(Default, Serialize, Deserialize, PartialEq, Debug)]
+ #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
  #[serde(default, rename = "file", rename_all = "lowercase")]
- struct RDFiles{
+ pub struct RDFiles{
      #[serde(rename = "@name")]
      name: String,
  
@@ -43,43 +64,22 @@ impl RawDataFiles {
  }
  
  impl RDFiles{
-     fn new() -> Self{
+    pub fn new() -> Self{
          RDFiles{
              name: "file".to_owned(),
              file_name: "file_name".to_owned()
          }
      }
+
+    pub fn get_name(&self) -> &str{
+        &self.name
+    }
  
-     fn set_file_name(&mut self, name: String){
+    pub fn get_file_name(&self) -> &str{
+        &self.file_name
+    }
+
+    pub fn set_file_name(&mut self, name: String){
          self.file_name = name;
-     }
+    }
  }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_raw_data_initialization(){
-        let raw_data_obj = RawDataFiles::new();
-        assert_eq!(raw_data_obj.name, "Raw data files".to_owned(), "NOT correct object name");
-        assert_eq!(raw_data_obj._type, "BATCH_LAST_FILES".to_owned(), "NOT correct type name");
-        assert_eq!(raw_data_obj.files.len(), 0, "NOT 0 length files vector initialization");
-    }
-
-    #[test]
-    fn test_raw_data_add_file(){
-        let mut raw_data_obj = RawDataFiles::new();
-        assert_eq!(raw_data_obj.files.len(), 0, "NOT 0 length files vector initialization");
-        raw_data_obj.add_file(RDFiles::new());
-        assert_eq!(raw_data_obj.files.len(), 1, "NOT correct lenght after file added to vector files");
-    }
-
-    #[test]
-    fn test_raw_data_set_type(){
-        let mut raw_data_obj = RawDataFiles::new();
-        assert_eq!(raw_data_obj._type, "BATCH_LAST_FILES".to_owned(), "NOT correct type name");
-        raw_data_obj.set_type("New type".to_owned());
-        assert_eq!(raw_data_obj._type, "New type", "Type not changed correctly");
-    }   
-}

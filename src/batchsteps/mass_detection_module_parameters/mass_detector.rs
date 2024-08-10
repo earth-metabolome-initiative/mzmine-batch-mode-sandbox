@@ -10,7 +10,7 @@ use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_impo
 use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::RecursiveThreshold;
 use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::WaveletTransform;
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
+#[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(default, rename_all = "lowercase")]
 pub struct MassDetector {
     #[serde(rename = "@name")]
@@ -31,36 +31,36 @@ impl MassDetector {
         }
     }
 
+    pub fn get_name(&self) -> &str{
+        &self.name
+    }
+
+    pub fn get_selected_item(&self) -> &str{
+        &self.selected_item
+    }
+
     pub fn add_module(&mut self, parameter:MSDetectorAdvancedModules){
         self.modules.push(parameter);
     }
-}
 
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_mass_detector_initialization(){
-        let mass_detector_obj = MassDetector::new();
-        assert_eq!(mass_detector_obj.name, "Mass detector");
-        assert_eq!(mass_detector_obj.selected_item, "Factor of lowest signal");
-        assert_eq!(mass_detector_obj.modules.len(), 0);
+    pub fn get_modules_length(&self) -> usize{
+        self.modules.len()
     }
 
-    #[test]
-    fn test_mass_detector_add_module(){
-        let mut mass_detector_obj = MassDetector::new();
-        assert_eq!(mass_detector_obj.modules.len(), 0);
-        let auto = Auto::new();
-        mass_detector_obj.add_module(MSDetectorAdvancedModules::Auto(auto));
-        assert_eq!(mass_detector_obj.modules.len(), 1);
-        if let MSDetectorAdvancedModules::Auto(_) = &mass_detector_obj.modules[0] {
-            ()
-        } else {
-            panic!("Incorrect module type");
+    pub fn get_module(&self, target: &str) -> Option<&MSDetectorAdvancedModules> {
+        for module in &self.modules {
+            match module {
+                MSDetectorAdvancedModules::Auto(_f) if target == "Auto" => return Some(module),
+                MSDetectorAdvancedModules::Centroid(_f) if target == "Centroid" => return Some(module),
+                MSDetectorAdvancedModules::ExactMass(_f) if target == "Exact Mass" => return Some(module),
+                MSDetectorAdvancedModules::FactorOfLowestSignal(_f) if target == "Factor of lowest signal" => return Some(module),
+                MSDetectorAdvancedModules::LocalMaxima(_f) if target == "Local maxima" => return Some(module),
+                MSDetectorAdvancedModules::RecursiveThreshold(_f) if target == "Recursive threshold" => return Some(module),
+                MSDetectorAdvancedModules::WaveletTransform(_f) if target == "Wavelet transform" => return Some(module),
+                _ => continue,
+            }
         }
+        None
     }
-
+    
 }

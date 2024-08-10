@@ -22,41 +22,43 @@ impl MassDetectionModule{
         }
     }
 
+    pub fn get_method(&self) -> String{
+        self.method.clone()
+    }
+
+    pub fn get_parameter_version(&self) -> u8{
+        self.parameter_version
+    }
+
+    pub fn get_parameters_length(&self) -> usize{
+        self.parameters.len()
+    }
+
     pub fn add_parameter(&mut self, parameter: Parameter){
         self.parameters.push(parameter);
     }
+
+    pub fn get_parameter(&self, target: &str) -> Result<&Parameter, &'static str>{
+        for param in &self.parameters {
+            match param {
+                Parameter::RawDataFiles(_) if target == "RawDataFiles" => return Ok(&param),
+                Parameter::ScanFilters(_) if target == "ScanFilters" => return Ok(&param),
+                Parameter::ScanTypes(_) if target == "ScanTypes" => return Ok(&param),
+                Parameter::MassDetector(_) if target == "MassDetector" => return Ok(&param),
+                Parameter::DenormalizeFragmentScanTraps(_) if target == "DenormalizeFragmentScanTraps" => return Ok(&param),
+                _ => continue,
+            }
+        }
+        Err("Parameter not found")
+    }
 }
 
-#[derive(Serialize, Deserialize, PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
-enum Parameter{
+pub enum Parameter{
     RawDataFiles(RawDataFiles),
     ScanFilters(ScanFilters),
     ScanTypes(ScanTypes),
     MassDetector(MassDetector),
     DenormalizeFragmentScanTraps(DenormalizeFragmentScanTraps)
-}
-
-
-#[cfg(test)]
-mod tests {
-    use crate::batchsteps::mass_detection_module_parameters;
-
-    use super::*;
-
-    #[test]
-    fn test_mass_detection_module_initialization(){
-        let mass_detection_obj = MassDetectionModule::new();
-        assert_eq!(mass_detection_obj.method, "io.github.mzmine.modules.dataprocessing.featdet_massdetection.MassDetectionModule", "NOT right method name");
-        assert_eq!(mass_detection_obj.parameter_version, 1, "NOT parameter version 1");
-        assert_eq!(mass_detection_obj.parameters.len(), 0, "NOT empty parameter vector initialization");
-    }
-
-    #[test]
-    fn test_mass_detection_module_add_parameter(){
-        let mut mass_detection_module_obj = MassDetectionModule::new();
-        assert_eq!(mass_detection_module_obj.parameters.len(), 0, "NOT empty parameter vector initalization");
-        mass_detection_module_obj.add_parameter(Parameter::MassDetector(MassDetector::new()));
-        assert_eq!(mass_detection_module_obj.parameters.len(), 1, "NOT correct lenght of parameter vector after adding parameter");
-    }
 }

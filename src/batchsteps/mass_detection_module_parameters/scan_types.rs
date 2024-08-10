@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
+#[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(default, rename_all = "lowercase")]
 pub struct ScanTypes {
     #[serde(rename = "@name")]
@@ -17,14 +17,22 @@ impl ScanTypes {
         }
     }
 
+    pub fn get_name(&self) -> &str{
+        &self.name
+    }
+
     pub fn add_parameter(&mut self, parameter:ScanTypesParameter){
         self.parameters.push(parameter);
     }
+
+    pub fn get_parameters_length(&self) -> usize{
+        self.parameters.len()
+    }
 }
 
-#[derive(Default, Serialize, Deserialize, PartialEq, Debug)]
+#[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(default, rename = "file", rename_all = "lowercase")]
-struct ScanTypesParameter{
+pub struct ScanTypesParameter{
     #[serde(rename = "@name")]
     name: String,
 
@@ -33,63 +41,22 @@ struct ScanTypesParameter{
 }
 
 impl ScanTypesParameter{
-    fn new() -> Self{
+    pub fn new() -> Self{
         ScanTypesParameter{
             name: "parameter".to_owned(),
             parameter: "All scan types".to_owned()
         }
     }
 
-    fn get_parameter(&self) -> String{
-        self.parameter.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    fn set_parameter(&mut self, parameter:String){
-        self.parameter = parameter;
-    }
-}
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    //Still need to test serialization
-
-    #[test]
-    fn test_scan_types_initialization(){
-        let scan_type_obj = ScanTypes::new();
-        assert_eq!(scan_type_obj.name, "Scan types (IMS)");
-        assert_eq!(scan_type_obj.parameters.len(), 0);
+    pub fn get_parameter(&self) -> &str{
+        &self.parameter
     }
 
-    #[test]
-    fn test_scan_types_add_parameter(){
-        let mut scan_type_obj = ScanTypes::new();
-        assert_eq!(scan_type_obj.parameters.len(), 0);
-        scan_type_obj.add_parameter(ScanTypesParameter::new());
-        assert_eq!(scan_type_obj.parameters.len(), 1);
+    pub fn set_parameter(&mut self, parameter:&str){
+        self.parameter = parameter.to_owned();
     }
-
-    #[test]
-    fn test_scan_types_parameter_initialization(){
-        let scan_types_parameter = ScanTypesParameter::new();
-        assert_eq!(scan_types_parameter.name, "parameter");
-        assert_eq!(scan_types_parameter.parameter, "All scan types");
-    }
-
-    #[test]
-    fn test_scan_types_parameter_get_value(){
-        let mut scan_types_parameter = ScanTypesParameter::new();
-        scan_types_parameter.parameter = "New parameter".to_owned();
-        assert_eq!(scan_types_parameter.get_parameter(), "New parameter");
-    }
-
-    #[test]
-    fn test_scan_types_parameter_set_parameter(){
-        let mut scan_types_parameter = ScanTypesParameter::new();
-        scan_types_parameter.set_parameter("New Parameter".to_owned());
-        assert_eq!(scan_types_parameter.parameter, "New Parameter");
-    }
-
 }
