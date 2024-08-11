@@ -10,46 +10,22 @@ pub struct MinimumConsecutiveScans{
 }
 
 impl MinimumConsecutiveScans{
-    fn new() -> Self{
+    pub fn new() -> Self{
         MinimumConsecutiveScans{
             name: "Minimum consecutive scans".to_owned(),
             value: None,
         }
     }
 
-    fn set_value(&mut self, value: Option<u8>){
+    pub fn get_name(&self) -> &str{
+        &self.name
+    }
+
+    pub fn set_value(&mut self, value: Option<u8>){
         self.value = value;
     }
 
-    fn get_value(&self) -> Option<u8>{
-        self.value
+    pub fn get_value(&self) -> &Option<u8>{
+        &self.value
     }
-}
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_minimum_consecutive_scans_initialization(){
-        let mcs_obj = MinimumConsecutiveScans::new();
-        assert_eq!(mcs_obj.name, "Minimum consecutive scans", "NOT right name initialized");
-        assert_eq!(mcs_obj.value, None);
-    }
-
-    #[test]
-    fn test_minimum_consecutive_scans_get_value(){
-        let mut mcs_obj = MinimumConsecutiveScans::new();
-        mcs_obj.value = Some(14);
-        assert_eq!(mcs_obj.get_value(), mcs_obj.value);
-    }
-
-    #[test]
-    fn test_minimum_consecutive_scans_set_value(){
-        let mut mcs_obj = MinimumConsecutiveScans::new();
-        mcs_obj.set_value(Some(36));
-        assert_eq!(mcs_obj.value, Some(36));
-    }
-
 }

@@ -30,14 +30,30 @@ impl ModularADAPChromatogramBuilderModule{
         }
     }
 
+    pub fn get_method(&self) -> &str{
+        &self.method
+    }
+
+    pub fn get_parameter_version(&self) -> &u8{
+        &self.parameter_version
+    }
+
+    pub fn get_parameters_length(&self) -> usize{
+        self.parameters.len()
+    }
+
     pub fn add_parameter(&mut self, parameter:ModularADAPChromatogramBuilderModuleParameter){
         self.parameters.push(parameter);
     }
+
+    // pub fn get_parameter(&self, target:&str) -> &ModularADAPChromatogramBuilderModuleParameter{
+    //     
+    // }
 }
 
 #[derive(Serialize, Deserialize, PartialEq)]
 #[serde(untagged)]
-enum ModularADAPChromatogramBuilderModuleParameter{
+pub enum ModularADAPChromatogramBuilderModuleParameter{
     RawDataFiles(RawDataFiles),
     ScanFilters(ScanFilters),
     MinimumConsecutiveScans(MinimumConsecutiveScans),
@@ -46,25 +62,4 @@ enum ModularADAPChromatogramBuilderModuleParameter{
     MzToleranceScanToScan(MzToleranceScanToScan),
     Suffix(ADAPSuffix),
     AllowSingleScanChromatograms(AllowSingleScanChromatograms),
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_mADAP_chr_builder_module_initialization(){
-        let obj = ModularADAPChromatogramBuilderModule::new();
-        assert_eq!(obj.method, "io.github.mzmine.modules.dataprocessing.featdet_adapchromatogrambuilder.ModularADAPChromatogramBuilderModule");
-        assert_eq!(obj.parameter_version, 1);
-        assert_eq!(obj.parameters.len(), 0);
-    }
-
-    #[test]
-    fn test_mADAP_chr_builder_module_add_parameter(){
-        let mut obj = ModularADAPChromatogramBuilderModule::new();
-        assert_eq!(obj.parameters.len(), 0);
-        obj.add_parameter(ModularADAPChromatogramBuilderModuleParameter::RawDataFiles(RawDataFiles::new()));
-        assert_eq!(obj.parameters.len(), 1);
-    }
 }
