@@ -18,12 +18,16 @@ impl ChromatographicThreshold{
         }
     }
 
+    pub fn get_name(&self) -> &str{
+        &self.name
+    }
+
     pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<f32>{
-        self.value
+    pub fn get_value(&self) -> &Option<f32>{
+        &self.value
     }
 }
 
@@ -34,23 +38,15 @@ mod tests {
     #[test]
     fn test_chr_thr_initialization(){
         let chr_obj = ChromatographicThreshold::new();
-        assert_eq!(chr_obj.name, "Chromatographic threshold");
-        assert_eq!(chr_obj.value, None);
+        assert_eq!(chr_obj.get_name(), "Chromatographic threshold");
+        assert_eq!(*chr_obj.get_value(), None);
     }
 
     #[test]
-    fn test_chr_thr_set_value(){
+    fn test_chr_thr_set_get_value(){
         let mut chr_obj = ChromatographicThreshold::new();
-        assert_eq!(chr_obj.value, None);
+        assert_eq!(*chr_obj.get_value(), None);
         chr_obj.set_value(Some(13.8));
-        assert_eq!(chr_obj.value, Some(13.8));
-    }
-
-    #[test]
-    fn test_chr_thr_get_value(){
-        let mut chr_obj = ChromatographicThreshold::new();
-        assert_eq!(chr_obj.value, None);
-        chr_obj.value = Some(2.45);
-        assert_eq!(chr_obj.get_value(), Some(2.45));
+        assert_eq!(*chr_obj.get_value(), Some(13.8));
     }
 }

@@ -16,7 +16,7 @@ mod tests {
     fn test_suffix_set_get_value(){
         let mut suffix_obj = Suffix::new();
         assert_eq!(suffix_obj.get_value(), "");
-        suffix_obj.set_value("New value".to_owned());
+        suffix_obj.set_value("New value");
         assert_eq!(suffix_obj.get_value(), "New value");
     }
 }

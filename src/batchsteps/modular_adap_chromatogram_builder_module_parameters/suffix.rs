@@ -22,8 +22,8 @@ impl Suffix{
         &self.name
     }
 
-    pub fn set_value(&mut self, value: String){
-        self.value = value;
+    pub fn set_value(&mut self, value: &str){
+        self.value = value.to_owned();
     }
 
     pub fn get_value(&self) -> &str{

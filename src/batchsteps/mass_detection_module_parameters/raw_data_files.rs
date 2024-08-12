@@ -22,12 +22,12 @@ impl RawDataFiles {
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn get_type(&self) -> String{
-        self._type.clone()
+    pub fn get_type(&self) -> &str{
+        &self._type
     }
 
     pub fn set_type(&mut self, _type: String){

@@ -18,12 +18,16 @@ impl Dimension{
         }
     }
 
-    pub fn set_value(&mut self, value:String){
-        self.value = value;
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn get_value(&self) -> String{
-        self.value.clone()
+    pub fn set_value(&mut self, value:&str){
+        self.value = value.to_owned();
+    }
+
+    pub fn get_value(&self) -> &str{
+        &self.value
     }
 }
 
@@ -34,23 +38,15 @@ mod tests {
     #[test]
     fn test_suffix_initialization(){
         let dimension_obj = Dimension::new();
-        assert_eq!(dimension_obj.name, "Dimension");
-        assert_eq!(dimension_obj.value, "Retention time");
+        assert_eq!(dimension_obj.get_name(), "Dimension");
+        assert_eq!(dimension_obj.get_value(), "Retention time");
     }
 
     #[test]
-    fn test_suffix_set_value(){
+    fn test_suffix_set_get_value(){
         let mut dimension_obj = Dimension::new();
-        assert_eq!(dimension_obj.value, "Retention time");
-        dimension_obj.set_value("TEST".to_owned());
-        assert_eq!(dimension_obj.value, "TEST");
-    }
-
-    #[test]
-    fn test_suffix_get_value(){
-        let mut dimension_obj = Dimension::new();
-        assert_eq!(dimension_obj.value, "Retention time");
-        dimension_obj.value = "TEST".to_owned();
+        assert_eq!(dimension_obj.get_value(), "Retention time");
+        dimension_obj.set_value("TEST");
         assert_eq!(dimension_obj.get_value(), "TEST");
     }
 }

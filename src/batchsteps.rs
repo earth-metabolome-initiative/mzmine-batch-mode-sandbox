@@ -37,18 +37,20 @@ pub mod minimum_search_feature_resolver_module;
 pub mod minimum_search_feature_resolver_module_parameters{
     pub mod chromatographic_threshold;
     pub mod dimension;
-    pub mod feature_list;
+    pub mod feature_lists;
     pub mod limit_by_ion_mobility_edges;
     pub mod minimum_absolute_height;
     pub mod minimum_relative_height;
     pub mod minimum_scans_data_points;
     pub mod minimum_search_range_rt_mobility_absolute;
-    pub mod min_ratio_absolute_peak_min_mobility;
+    pub mod min_ratio_of_peak_top_edge;
     pub mod ms_ms_scan_pairing;
     pub mod original_feature_list;
     pub mod retention_time_filter;
     pub mod suffix;
 }
+
+pub mod return_types;
 
 pub use crate::batchsteps::all_spectral_data_import_module::AllSpectralDataImportModule;
 pub use crate::batchsteps::mass_detection_module::MassDetectionModule;
