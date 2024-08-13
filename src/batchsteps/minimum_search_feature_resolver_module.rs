@@ -56,7 +56,7 @@ pub enum MinimumSearchFeatureResolverModuleParameters{
     MinimumRelativeHeight(MinimumRelativeHeight),
     MinimumScansDataPoints(MinimumScansDataPoints),
     MinimumSearchRangeRTMobilityAbsolute(MinimumSearchRangeRTMobilityAbsolute),
-    //MsMsScanPairing(MsMsScanPairing),
+    MsMsScanPairing(MsMsScanPairing),
     //OriginalFeatureList(OriginalFeatureList)
     //RetentionTimeFilter(RetentionTimeFilter)
     //Suffix(Suffix)

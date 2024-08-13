@@ -87,15 +87,25 @@ pub mod minimum_search_feature_resolver_module{
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::minimum_relative_height::MinimumRelativeHeight;
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::minimum_scans_data_points::MinimumScansDataPoints;
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::minimum_search_range_rt_mobility_absolute::MinimumSearchRangeRTMobilityAbsolute;
+
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing::MsMsScanPairing;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing::MsMsScanPairingParameters;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters::merge_ms_ms_spectra_TIMS::MergeMsMsSpectraTIMS;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters::minimum_relative_feature_height::MinimumRelativeFeatureHeight;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters::minimum_required_signals::MinimumRequiredSignals;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters::minimum_signal_intensity_absolute_TIMS::MinimumSignalIntensityAbsoluteTIMS;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters::minimum_signal_intensity_relative_TIMS::MinimumSignalIntensityRelativeTIMS;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters::ms1_to_ms2_precursor_tolerance::Ms1Ms2PrecursorTolerance;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters::ms1_to_ms2_precursor_tolerance::ToleranceParameters;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters::ms1_to_ms2_precursor_tolerance::PpmTolerance;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters::ms1_to_ms2_precursor_tolerance::AbsoluteTolerance;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::original_feature_list::OriginalFeatureList;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::retention_time_filter::RetentionTimeFilter;
 }
 
 pub mod prelude {
     pub use crate::batch::Batch;
     pub use crate::batch::Modules;
-    use crate::batchsteps;
-
-    use core::panic;
 
     pub use crate::batchsteps::return_types::*;
 
@@ -149,7 +159,7 @@ pub mod prelude {
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::minimum_scans_data_points::MinimumScansDataPoints;
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::minimum_search_range_rt_mobility_absolute::MinimumSearchRangeRTMobilityAbsolute;
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing::MsMsScanPairing;
-    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::original_feature_list;
+    pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::original_feature_list::OriginalFeatureList as ResolverOriginalFeatureList;
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::retention_time_filter;
 }
 

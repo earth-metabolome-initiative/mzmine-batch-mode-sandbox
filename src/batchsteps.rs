@@ -45,9 +45,12 @@ pub mod minimum_search_feature_resolver_module_parameters{
     pub mod minimum_search_range_rt_mobility_absolute;
     pub mod min_ratio_of_peak_top_edge;
     pub mod ms_ms_scan_pairing;
+    pub mod ms_ms_scan_pairing_parameters;
     pub mod original_feature_list;
     pub mod retention_time_filter;
     pub mod suffix;
+
+    //pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters;
 }
 
 pub mod return_types;
