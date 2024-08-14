@@ -10,6 +10,7 @@ use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_
 #[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(default, rename_all = "lowercase")]
 pub struct MsMsScanPairing{
+    #[serde(rename = "@name")]
     name: String,
 
     parameter: Vec<MsMsScanPairingParameters>

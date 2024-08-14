@@ -1,5 +1,9 @@
 use serde::{Serialize, Deserialize};
 
+use quick_xml::events::{Event, BytesEnd, BytesStart, BytesText};
+use quick_xml::writer::Writer;
+use std::io::{Cursor, Result as IoResult, Error as IoError, ErrorKind};
+
 #[derive(Default, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(default, rename_all = "lowercase")]
 pub struct RawDataFiles {
@@ -10,7 +14,7 @@ pub struct RawDataFiles {
     #[serde(rename = "@type")]
     _type: String,
     
-    files: Vec<RDFiles>,
+    value: String,
 }
 
 impl RawDataFiles {
@@ -18,7 +22,7 @@ impl RawDataFiles {
         RawDataFiles { 
             name: "Raw data files".to_owned(), 
             _type: "BATCH_LAST_FILES".to_owned(),
-            files: Vec::new()
+            value: "".to_owned(),
         }
     }
 
@@ -34,52 +38,38 @@ impl RawDataFiles {
         self._type = _type;
     }
 
-    pub fn add_file(&mut self, file:RDFiles){
-        self.files.push(file);
+    pub fn get_value(&self) -> &str{
+        &self.value
     }
 
-    pub fn get_file(&self, target: &str) -> Result<&RDFiles, &'static str>{
-        for file in &self.files{
-            if file.get_file_name() == target{
-                return Ok(file);
-            }
-        }
-        Err("File not found")
-    }   
+    pub fn set_value(&mut self, value: &str){
+        self.value = value.to_owned();
+    }
 
-    pub fn get_files_length(&self) -> usize{
-        self.files.len()
+    pub fn write_element(&mut self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
+       // create XML element -> istantiate element name (batch/batchstep/parameter/module)
+       let mut element = BytesStart::new("parameter");
+
+       // add the attribute(tag) to the element
+       element.push_attribute(("name", self.name.as_str()));
+
+       // add the attribute(tag) to the element
+       element.push_attribute(("type", self._type.as_str()));
+       
+       // add the value as text
+       writer.write_event(Event::Start(element))
+           .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+       // close the XML element
+       if !self.value.is_empty() {
+           writer.write_event(Event::Text(BytesText::new(self.value.as_str())))
+               .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+       }
+
+       // Write the end tag
+       writer.write_event(Event::End(BytesEnd::new("parameter")))
+           .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+       Ok(())
     }
 }
-
-//still not used but supposed to look something like this if will ever be the case
- #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
- #[serde(default, rename = "file", rename_all = "lowercase")]
- pub struct RDFiles{
-     #[serde(rename = "@name")]
-     name: String,
- 
-     #[serde(rename = "$text")]
-     file_name: String
- }
- 
- impl RDFiles{
-    pub fn new() -> Self{
-         RDFiles{
-             name: "file".to_owned(),
-             file_name: "file_name".to_owned()
-         }
-     }
-
-    pub fn get_name(&self) -> &str{
-        &self.name
-    }
- 
-    pub fn get_file_name(&self) -> &str{
-        &self.file_name
-    }
-
-    pub fn set_file_name(&mut self, name: String){
-         self.file_name = name;
-    }
- }

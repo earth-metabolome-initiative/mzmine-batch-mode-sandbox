@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(default, rename_all = "lowercase")]
 pub struct FeatureLists{
     #[serde(rename="@name")]

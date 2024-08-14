@@ -18,4 +18,4 @@ mod test{
         mtol_obj.set_value("something");
         assert_eq!(mtol_obj.get_value(), "something");
     }
-}
+} 

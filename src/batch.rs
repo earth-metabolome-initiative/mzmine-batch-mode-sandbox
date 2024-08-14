@@ -9,9 +9,9 @@ pub enum Modules {
     MassDetectionModule(Vec<MassDetectionModule>),
     ModularADAPChromatogramBuilderModule(ModularADAPChromatogramBuilderModule),
     SmoothinModule(SmoothingModule),
-    // MinimumSearchFeatureResolverModule(batchsteps::minimum_search_feature_resolver_module::MinimumSearchFeatureResolverModule),
-    // IsotopeGrouper(batchsteps::isotope_grouper_module::IsotopeGrouper),
-    // RowsFilterModule(batchsteps::rows_filter_module::RowsFilterModule),
+    MinimumSearchFeatureResolverModule(MinimumSearchFeatureResolverModule),
+    IsotopeGrouper(IsotopeGrouper),
+    //RowsFilterModule(RowsFilterModule),
     // RowsFilterModule2(batchsteps::rows_filter_module_2::RowsFilterModule2),
     // GnpsFbmnExportAndSubmitModule(batchsteps::gnps_fbmn_export_and_submit_module::GnpsFbmnExportAndSubmitModule),
     // SiriusExportModule(batchsteps::sirius_export_module::SiriusExportModule)

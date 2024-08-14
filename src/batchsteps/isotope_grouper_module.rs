@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::isotope_grouper_module::*;
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct IsotopeGrouper{
     method: String,
 

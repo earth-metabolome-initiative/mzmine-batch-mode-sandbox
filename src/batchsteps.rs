@@ -56,13 +56,18 @@ pub mod isotope_grouper_module_parameters{
     pub mod feature_lists;
     pub mod name_suffix;
     pub mod m_z_tolerance_intra_sample;
-    pub mod retention_time_tolerance;
     pub mod mobility_tolerance;
     pub mod monotonic_shape;
     pub mod maximum_charge;
     pub mod representative_isotope;
     pub mod never_remove_feature_with_MS2;
     pub mod original_feature_list;
+    pub mod retention_time_tolerance;
+}
+
+pub mod rows_filter_module;
+pub mod rows_filter_module_parameters{
+    pub mod minimum_aligned_features_samples;
 }
 
 pub mod return_types;

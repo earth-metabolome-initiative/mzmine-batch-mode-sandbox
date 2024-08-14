@@ -57,9 +57,9 @@ pub enum MinimumSearchFeatureResolverModuleParameters{
     MinimumScansDataPoints(MinimumScansDataPoints),
     MinimumSearchRangeRTMobilityAbsolute(MinimumSearchRangeRTMobilityAbsolute),
     MsMsScanPairing(MsMsScanPairing),
-    //OriginalFeatureList(OriginalFeatureList)
-    //RetentionTimeFilter(RetentionTimeFilter)
-    //Suffix(Suffix)
+    OriginalFeatureList(OriginalFeatureList),
+    RetentionTimeFilter(RetentionTimeFilter),
+    Suffix(Suffix)
 }
 
 impl MinimumSearchFeatureResolverModuleParameters {

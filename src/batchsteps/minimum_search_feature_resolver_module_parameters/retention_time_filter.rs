@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(default, rename_all = "lowercase")]
 pub struct RetentionTimeFilter{
     #[serde(rename="@name")]
