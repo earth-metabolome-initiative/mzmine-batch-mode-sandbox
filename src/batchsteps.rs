@@ -49,8 +49,20 @@ pub mod minimum_search_feature_resolver_module_parameters{
     pub mod original_feature_list;
     pub mod retention_time_filter;
     pub mod suffix;
+}
 
-    //pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters;
+pub mod isotope_grouper_module;
+pub mod isotope_grouper_module_parameters{
+    pub mod feature_lists;
+    pub mod name_suffix;
+    pub mod m_z_tolerance_intra_sample;
+    pub mod retention_time_tolerance;
+    pub mod mobility_tolerance;
+    pub mod monotonic_shape;
+    pub mod maximum_charge;
+    pub mod representative_isotope;
+    pub mod never_remove_feature_with_MS2;
+    pub mod original_feature_list;
 }
 
 pub mod return_types;

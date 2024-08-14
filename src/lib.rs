@@ -103,6 +103,21 @@ pub mod minimum_search_feature_resolver_module{
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::retention_time_filter::RetentionTimeFilter;
 }
 
+pub mod isotope_grouper_module{
+    pub use crate::batchsteps::isotope_grouper_module::*;
+
+    pub use crate::batchsteps::isotope_grouper_module_parameters::feature_lists::FeatureLists;
+    pub use crate::batchsteps::isotope_grouper_module_parameters::name_suffix::NameSuffix;
+    pub use crate::batchsteps::isotope_grouper_module_parameters::m_z_tolerance_intra_sample::*;
+    pub use crate::batchsteps::isotope_grouper_module_parameters::retention_time_tolerance::RetentionTimeTolerance;
+    pub use crate::batchsteps::isotope_grouper_module_parameters::mobility_tolerance::MobilityTolerance;
+    pub use crate::batchsteps::isotope_grouper_module_parameters::monotonic_shape::MonotonicShape;
+    pub use crate::batchsteps::isotope_grouper_module_parameters::maximum_charge::MaximumCharge;
+    pub use crate::batchsteps::isotope_grouper_module_parameters::representative_isotope::RepresentativeIsotope;
+    pub use crate::batchsteps::isotope_grouper_module_parameters::never_remove_feature_with_MS2::NeverRemoveFeatureWithMs2;
+    pub use crate::batchsteps::isotope_grouper_module_parameters::original_feature_list::OriginalFeatureList;
+}
+
 pub mod prelude {
     pub use crate::batch::Batch;
     pub use crate::batch::Modules;
