@@ -118,16 +118,17 @@ impl SavitzkyGolay{
         self.parameters.push(parameter);
     }
 
-    pub fn get_parameter(&mut self, target:&str) -> Option<&SavitzkyGolayParameter>{
-        for parameter in &mut self.parameters{
-            match parameter{
-                SavitzkyGolayParameter::RetentionTimeSmoothing(_) if target == "Retention time smoothing" => return Some(parameter),
-                SavitzkyGolayParameter::MobilitySmoothing(_) if target == "Mobility smoothing" => return Some(parameter),
-                _ => continue
+    pub fn get_parameter(&mut self, target: &str) -> &mut SavitzkyGolayParameter {
+        for parameter in &mut self.parameters {
+            match parameter {
+                SavitzkyGolayParameter::RetentionTimeSmoothing(_) if target == "Retention time smoothing" => return parameter,
+                SavitzkyGolayParameter::MobilitySmoothing(_) if target == "Mobility smoothing" => return parameter,
+                _ => continue,
             }
         }
-        None
+        panic!("Parameter '{}' not found", target)
     }
+    
 }
 
 #[derive(Serialize, Deserialize, PartialEq)]

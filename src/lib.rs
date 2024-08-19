@@ -129,7 +129,7 @@ pub mod prelude {
     pub use crate::batch::Batch;
     pub use crate::batch::Modules;
 
-    pub use crate::batchsteps::return_types::*;
+    pub use crate::batchsteps::return_types::Value;
 
     pub use crate::batchsteps::AllSpectralDataImportModule;
     pub use crate::batchsteps::all_spectral_data_import_module::Parameter;
@@ -185,9 +185,6 @@ pub mod prelude {
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::retention_time_filter::RetentionTimeFilter;
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::suffix::Suffix;
 
-    pub use crate::batchsteps::isotope_grouper_module::IsotopeGrouper;
-
-    pub use crate::batchsteps::isotope_grouper_module::IsotopeGrouperParameters;
     pub use crate::batchsteps::isotope_grouper_module_parameters::feature_lists::FeatureLists as IsotopeFeatureLists;
     pub use crate::batchsteps::isotope_grouper_module_parameters::name_suffix::NameSuffix;
     pub use crate::batchsteps::isotope_grouper_module_parameters::m_z_tolerance_intra_sample::*;

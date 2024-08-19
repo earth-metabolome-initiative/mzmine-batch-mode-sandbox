@@ -19,6 +19,15 @@ mod tests {
         let mut mass_detection_module_obj = MassDetectionModule::new();
         assert_eq!(mass_detection_module_obj.get_parameters_length(), 0, "NOT empty parameter vector initalization");
         mass_detection_module_obj.add_parameter(MassDetectionModuleParameter::MassDetector(MassDetector::new()));
-        assert_eq!(mass_detection_module_obj.get_parameter_version(), 1, "NOT correct lenght of parameter vector after adding parameter");
+        assert_eq!(mass_detection_module_obj.get_parameter_version(), 1, "NOT correct length of parameter vector after adding parameter");
+    }
+
+    #[test]
+    fn mass_detection_module_get_parameter(){
+        let mut mass_detection_module_obj = MassDetectionModule::new();
+        assert_eq!(mass_detection_module_obj.get_parameters_length(), 0, "NOT empty parameter vector initalization");
+        mass_detection_module_obj.add_parameter(MassDetectionModuleParameter::MassDetector(MassDetector::new()));
+        let retrieved_parameter = mass_detection_module_obj.get_parameter("MassDetector");
+        assert_eq!(retrieved_parameter.get_name().get_str_value(), "Mass detector");
     }
 }

@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::modules::*;
 use serde::{Deserialize, Serialize}; // Import serde macros
 
 /// Enum of all available modules (type defined)

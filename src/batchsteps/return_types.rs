@@ -1,3 +1,4 @@
+#[derive(Debug, Clone, PartialEq)]
 pub enum Value<'a> {
     Float(&'a Option<f32>),
     Str(&'a str),

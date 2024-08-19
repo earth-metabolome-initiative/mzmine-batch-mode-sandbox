@@ -71,10 +71,10 @@ mod tests {
         assert_eq!(sg_obj.get_parameters_length(), 0);
         sg_obj.add_parameter(SavitzkyGolayParameter::RetentionTimeSmoothing(RetentionTimeSmoothing::new()));
         assert_eq!(sg_obj.get_parameters_length(), 1);
-        assert_eq!(sg_obj.get_parameter("Retention time smoothing").unwrap().get_name(), "Retention time smoothing");
+        assert_eq!(sg_obj.get_parameter("Retention time smoothing").get_name(), "Retention time smoothing");
         sg_obj.add_parameter(SavitzkyGolayParameter::MobilitySmoothing(MobilitySmoothing::new()));
         assert_eq!(sg_obj.get_parameters_length(), 2);
-        assert_eq!(sg_obj.get_parameter("Mobility smoothing").unwrap().get_name(), "Mobility smoothing");
+        assert_eq!(sg_obj.get_parameter("Mobility smoothing").get_name(), "Mobility smoothing");
     }
 
     #[test]

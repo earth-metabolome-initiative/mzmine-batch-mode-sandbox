@@ -568,7 +568,6 @@ impl Polarity{
         writer.write_event(Event::Start(element))
             .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
 
-        // close the XML element
         if !self.value.is_empty(){
             writer.write_event(Event::Text(BytesText::new(self.get_value())))
                 .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
