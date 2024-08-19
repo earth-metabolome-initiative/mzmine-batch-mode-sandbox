@@ -1,4 +1,4 @@
-use mzbatch_generator::minimum_search_feature_resolver_module::*;
+use mzbatch_generator::minimum_search_feature_resolver_module_parameters::MinRatioOfPeakTopEdge;
 
 #[cfg(test)]
 mod test{

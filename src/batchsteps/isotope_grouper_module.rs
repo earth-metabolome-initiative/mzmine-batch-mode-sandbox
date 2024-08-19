@@ -1,6 +1,8 @@
 use serde::{Serialize, Deserialize};
 
-use crate::isotope_grouper_module::*;
+use crate::xml_serialization::*;
+
+use crate::isotope_grouper_module_parameters::*;
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct IsotopeGrouper{

@@ -1,4 +1,4 @@
-use mzbatch_generator::mass_detection_module::*;
+use mzbatch_generator::mass_detection_module_parameters::RawDataFiles;
 
 #[cfg(test)]
 mod tests {

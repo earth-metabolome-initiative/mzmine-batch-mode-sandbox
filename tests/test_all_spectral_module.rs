@@ -1,4 +1,5 @@
-use mzbatch_generator::all_spectral_data_import_module::*;
+use mzbatch_generator::modules::AllSpectralDataImportModule;
+use mzbatch_generator::all_spectral_data_import_module_parameters::*;
 
 #[cfg(test)]
 mod tests {

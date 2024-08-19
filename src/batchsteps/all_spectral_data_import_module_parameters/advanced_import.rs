@@ -1,5 +1,7 @@
 use serde::{Serialize, Deserialize};
 
+use crate::prelude::*;
+
 pub enum Value {
     Single(Option<f32>),
     Vector(Vec<Option<f32>>),
@@ -612,6 +614,30 @@ impl FactorOfLowestSignal{
     pub fn get_value(& self) -> &Option<f32>{
         self.parameter.get_value()
     }
+
+    // pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
+    //     // create XML element -> istantiate element name (batch/batchstep/parameter/module)
+    //     let mut element = BytesStart::new("module");
+// 
+    //     // add the attribute(tag) to the element
+    //     element.push_attribute(("name", self.name.as_str()));
+    //     
+    //     // add the value as text
+    //     writer.write_event(Event::Start(element))
+    //         .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+ // 
+    //     // close the XML element
+    //     if let Some(ref value) = *self.value {
+    //         writer.write_event(Event::Text(BytesText::new(&self.value_to_string().as_str())))
+    //             .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    //     }
+// 
+    //     // Write the end tag
+    //     writer.write_event(Event::End(BytesEnd::new("parameter")))
+    //         .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+// 
+    //     Ok(())
+    // }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]

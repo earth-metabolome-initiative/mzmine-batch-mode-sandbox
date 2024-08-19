@@ -1,6 +1,9 @@
-use mzbatch_generator::mass_detection_module::*;
+use mzbatch_generator::mass_detection_module_parameters::*;
 use mzbatch_generator::all_spectral_data_import_module_parameters::Auto;
+use mzbatch_generator::all_spectral_data_import_module_parameters::Centroid;
 use mzbatch_generator::all_spectral_data_import_module_parameters::MSDetectorAdvancedModules;
+
+use mzbatch_generator::prelude::*;
 
 #[cfg(test)]
 mod tests {
@@ -34,6 +37,40 @@ mod tests {
             panic!("Module not found");
         }
     }
+
+    // #[test]
+    // fn mass_detector_serialization() -> IoResult<()> {
+
+    //     // <module name="Auto">
+    //     //     <parameter name="Noise level">1000.0</parameter>
+    //     // </module>
+    //     // <module name="Centroid">
+    //     //     <parameter name="Noise level"/>
+    //     // </module>
+        
+    //     // Create a writer with an in-memory buffer
+    //     let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+    //     let mut scan_types = MassDetector::new();
+
+    //     scan_types.add_module(MSDetectorAdvancedModules::Auto(Auto::new()));
+    //     scan_types.add_module(MSDetectorAdvancedModules::Centroid(Centroid::new()));
+
+    //     // Write the ScanTypes element
+        
+
+    //     // Convert buffer to string
+    //     let result = writer.into_inner().into_inner();
+    //     let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+    //     // Define the expected XML output
+    //     let expected = r#"<parameter name="Scan number"></parameter>"#;
+
+    //     // Assert the result matches the expected output
+    //     assert_eq!(result_str, expected);
+
+    //     Ok(())
+    // }
     
 
 }

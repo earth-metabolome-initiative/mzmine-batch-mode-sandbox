@@ -1,7 +1,11 @@
 use core::panic;
 
 use serde::{Serialize, Deserialize};
-use crate::prelude::*;
+//use crate::prelude::*;
+
+use crate::minimum_search_feature_resolver_module_parameters::*;
+use crate::smoothing_module_parameters::SmoothSuffix;
+use crate::batchsteps::return_types::*;
 
 #[derive(Default, Serialize, Deserialize, PartialEq)]
 #[serde(default, rename_all = "lowercase")]
@@ -52,14 +56,14 @@ pub enum MinimumSearchFeatureResolverModuleParameters{
     FeatureList(FeatureLists),
     LimitByIonMobilityEdges(LimitByIonMobilityEdges),
     MinRatioOfPeakTopEdge(MinRatioOfPeakTopEdge),
-    MinimumAbsoluteHeight(ResolverMinimumAbsoluteHeight),
+    MinimumAbsoluteHeight(MinimumAbsoluteHeight),
     MinimumRelativeHeight(MinimumRelativeHeight),
     MinimumScansDataPoints(MinimumScansDataPoints),
     MinimumSearchRangeRTMobilityAbsolute(MinimumSearchRangeRTMobilityAbsolute),
     MsMsScanPairing(MsMsScanPairing),
     OriginalFeatureList(OriginalFeatureList),
     RetentionTimeFilter(RetentionTimeFilter),
-    Suffix(Suffix)
+    Suffix(SmoothSuffix)
 }
 
 impl MinimumSearchFeatureResolverModuleParameters {
@@ -87,7 +91,6 @@ impl MinimumSearchFeatureResolverModuleParameters {
     pub fn set_value(&mut self, value:Value) {
         match self{
             MinimumSearchFeatureResolverModuleParameters::ChromaticThreshold(_f) => _f.set_value(*value.get_float_value()),
-            MinimumSearchFeatureResolverModuleParameters::FeatureList(_f) => _f.set_value(*value.get_float_value()),
             MinimumSearchFeatureResolverModuleParameters::Dimension(_f) => _f.set_value(value.get_str_value()),
             MinimumSearchFeatureResolverModuleParameters::LimitByIonMobilityEdges(_f) => _f.set_value(*value.get_bool_value()),
             MinimumSearchFeatureResolverModuleParameters::MinRatioOfPeakTopEdge(_f) => _f.set_value(*value.get_float_value()),

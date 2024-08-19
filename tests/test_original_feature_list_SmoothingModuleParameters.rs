@@ -1,4 +1,4 @@
-use mzbatch_generator::smoothing_module::*;
+use mzbatch_generator::smoothing_module_parameters::OriginalFeatureList;
 
 #[cfg(test)]
 mod tests {

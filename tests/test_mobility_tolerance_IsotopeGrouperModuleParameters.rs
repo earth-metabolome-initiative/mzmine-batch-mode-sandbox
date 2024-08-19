@@ -1,4 +1,4 @@
-use mzbatch_generator::isotope_grouper_module::*;
+use mzbatch_generator::isotope_grouper_module_parameters::MobilityTolerance;
 
 #[cfg(test)]
 mod test{

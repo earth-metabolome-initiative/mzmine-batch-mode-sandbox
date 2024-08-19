@@ -1,4 +1,9 @@
-use mzbatch_generator::isotope_grouper_module::*;
+use mzbatch_generator::isotope_grouper_module_parameters::MzToleranceIntraSample;
+use mzbatch_generator::isotope_grouper_module_parameters::MzToleranceIntraSampleParameters;
+use mzbatch_generator::isotope_grouper_module_parameters::AbsoluteTolerance;
+use mzbatch_generator::isotope_grouper_module_parameters::PpmTolerance;
+
+use mzbatch_generator::xml_serialization::*;
 
 #[cfg(test)]
 mod test{
@@ -47,6 +52,39 @@ mod test{
         assert_eq!(*absolute.get_value(), None);
         absolute.set_value(Some(1.1));
         assert_eq!(*absolute.get_value(), Some(1.1))
+    }
+
+    #[test]
+    fn m_z_tolerance_intra_sample_serialization() -> IoResult<()>{
+
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut mz_tolerance = MzToleranceIntraSample::new();
+        let mut absolute = AbsoluteTolerance::new();
+        absolute.set_value(Some(0.0015));
+        let mut ppm = PpmTolerance::new();
+        ppm.set_value(Some(3.0));
+
+        mz_tolerance.add_parameter(MzToleranceIntraSampleParameters::AbsoluteTolerance(absolute));
+        mz_tolerance.add_parameter(MzToleranceIntraSampleParameters::PpmTolerance(ppm));
+
+        assert_eq!(mz_tolerance.get_parameter_length(), 2);
+
+        // Write the ScanTypes element
+        mz_tolerance.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="m/z tolerance (intra-sample)"><absolutetolerance>0.0015</absolutetolerance><ppmtolerance>3.0</ppmtolerance></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
 }

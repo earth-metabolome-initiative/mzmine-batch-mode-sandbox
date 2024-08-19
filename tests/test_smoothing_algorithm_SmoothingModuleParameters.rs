@@ -1,4 +1,17 @@
-use mzbatch_generator::smoothing_module::*;
+use mzbatch_generator::smoothing_module_parameters::SmoothingAlgorithm;
+use mzbatch_generator::smoothing_module_parameters::SmoothingAlgorithmModule;
+
+use mzbatch_generator::smoothing_module_parameters::SavitzkyGolay;
+use mzbatch_generator::smoothing_module_parameters::SavitzkyGolayParameter;
+use mzbatch_generator::smoothing_module_parameters::RetentionTimeSmoothing;
+use mzbatch_generator::smoothing_module_parameters::MobilitySmoothing;
+
+use mzbatch_generator::smoothing_module_parameters::LoessSmoothing;
+use mzbatch_generator::smoothing_module_parameters::LoessSmoothingParameter;
+use mzbatch_generator::smoothing_module_parameters::RetentionTimeWidth;
+use mzbatch_generator::smoothing_module_parameters::MobilityWidth;
+
+
 
 #[cfg(test)]
 mod tests {

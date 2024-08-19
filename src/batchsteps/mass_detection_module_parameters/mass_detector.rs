@@ -1,14 +1,16 @@
 use serde::{Serialize, Deserialize};
 
+use crate::prelude::*;
+
 use crate::prelude::MSDetectorAdvancedModules;
 // I don't know why but prelude::* or any other use crate:: wasn't working ... 
-use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::Auto;
-use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::Centroid;
-use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::ExactMass;
-use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::FactorOfLowestSignal;
-use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::LocalMaxima;
-use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::RecursiveThreshold;
-use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::WaveletTransform;
+// use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::Auto;
+// use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::Centroid;
+// use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::ExactMass;
+// use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::FactorOfLowestSignal;
+// use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::LocalMaxima;
+// use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::RecursiveThreshold;
+// use crate::batchsteps::all_spectral_data_import_module_parameters::advanced_import::WaveletTransform;
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(default, rename_all = "lowercase")]
@@ -62,5 +64,6 @@ impl MassDetector {
         }
         None
     }
-    
+
+    // No write_element because we can call it directly after get_module (I guess)
 }

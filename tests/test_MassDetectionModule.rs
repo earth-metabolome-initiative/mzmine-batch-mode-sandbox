@@ -1,4 +1,6 @@
-use mzbatch_generator::mass_detection_module::*;
+use mzbatch_generator::modules::MassDetectionModule;
+use mzbatch_generator::modules::MassDetectionModuleParameter;
+use mzbatch_generator::mass_detection_module_parameters::MassDetector;
 
 #[cfg(test)]
 mod tests {

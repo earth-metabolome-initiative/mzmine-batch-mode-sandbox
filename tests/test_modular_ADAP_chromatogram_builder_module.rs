@@ -1,4 +1,5 @@
-pub use mzbatch_generator::modular_adap_chromatogram_builder_module::*;
+pub use mzbatch_generator::modules::ModularADAPChromatogramBuilderModule;
+pub use mzbatch_generator::modules::ModularADAPChromatogramBuilderModuleParameter;
 
 use mzbatch_generator::prelude::RawDataFiles;
 

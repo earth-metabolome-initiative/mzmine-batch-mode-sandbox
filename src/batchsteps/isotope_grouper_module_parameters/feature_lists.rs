@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::isotope_grouper_module::*;
+use crate::xml_serialization::*;
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(default, rename_all = "lowercase")]
@@ -30,5 +30,25 @@ impl FeatureLists{
     
     pub fn set_type(&mut self, _type: &str){
         self._type = _type.to_owned();
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
+        let mut element = BytesStart::new("parameter");
+        
+        // Set attributes with proper conversion from String to &str
+        element.push_attribute(("name", self.name.as_str()));
+
+        // Set attributes with proper conversion from String to &str
+        element.push_attribute(("type", self.get_type()));
+        
+        // Write the start tag
+        writer.write_event(Event::Start(element))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+        
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+        
+        Ok(())
     } 
 }

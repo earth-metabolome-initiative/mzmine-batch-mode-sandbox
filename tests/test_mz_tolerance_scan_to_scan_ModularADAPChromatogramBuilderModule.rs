@@ -1,4 +1,6 @@
-use mzbatch_generator::modular_adap_chromatogram_builder_module::*;
+use mzbatch_generator::modular_adap_chromatogram_builder_module_parameters::MzToleranceScanToScan;
+use mzbatch_generator::modular_adap_chromatogram_builder_module_parameters::PpmTolerance;
+use mzbatch_generator::modular_adap_chromatogram_builder_module_parameters::AbsoluteTolerance;
 
 #[cfg(test)]
 mod tests {

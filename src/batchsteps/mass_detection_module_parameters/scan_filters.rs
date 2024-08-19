@@ -88,7 +88,7 @@ impl ScanFilters {
 
         // Write the end tag
         writer.write_event(Event::End(BytesEnd::new("parameter")))
-        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
 
         Ok(())
     }

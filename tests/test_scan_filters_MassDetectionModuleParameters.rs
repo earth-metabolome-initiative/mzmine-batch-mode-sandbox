@@ -1,4 +1,14 @@
-use mzbatch_generator::mass_detection_module::*;
+use mzbatch_generator::mass_detection_module_parameters::ScanFilters;
+use mzbatch_generator::mass_detection_module_parameters::ScanFiltersParameter;
+use mzbatch_generator::mass_detection_module_parameters::Mobility;
+use mzbatch_generator::mass_detection_module_parameters::ScanNumber;
+use mzbatch_generator::mass_detection_module_parameters::BaseFilteringInteger;
+use mzbatch_generator::mass_detection_module_parameters::Polarity;
+use mzbatch_generator::mass_detection_module_parameters::SpectrumType;
+use mzbatch_generator::mass_detection_module_parameters::RetentionTime;
+use mzbatch_generator::mass_detection_module_parameters::MSLevelFilter;
+use mzbatch_generator::mass_detection_module_parameters::ScanDefinition;
+
 
 #[cfg(test)]
 mod tests {
@@ -94,11 +104,11 @@ mod tests {
         // Create a writer with an in-memory buffer
         let mut writer = Writer::new(Cursor::new(Vec::new()));
 
-        let mut scan_types = ScanNumber::new();
-        scan_types.set_value(None);
+        let mut scan_number = ScanNumber::new();
+        scan_number.set_value(None);
 
         // Write the ScanTypes element
-        scan_types.write_element(&mut writer)?;
+        scan_number.write_element(&mut writer)?;
 
         // Convert buffer to string
         let result = writer.into_inner().into_inner();

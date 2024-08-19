@@ -1,4 +1,4 @@
-use mzbatch_generator::modular_adap_chromatogram_builder_module::*;
+use mzbatch_generator::modular_adap_chromatogram_builder_module_parameters::Suffix;
 
 #[cfg(test)]
 mod tests {

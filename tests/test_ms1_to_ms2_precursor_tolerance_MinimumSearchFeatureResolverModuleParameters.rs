@@ -1,4 +1,7 @@
-use mzbatch_generator::minimum_search_feature_resolver_module::*;
+use mzbatch_generator::minimum_search_feature_resolver_module_parameters::Ms1Ms2PrecursorTolerance;
+use mzbatch_generator::minimum_search_feature_resolver_module_parameters::AbsoluteTolerance;
+use mzbatch_generator::minimum_search_feature_resolver_module_parameters::ToleranceParameters;
+use mzbatch_generator::minimum_search_feature_resolver_module_parameters::PpmTolerance;
 
 #[cfg(test)]
 mod test{
