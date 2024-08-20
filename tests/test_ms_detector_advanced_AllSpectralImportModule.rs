@@ -1,4 +1,5 @@
 use mzbatch_generator::all_spectral_data_import_module_parameters::*;
+use mzbatch_generator::xml_serialization::*;
 
 #[cfg(test)]
 mod tests {
@@ -203,60 +204,160 @@ mod tests {
 
         recursive_thr_obj.add_parameter(RecursiveThresholdParameters::RTNoiseLevel(RTNoiseLevel::new()));
         recursive_thr_obj.set_parameter_value("RTNoiseLevel", Some(2.2));
-        assert_eq!(recursive_thr_obj.get_parameter_value("RTNoiseLevel"), Some(2.2), "At RTNoiseLevel");
+        assert_eq!(*recursive_thr_obj.get_parameter_value("RTNoiseLevel"), Some(2.2), "At RTNoiseLevel");
 
         recursive_thr_obj.add_parameter(RecursiveThresholdParameters::MinMZPeakWidth(MinMZPeakWidth::new()));
         recursive_thr_obj.set_parameter_value("MinMZPeakWidth", Some(4.4));
-        assert_eq!(recursive_thr_obj.get_parameter_value("MinMZPeakWidth"), Some(4.4), "At MinMZPeakWidth");
+        assert_eq!(*recursive_thr_obj.get_parameter_value("MinMZPeakWidth"), Some(4.4), "At MinMZPeakWidth");
 
         recursive_thr_obj.add_parameter(RecursiveThresholdParameters::MaxMZPeakWidth(MaxMZPeakWidth::new()));
         recursive_thr_obj.set_parameter_value("MaxMZPeakWidth", Some(6.6));
-        assert_eq!(recursive_thr_obj.get_parameter_value("MaxMZPeakWidth"), Some(6.6), "At MinMZPeakWidth");
+        assert_eq!(*recursive_thr_obj.get_parameter_value("MaxMZPeakWidth"), Some(6.6), "At MinMZPeakWidth");
     } 
+
+    #[test]
+    fn recursive_threshold_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut recursive_obj = RecursiveThreshold::new();
+
+        let noise = RTNoiseLevel::new();
+        let min = MinMZPeakWidth::new();
+        let max = MaxMZPeakWidth::new();
+
+        recursive_obj.add_parameter(RecursiveThresholdParameters::RTNoiseLevel(noise));
+        recursive_obj.add_parameter(RecursiveThresholdParameters::MinMZPeakWidth(min));
+        recursive_obj.add_parameter(RecursiveThresholdParameters::MaxMZPeakWidth(max));
+
+        // Write the ScanTypes element
+        recursive_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<module name="Recursive threshold"><parameter name="Noise level"></parameter><parameter name="Min m/z peak width"></parameter><parameter name="Max m/z peak width"></parameter></module>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
+    }
 
     #[test]
     fn rtnoise_level_initialization(){
         let rt_noise_level_obj = RTNoiseLevel::new();
         assert_eq!(rt_noise_level_obj.get_name(), "Noise level");
-        assert_eq!(rt_noise_level_obj.get_value(), None);
+        assert_eq!(*rt_noise_level_obj.get_value(), None);
     }
 
     #[test]
     fn rtnoise_level_get_set(){
         let mut rtnoise_obj = RTNoiseLevel::new();
-        assert_eq!(rtnoise_obj.get_value(), None);
+        assert_eq!(*rtnoise_obj.get_value(), None);
         rtnoise_obj.set_value(Some(3.3));
-        assert_eq!(rtnoise_obj.get_value(), Some(3.3));
+        assert_eq!(*rtnoise_obj.get_value(), Some(3.3));
+    }
+
+    #[test]
+    fn rtnoise_level_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut noise_obj = RTNoiseLevel::new();
+
+        // Write the ScanTypes element
+        noise_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Noise level"></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
     fn min_mz_peak_width_initialization(){
         let min_mz_peak_width_obj = MinMZPeakWidth::new();
         assert_eq!(min_mz_peak_width_obj.get_name(), "Min m/z peak width");
-        assert_eq!(min_mz_peak_width_obj.get_value(), None);
+        assert_eq!(*min_mz_peak_width_obj.get_value(), None);
     }
 
     #[test]
     fn min_mz_peak_width_get_set(){
         let mut min_mz_peak_width_obj = MinMZPeakWidth::new();
-        assert_eq!(min_mz_peak_width_obj.get_value(), None);
+        assert_eq!(*min_mz_peak_width_obj.get_value(), None);
         min_mz_peak_width_obj.set_value(Some(3.3));
-        assert_eq!(min_mz_peak_width_obj.get_value(), Some(3.3));
+        assert_eq!(*min_mz_peak_width_obj.get_value(), Some(3.3));
+    }
+
+    #[test]
+    fn min_mz_peak_width_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut min_obj = MinMZPeakWidth::new();
+
+        // Write the ScanTypes element
+        min_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Min m/z peak width"></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
     fn max_mz_peak_width_initialization(){
         let max_mz_peak_width_obj = MaxMZPeakWidth::new();
         assert_eq!(max_mz_peak_width_obj.get_name(), "Max m/z peak width");
-        assert_eq!(max_mz_peak_width_obj.get_value(), None);
+        assert_eq!(*max_mz_peak_width_obj.get_value(), None);
     }
 
     #[test]
     fn max_mz_peak_width_get_set(){
         let mut max_mz_peak_width_obj = MaxMZPeakWidth::new();
-        assert_eq!(max_mz_peak_width_obj.get_value(), None);
+        assert_eq!(*max_mz_peak_width_obj.get_value(), None);
         max_mz_peak_width_obj.set_value(Some(1.1));
-        assert_eq!(max_mz_peak_width_obj.get_value(), Some(1.1));
+        assert_eq!(*max_mz_peak_width_obj.get_value(), Some(1.1));
+    }
+
+    #[test]
+    fn max_mz_peak_width_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut max_obj = MaxMZPeakWidth::new();
+
+        // Write the ScanTypes element
+        max_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Max m/z peak width"></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
@@ -280,70 +381,194 @@ mod tests {
         wavelet_obj.set_parameter_value("ScaleLevel", Some(2.3));
         wavelet_obj.set_parameter_value("WaveletWindowSize", Some(3.4));
 
-        assert_eq!(wavelet_obj.get_parameter_value("WTNoiseLevel"), Some(1.2));
-        assert_eq!(wavelet_obj.get_parameter_value("ScaleLevel"), Some(2.3));
-        assert_eq!(wavelet_obj.get_parameter_value("WaveletWindowSize"), Some(3.4));
+        assert_eq!(*wavelet_obj.get_parameter_value("WTNoiseLevel"), Some(1.2));
+        assert_eq!(*wavelet_obj.get_parameter_value("ScaleLevel"), Some(2.3));
+        assert_eq!(*wavelet_obj.get_parameter_value("WaveletWindowSize"), Some(3.4));
+    }
+
+    #[test]
+    fn wavelet_transform_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut wavelet_obj = WaveletTransform::new();
+
+        let noise_par = WTNoiseLevel::new();
+        let scale_par = ScaleLevel::new();
+        let window_par = WaveletWindowSize::new();
+
+        wavelet_obj.add_parameter(WaveletTransformParameters::WTNoiseLevel(noise_par));
+        wavelet_obj.add_parameter(WaveletTransformParameters::ScaleLevel(scale_par));
+        wavelet_obj.add_parameter(WaveletTransformParameters::WaveletWindowSize(window_par));
+
+        // Write the ScanTypes element
+        wavelet_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<module name="Wavelet transform"><parameter name="Noise level"></parameter><parameter name="Scale level"></parameter><parameter name="Wavelet window size (%)"></parameter></module>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
     fn wt_noise_level_initialization(){
         let wt_obj = WTNoiseLevel::new();
         assert_eq!(wt_obj.get_name(), "Noise level");
-        assert_eq!(wt_obj.get_value(), None);
+        assert_eq!(*wt_obj.get_value(), None);
     }
 
     #[test]
     fn wt_noise_level_get_set(){
         let mut wt_obj = WTNoiseLevel::new();
-        assert_eq!(wt_obj.get_value(), None);
+        assert_eq!(*wt_obj.get_value(), None);
         wt_obj.set_value(Some(2.2));
-        assert_eq!(wt_obj.get_value(), Some(2.2));
+        assert_eq!(*wt_obj.get_value(), Some(2.2));
+    }
+
+    #[test]
+    fn wt_noise_level_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut noise_obj = WTNoiseLevel::new();
+
+        // Write the ScanTypes element
+        noise_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Noise level"></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
     fn scale_level_initialization(){
         let scale_obj = ScaleLevel::new();
         assert_eq!(scale_obj.get_name(), "Scale level");
-        assert_eq!(scale_obj.get_value(), None);
+        assert_eq!(*scale_obj.get_value(), None);
     }
 
     #[test]
     fn scale_level_get_set(){
         let mut scale_obj = ScaleLevel::new();
-        assert_eq!(scale_obj.get_value(), None);
+        assert_eq!(*scale_obj.get_value(), None);
         scale_obj.set_value(Some(1.4));
-        assert_eq!(scale_obj.get_value(), Some(1.4));
+        assert_eq!(*scale_obj.get_value(), Some(1.4));
+    }
+
+    #[test]
+    fn scale_level_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut wavelet_obj = ScaleLevel::new();
+
+        // Write the ScanTypes element
+        wavelet_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Scale level"></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
     fn wavelet_window_size_initialization(){
         let window_obj = WaveletWindowSize::new();
         assert_eq!(window_obj.get_name(), "Wavelet window size (%)");
-        assert_eq!(window_obj.get_value(), None);
+        assert_eq!(*window_obj.get_value(), None);
     }
 
     #[test]
     fn wavelet_window_size_get_set(){
         let mut window_obj = WaveletWindowSize::new();
-        assert_eq!(window_obj.get_value(), None);
+        assert_eq!(*window_obj.get_value(), None);
         window_obj.set_value(Some(5.4));
-        assert_eq!(window_obj.get_value(), Some(5.4));
+        assert_eq!(*window_obj.get_value(), Some(5.4));
+    }
+
+    #[test]
+    fn wavelet_window_size_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut wavelet_obj = WaveletWindowSize::new();
+
+        // Write the ScanTypes element
+        wavelet_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Wavelet window size (%)"></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
     fn denormalize_fragment_scans_traps_initialization(){
         let dfst_obj: DenormalizeFragmentScansTraps = DenormalizeFragmentScansTraps::new();
         assert_eq!(dfst_obj.get_name(), "Denormalize fragment scans (traps)");
-        assert_eq!(dfst_obj.get_value(), true);
+        assert_eq!(*dfst_obj.get_value(), true);
     }
 
     #[test]
     fn denormalize_fragment_scans_traps_set_value(){
         let mut dfst_obj = DenormalizeFragmentScansTraps::new();
-        assert_eq!(dfst_obj.get_value(), true);
+        assert_eq!(*dfst_obj.get_value(), true);
         dfst_obj.set_false();
-        assert_eq!(dfst_obj.get_value(), false);
+        assert_eq!(*dfst_obj.get_value(), false);
         dfst_obj.set_true();
-        assert_eq!(dfst_obj.get_value(), true);
+        assert_eq!(*dfst_obj.get_value(), true);
+    }
+
+    #[test]
+    fn denormalize_fragment_scan_traps_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut denormalize_obj: DenormalizeFragmentScansTraps = DenormalizeFragmentScansTraps::new();
+        denormalize_obj.set_true();
+
+        // Write the ScanTypes element
+        denormalize_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Denormalize fragment scans (traps)">true</parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 }

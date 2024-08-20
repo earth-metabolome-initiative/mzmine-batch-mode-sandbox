@@ -41,19 +41,33 @@ impl FileNames{
         self.files.retain(|file| file.get_name() != name);
     }
     
-    pub fn write_element(&self, writer: Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // let last_files = BytesStart::new("parameter");
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        let mut last_files = BytesStart::new("parameter");
 
-        // // Write the start tag
-        // writer.write_event(Event::Start(last_files))
-        //     .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+        last_files.push_attribute(("name", self.get_name()));
 
-        // writer.write_event(Event::Text(BytesText::new(file.get_name())))
-        //     .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+        // Write the start tag
+        writer.write_event(Event::Start(last_files))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
 
-        // // Write the end tag
-        // writer.write_event(Event::End(BytesEnd::new("parameter")))
-        //     .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+        for file in &self.files{
+            let current_file = BytesStart::new("file");
+
+            // Write the start tag
+            writer.write_event(Event::Start(current_file))
+                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+            writer.write_event(Event::Text(BytesText::new(file.get_name())))
+                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+                // Write the end tag
+            writer.write_event(Event::End(BytesEnd::new("file")))
+                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+        }
+        
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
 
         Ok(())
     }

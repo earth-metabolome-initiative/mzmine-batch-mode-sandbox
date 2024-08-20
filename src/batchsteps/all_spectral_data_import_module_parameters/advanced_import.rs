@@ -1,6 +1,5 @@
 use serde::{Serialize, Deserialize};
-
-use crate::prelude::*;
+use crate::xml_serialization::*;
 
 pub enum Value {
     Single(Option<f32>),
@@ -926,8 +925,8 @@ impl RecursiveThreshold{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn add_parameter(&mut self, parameter: RecursiveThresholdParameters){
@@ -949,7 +948,7 @@ impl RecursiveThreshold{
         }
     }
 
-    pub fn get_parameter_value(&self, target: &str) -> Option<f32>{
+    pub fn get_parameter_value(&self, target: &str) -> &Option<f32>{
         for param in &self.parameters {
             match param {
                 RecursiveThresholdParameters::RTNoiseLevel(rt) if target == "RTNoiseLevel" => return rt.get_value(),
@@ -958,7 +957,28 @@ impl RecursiveThreshold{
                 _ => continue,
             }
         }
-        None
+        &None
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Min m/z peak width"/>
+        let mut max_obj = BytesStart::new("module");
+
+        max_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(max_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        for parameter in &self.parameters{
+            parameter.write_element(writer)?;
+        }
+
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("module")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -979,7 +999,7 @@ impl RecursiveThresholdParameters{
         }
     }
     
-    pub fn get_value(&self) -> Option<f32>{
+    pub fn get_value(&self) -> &Option<f32>{
         match self{
             RecursiveThresholdParameters::RTNoiseLevel(f) => f.get_value(),
             RecursiveThresholdParameters::MinMZPeakWidth(f) => f.get_value(),
@@ -993,6 +1013,15 @@ impl RecursiveThresholdParameters{
             RecursiveThresholdParameters::MinMZPeakWidth(f) => f.set_value(value),
             RecursiveThresholdParameters::MaxMZPeakWidth(f) => f.set_value(value),
         }
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        match self{
+            RecursiveThresholdParameters::RTNoiseLevel(_f) => _f.write_element(writer)?,
+            RecursiveThresholdParameters::MinMZPeakWidth(_f) => _f.write_element(writer)?,
+            RecursiveThresholdParameters::MaxMZPeakWidth(_f) => _f.write_element(writer)?,
+        }
+        Ok(())
     }
 }
 
@@ -1013,16 +1042,41 @@ impl RTNoiseLevel{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<f32>{
-        self.value
+    pub fn get_value(&self) -> &Option<f32>{
+        &self.value
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut noise_obj = BytesStart::new("parameter");
+
+        noise_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(noise_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => value.to_string(),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -1043,16 +1097,41 @@ impl MinMZPeakWidth{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<f32>{
-        self.value
+    pub fn get_value(&self) -> &Option<f32>{
+        &self.value
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Min m/z peak width"/>
+        let mut max_obj = BytesStart::new("parameter");
+
+        max_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(max_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => value.to_string(),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -1073,16 +1152,41 @@ impl MaxMZPeakWidth {
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
     }
     
-    pub fn get_value(&self) -> Option<f32>{
-        self.value
+    pub fn get_value(&self) -> &Option<f32>{
+        &self.value
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Max m/z peak width"/>
+        let mut max_obj = BytesStart::new("parameter");
+
+        max_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(max_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => value.to_string(),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -1103,8 +1207,8 @@ impl WaveletTransform {
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn add_parameter(&mut self, parameter:WaveletTransformParameters){
@@ -1126,7 +1230,7 @@ impl WaveletTransform {
         }
     }
 
-    pub fn get_parameter_value(&self, target: &str) -> Option<f32>{
+    pub fn get_parameter_value(&self, target: &str) -> &Option<f32>{
         for param in &self.parameters {
             match param {
                 WaveletTransformParameters::WTNoiseLevel(_f) if target == "WTNoiseLevel" => return _f.get_value(),
@@ -1135,7 +1239,27 @@ impl WaveletTransform {
                 _ => continue,
             }
         }
-        None
+        &None
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        let mut noise_obj = BytesStart::new("module");
+
+        noise_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(noise_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        for parameter in &self.parameters{
+            parameter.write_element(writer)?;
+        }
+
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("module")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -1148,7 +1272,7 @@ pub enum WaveletTransformParameters{
 }
 
 impl WaveletTransformParameters{
-    pub fn get_value(&self) -> Option<f32> {
+    pub fn get_value(&self) -> &Option<f32> {
         match self{
             WaveletTransformParameters::WTNoiseLevel(f) => f.get_value(),
             WaveletTransformParameters::ScaleLevel(f) => f.get_value(),
@@ -1162,6 +1286,16 @@ impl WaveletTransformParameters{
             WaveletTransformParameters::ScaleLevel(f) => f.set_value(value),
             WaveletTransformParameters::WaveletWindowSize(f) => f.set_value(value),
         }
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        match self{
+            WaveletTransformParameters::ScaleLevel(_f) => _f.write_element(writer)?,
+            WaveletTransformParameters::WTNoiseLevel(_f) => _f.write_element(writer)?,
+            WaveletTransformParameters::WaveletWindowSize(_f) => _f.write_element(writer)?,
+            _ => panic!("No matching parameter for write_element()")
+        }
+        Ok(())
     }
 }
 
@@ -1182,16 +1316,41 @@ impl WTNoiseLevel {
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn get_value(&self) -> Option<f32>{
-        self.value
+    pub fn get_value(&self) -> &Option<f32>{
+        &self.value
     }
 
     pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut noise_obj = BytesStart::new("parameter");
+
+        noise_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(noise_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => value.to_string(),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -1212,16 +1371,41 @@ impl ScaleLevel {
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn get_value(&self) -> Option<f32>{
-        self.value
+    pub fn get_value(&self) -> &Option<f32>{
+        &self.value
     }
 
     pub fn set_value(&mut self, value: Option<f32>){
         self.value = value;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Scale level"/>
+        let mut scale_obj = BytesStart::new("parameter");
+
+        scale_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(scale_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => value.to_string(),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -1242,16 +1426,41 @@ impl WaveletWindowSize {
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn get_value(&self) -> Option<f32>{
-        self.value
+    pub fn get_value(&self) -> &Option<f32>{
+        &self.value
     }
 
     pub fn set_value(&mut self, value: Option<f32>){
         self.value = value;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Wavelet window size (%)"/>
+        let mut wavelet_obj = BytesStart::new("parameter");
+
+        wavelet_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(wavelet_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => value.to_string(),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -1273,12 +1482,20 @@ impl DenormalizeFragmentScansTraps{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn get_value(&self) -> bool{
-        self.value
+    pub fn get_value(&self) -> &bool{
+        &self.value
+    }
+
+    pub fn set_value(&mut self, value: bool){
+        self.value = value;
+    }
+
+    pub fn invert_value(&mut self){
+        self.value = !self.value;
     }
 
     pub fn set_true(&mut self) {
@@ -1287,5 +1504,25 @@ impl DenormalizeFragmentScansTraps{
 
     pub fn set_false(&mut self){
         self.value = false;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Denormalize fragment scans (traps)">true</parameter>
+        let mut last_files = BytesStart::new("parameter");
+
+        last_files.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(last_files))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        writer.write_event(Event::Text(BytesText::new(self.get_value().to_string().as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
