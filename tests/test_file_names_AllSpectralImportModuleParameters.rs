@@ -17,7 +17,7 @@ mod tests {
         assert_eq!(file_names.files_length(), 0);                      // test it was empty
     
         let mut new_file = InputFile::new();
-        new_file.set_name("This".to_owned());
+        new_file.set_name("This");
         
         file_names.add_file_name(new_file);
         
@@ -38,7 +38,7 @@ mod tests {
     fn input_file_get_set_name(){
         let mut input_file = InputFile::new();
         assert_eq!(input_file.get_name(), "");
-        input_file.set_name("Changed".to_owned());
+        input_file.set_name("Changed");
         assert_eq!(input_file.get_name(), "Changed");
     }
 }

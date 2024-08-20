@@ -1,5 +1,7 @@
 use serde::{Serialize, Deserialize};
 
+use crate::xml_serialization::*;
+
 #[derive(Default, Serialize, Deserialize, PartialEq)]
 #[serde(default, rename_all = "lowercase")]
 pub struct FileNames {
@@ -18,8 +20,8 @@ impl FileNames{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn get_file(&self, name: &str) -> Option<&InputFile> {
@@ -38,6 +40,23 @@ impl FileNames{
     pub fn remove_file_name(&mut self, name: &str) {
         self.files.retain(|file| file.get_name() != name);
     }
+    
+    pub fn write_element(&self, writer: Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // let last_files = BytesStart::new("parameter");
+
+        // // Write the start tag
+        // writer.write_event(Event::Start(last_files))
+        //     .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        // writer.write_event(Event::Text(BytesText::new(file.get_name())))
+        //     .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        // // Write the end tag
+        // writer.write_event(Event::End(BytesEnd::new("parameter")))
+        //     .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
+    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
@@ -54,11 +73,11 @@ impl InputFile{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn set_name(&mut self, file_name: String){
-        self.name = file_name;
+    pub fn set_name(&mut self, file_name: &str){
+        self.name = file_name.to_owned();
     }
 }

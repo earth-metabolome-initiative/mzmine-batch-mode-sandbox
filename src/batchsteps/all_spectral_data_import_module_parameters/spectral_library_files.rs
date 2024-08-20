@@ -1,5 +1,7 @@
 use serde::{Serialize, Deserialize};
 
+use crate::xml_serialization::*;
+
 #[derive(Default, Serialize, Deserialize, PartialEq)]
 #[serde(default, rename_all = "lowercase")]
 pub struct SpectralLibrary {
@@ -17,8 +19,8 @@ impl SpectralLibrary{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
  
     pub fn add_file(&mut self, element: SpectralLibraryFile){
@@ -33,7 +35,7 @@ impl SpectralLibrary{
         self.files.remove(index);
     }
 
-    pub fn get_file_by_name(&self, name:String) -> Result<&SpectralLibraryFile, &'static str>{
+    pub fn get_file_by_name(&self, name:&str) -> Result<&SpectralLibraryFile, &'static str>{
         for file in &self.files{
             if file.get_name() == name{
                 return Ok(&file);
@@ -41,6 +43,28 @@ impl SpectralLibrary{
         }
         Err("File not found")
     }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
+        //<parameter name="Monotonic shape">true</parameter>
+        let mut element = BytesStart::new("parameter");
+
+        element.push_attribute(("name", self.get_name())); 
+
+        // Write the start tag
+        writer.write_event(Event::Start(element))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        for file in &self.files{
+            writer.write_event(Event::Text(BytesText::new(file.get_file_name())))
+                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+        }
+
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+        
+        Ok(())
+    } 
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Clone)]
@@ -61,12 +85,12 @@ impl SpectralLibraryFile{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn get_file_name(&self) -> String{
-        self.file_name.clone()
+    pub fn get_file_name(&self) -> &str{
+        &self.file_name
     }
 
     pub fn change_file_name(&mut self, name: String){

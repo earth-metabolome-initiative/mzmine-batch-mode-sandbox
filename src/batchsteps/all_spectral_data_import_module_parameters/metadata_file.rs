@@ -1,5 +1,7 @@
 use serde::{Serialize, Deserialize};
 
+use crate::xml_serialization::*;
+
 #[derive(Default, Serialize, Deserialize, PartialEq)]
 #[serde(default, rename_all = "lowercase")]
 pub struct MetaData {
@@ -25,8 +27,8 @@ impl MetaData {
         }
     }
 
-    pub fn get_name(&mut self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn is_selected(&self) -> bool{
@@ -41,12 +43,16 @@ impl MetaData {
         self.selected = false;
     }
 
+    pub fn get_last_files(&self) -> &Vec<MetaDataFile>{
+        &self.last_files
+    }
+
     pub fn last_files_length(&self) -> usize{
         self.last_files.len()
     }
 
-    pub fn get_current_file(&self) -> MetaDataFile{
-        self.current_file.clone()
+    pub fn get_current_file(&self) -> &MetaDataFile{
+        &self.current_file
     }
 
     pub fn set_current_file(&mut self, file: MetaDataFile){
@@ -61,16 +67,70 @@ impl MetaData {
         self.last_files.remove(index);
     }
 
-    pub fn get_last_file(&self, name: &str) -> Result<&MetaDataFile, &'static str>{
+    pub fn get_last_file(&self, name: &str) -> &MetaDataFile{
         for file in &self.last_files {
             if file.get_name() == name {
-                return Ok(&file);
+                return &file;
             }
         }
-        Err("File not found")
+        panic!("No file found")
     }
     
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
 
+        let mut metadata = BytesStart::new("parameter");
+
+        metadata.push_attribute(("name", self.get_name()));
+        metadata.push_attribute(("selected", self.is_selected().to_string().as_str()));
+
+            // Write the start tag
+        writer.write_event(Event::Start(metadata))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+
+            //          Writing last file vector
+
+        //<parameter name="Monotonic shape">true</parameter>
+        let current_file = BytesStart::new("current_file");
+
+        //element.push_attribute(("name", self.get_name())); 
+
+        // Write the start tag
+        writer.write_event(Event::Start(current_file))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        writer.write_event(Event::Text(BytesText::new(self.get_current_file().get_name())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("current_file")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+
+            //          Writing last file vector
+
+        for file in &self.last_files{
+            let last_files = BytesStart::new("last_file");
+
+            // Write the start tag
+            writer.write_event(Event::Start(last_files))
+                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+            writer.write_event(Event::Text(BytesText::new(file.get_name())))
+                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+            // Write the end tag
+            writer.write_event(Event::End(BytesEnd::new("last_file")))
+                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+        }
+
+
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+        
+        Ok(())
+    }
 
 }
 
@@ -88,11 +148,11 @@ impl MetaDataFile {
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn set_name(&mut self, file_name: String){
-        self.name = file_name;
+    pub fn set_name(&mut self, file_name: &str){
+        self.name = file_name.to_owned();
     }
 }
