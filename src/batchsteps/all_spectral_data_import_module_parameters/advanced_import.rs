@@ -487,8 +487,8 @@ impl MSDetectorAdvanced {
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn invert_selected(&mut self){
@@ -507,8 +507,8 @@ impl MSDetectorAdvanced {
         self.selected=false;
     }
 
-    pub fn get_selected_item(&self) -> String{
-        self.selected_item.clone()
+    pub fn get_selected_item(&self) -> &str{
+        &self.selected_item
     }
 
     pub fn set_selected_item(&mut self, item:String){
@@ -550,6 +550,28 @@ impl MSDetectorAdvanced {
     pub fn get_module(&self, index:usize) -> MSDetectorAdvancedModules{
         self.modules[index].clone()
     }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut ms_detector_obj = BytesStart::new("parameter");
+        ms_detector_obj.push_attribute(("name", self.get_name()));
+        ms_detector_obj.push_attribute(("selected", self.is_selected().to_string().as_str()));
+        ms_detector_obj.push_attribute(("selected_item", self.get_selected_item()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(ms_detector_obj))
+        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        for module in &self.modules{
+            module.write_element(writer)?;
+        }
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
+    }
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
@@ -583,8 +605,22 @@ impl MSDetectorAdvancedModules {
             MSDetectorAdvancedModules::Centroid(f) => f.set_value(value),
             MSDetectorAdvancedModules::ExactMass(f) => f.set_value(value),
             MSDetectorAdvancedModules::LocalMaxima(f) => f.set_value(value),
-            _ => (),
+            _ => panic!("No matching parameter found"),
         }
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        match self{
+            MSDetectorAdvancedModules::FactorOfLowestSignal(_f) => _f.write_element(writer)?,
+            MSDetectorAdvancedModules::Auto(_f) => _f.write_element(writer)?,
+            MSDetectorAdvancedModules::Centroid(_f) => _f.write_element(writer)?,
+            MSDetectorAdvancedModules::ExactMass(_f) => _f.write_element(writer)?,
+            MSDetectorAdvancedModules::LocalMaxima(_f) => _f.write_element(writer)?,
+            MSDetectorAdvancedModules::RecursiveThreshold(_f) => _f.write_element(writer)?,
+            MSDetectorAdvancedModules::WaveletTransform(_f) => _f.write_element(writer)?,
+            _ => panic!("No matching parameter")
+        }
+        Ok(())
     }
 }
 
@@ -599,11 +635,15 @@ pub struct FactorOfLowestSignal{
 }
 
 impl FactorOfLowestSignal{
-    pub fn new(value:Option<f32>) -> Self{
+    pub fn new() -> Self{
         FactorOfLowestSignal{
             name: "Factor of lowest signal".to_owned(),
-            parameter: ParameterFactorOfLowestSignal::new(value)
+            parameter: ParameterFactorOfLowestSignal::new()
         }
+    }
+
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn set_value(&mut self, value:Option<f32>){
@@ -614,29 +654,27 @@ impl FactorOfLowestSignal{
         self.parameter.get_value()
     }
 
-    // pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
-    //     // create XML element -> istantiate element name (batch/batchstep/parameter/module)
-    //     let mut element = BytesStart::new("module");
-// 
-    //     // add the attribute(tag) to the element
-    //     element.push_attribute(("name", self.name.as_str()));
-    //     
-    //     // add the value as text
-    //     writer.write_event(Event::Start(element))
-    //         .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
- // 
-    //     // close the XML element
-    //     if let Some(ref value) = *self.value {
-    //         writer.write_event(Event::Text(BytesText::new(&self.value_to_string().as_str())))
-    //             .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    //     }
-// 
-    //     // Write the end tag
-    //     writer.write_event(Event::End(BytesEnd::new("parameter")))
-    //         .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-// 
-    //     Ok(())
-    // }
+    pub fn set_parameter(&mut self, parameter:ParameterFactorOfLowestSignal){
+        self.parameter = parameter;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut exact_mass_obj = BytesStart::new("module");
+        exact_mass_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(exact_mass_obj))
+        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        self.parameter.write_element(writer)?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("module")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
+    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
@@ -649,19 +687,48 @@ pub struct ParameterFactorOfLowestSignal{
 }
 
 impl ParameterFactorOfLowestSignal {
-    fn new(value: Option<f32>) -> Self{
+    pub fn new() -> Self{
         ParameterFactorOfLowestSignal{
-            name: "Factor of lowest signal".to_owned(),
-            value: Some(0.0),
+            name: "Noise factor".to_owned(),
+            value: None,
         }
     }
 
-    fn set_value(&mut self, value: Option<f32>){
+    pub fn get_name(&self) -> &str{
+        &self.name
+    }
+
+    pub fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
 
-    fn get_value(& self) -> &Option<f32>{
+    pub fn get_value(& self) -> &Option<f32>{
         &self.value
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut parameter_obj = BytesStart::new("parameter");
+
+        parameter_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(parameter_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => format!("{:.1}", value),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -681,8 +748,8 @@ impl Auto{
             parameter: ParameterAuto::new() }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn get_value(&self) -> &Option<f32>{
@@ -691,6 +758,28 @@ impl Auto{
 
     pub fn set_value(&mut self, value:Option<f32>){
         self.parameter.set_value(value);
+    }
+
+    pub fn set_parameter(&mut self, parameter:ParameterAuto){
+        self.parameter = parameter;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut exact_mass_obj = BytesStart::new("module");
+        exact_mass_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(exact_mass_obj))
+        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        self.parameter.write_element(writer)?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("module")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -709,12 +798,12 @@ impl ParameterAuto{
     pub fn new() -> Self{
         ParameterAuto{
             name: "Noise level".to_owned(),
-            value: Some(1000.0),
+            value: None,
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     // just set it pub for testing but imo shouldn't
@@ -724,6 +813,31 @@ impl ParameterAuto{
     // just set it pub for testing but imo shouldn't 
     pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut parameter_obj = BytesStart::new("parameter");
+
+        parameter_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(parameter_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => format!("{:.1}", value),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -744,8 +858,8 @@ impl Centroid{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn set_value(&mut self, value:Option<f32>){
@@ -754,6 +868,28 @@ impl Centroid{
 
     pub fn get_value(&self) -> &Option<f32>{
         self.parameter.get_value()
+    }
+
+    pub fn set_parameter(&mut self, parameter: ParameterCentroid){
+        self.parameter = parameter;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut exact_mass_obj = BytesStart::new("module");
+        exact_mass_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(exact_mass_obj))
+        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        self.parameter.write_element(writer)?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("module")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -775,8 +911,8 @@ impl ParameterCentroid{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn get_value(&self) -> &Option<f32>{
@@ -785,6 +921,31 @@ impl ParameterCentroid{
 
     pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut parameter_obj = BytesStart::new("parameter");
+
+        parameter_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(parameter_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => value.to_string(),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -805,8 +966,8 @@ impl ExactMass{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn get_value(&self) -> &Option<f32>{
@@ -815,6 +976,28 @@ impl ExactMass{
 
     pub fn set_value(&mut self, value:Option<f32>){
         self.parameter.set_value(value);
+    }
+
+    pub fn set_parameter(&mut self, parameter:ParameterExactMass){
+        self.parameter = parameter;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut exact_mass_obj = BytesStart::new("module");
+        exact_mass_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(exact_mass_obj))
+        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        self.parameter.write_element(writer)?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("module")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -835,8 +1018,8 @@ impl ParameterExactMass{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn get_value(&self) -> &Option<f32>{
@@ -845,6 +1028,31 @@ impl ParameterExactMass{
 
     pub fn set_value(&mut self, value: Option<f32>){
         self.value = value;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut parameter_obj = BytesStart::new("parameter");
+
+        parameter_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(parameter_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => value.to_string(),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -865,8 +1073,8 @@ impl LocalMaxima{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn get_value(&self) -> &Option<f32>{
@@ -875,6 +1083,28 @@ impl LocalMaxima{
 
     pub fn set_value(&mut self, value:Option<f32>){
         self.parameter.set_value(value);
+    }
+
+    pub fn set_parameter(&mut self, parameter:ParameterLocalMaxima){
+        self.parameter = parameter;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut local_maxima_obj = BytesStart::new("module");
+        local_maxima_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(local_maxima_obj))
+        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        self.parameter.write_element(writer)?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("module")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -894,8 +1124,8 @@ impl ParameterLocalMaxima{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn get_value(&self) -> &Option<f32>{
@@ -904,6 +1134,31 @@ impl ParameterLocalMaxima{
 
     pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
+    }
+
+    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
+        // <parameter name="Noise level"/>
+        let mut parameter_obj = BytesStart::new("parameter");
+
+        parameter_obj.push_attribute(("name", self.get_name()));
+
+        // Write the start tag
+        writer.write_event(Event::Start(parameter_obj))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        let value = match *self.get_value(){
+            Some(value) => value.to_string(),
+            None => "".to_owned()
+        };
+
+        writer.write_event(Event::Text(BytesText::new(value.as_str())))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+    
+        // Write the end tag
+        writer.write_event(Event::End(BytesEnd::new("parameter")))
+            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
+
+        Ok(())
     }
 }
 

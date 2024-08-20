@@ -30,7 +30,7 @@ mod tests {
             MSDetectorAdvancedModules::Auto(Auto::new()),
             MSDetectorAdvancedModules::Centroid(Centroid::new()),
             MSDetectorAdvancedModules::ExactMass(ExactMass::new()),
-            MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(Some(32.0))),
+            MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new()),
             MSDetectorAdvancedModules::LocalMaxima(LocalMaxima::new()),
             MSDetectorAdvancedModules::RecursiveThreshold(RecursiveThreshold::new()),
             MSDetectorAdvancedModules::WaveletTransform(WaveletTransform::new())
@@ -47,14 +47,101 @@ mod tests {
     }
 
     #[test]
+    fn ms_detector_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut ms_detector_obj = MSDetectorAdvanced::new();
+        
+        let mut factor = FactorOfLowestSignal::new();
+        // add here otherwise .set_ms1() does not add the parameter value
+        ms_detector_obj.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(factor));
+        ms_detector_obj.set_ms1(Some(5.0));
+
+
+        let mut auto = Auto::new();
+        auto.set_value(Some(1000.0));
+
+        let centroid = Centroid::new();
+
+        let mass = ExactMass::new();
+
+        let maxima = LocalMaxima::new();
+
+        let mut recursive = RecursiveThreshold::new();
+        let rec_par_1 = RTNoiseLevel::new();
+        let rec_par_2 = MinMZPeakWidth::new();
+        let rec_par_3 = MaxMZPeakWidth::new();
+        recursive.add_parameter(RecursiveThresholdParameters::RTNoiseLevel(rec_par_1));
+        recursive.add_parameter(RecursiveThresholdParameters::MinMZPeakWidth(rec_par_2));
+        recursive.add_parameter(RecursiveThresholdParameters::MaxMZPeakWidth(rec_par_3));
+
+        let mut wavelet = WaveletTransform::new();
+        let wav_par_1 = WTNoiseLevel::new();
+        let wav_par_2: ScaleLevel = ScaleLevel::new();
+        let wav_par_3: WaveletWindowSize = WaveletWindowSize::new();
+        wavelet.add_parameter(WaveletTransformParameters::WTNoiseLevel(wav_par_1));
+        wavelet.add_parameter(WaveletTransformParameters::ScaleLevel(wav_par_2));
+        wavelet.add_parameter(WaveletTransformParameters::WaveletWindowSize(wav_par_3));
+
+        ms_detector_obj.add_module(MSDetectorAdvancedModules::Auto(auto));
+        ms_detector_obj.add_module(MSDetectorAdvancedModules::Centroid(centroid));
+        ms_detector_obj.add_module(MSDetectorAdvancedModules::ExactMass(mass));
+        ms_detector_obj.add_module(MSDetectorAdvancedModules::LocalMaxima(maxima));
+        ms_detector_obj.add_module(MSDetectorAdvancedModules::RecursiveThreshold(recursive));
+        ms_detector_obj.add_module(MSDetectorAdvancedModules::WaveletTransform(wavelet));
+
+        // Write the ScanTypes element
+        ms_detector_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="MS1 detector (Advanced)" selected="true" selected_item="Factor of lowest signal"><module name="Factor of lowest signal"><parameter name="Noise factor">5.0</parameter></module><module name="Auto"><parameter name="Noise level">1000.0</parameter></module><module name="Centroid"><parameter name="Noise level"></parameter></module><module name="Exact mass"><parameter name="Noise level"></parameter></module><module name="Local maxima"><parameter name="Noise level"></parameter></module><module name="Recursive threshold"><parameter name="Noise level"></parameter><parameter name="Min m/z peak width"></parameter><parameter name="Max m/z peak width"></parameter></module><module name="Wavelet transform"><parameter name="Noise level"></parameter><parameter name="Scale level"></parameter><parameter name="Wavelet window size (%)"></parameter></module></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
+    }
+
+    #[test]
+    fn factor_of_lowest_signal_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut exact_mass_obj = FactorOfLowestSignal::new();
+        let mut parameter_obj = ParameterFactorOfLowestSignal::new();
+        parameter_obj.set_value(Some(5.0));
+        exact_mass_obj.set_parameter(parameter_obj);
+
+        // Write the ScanTypes element
+        exact_mass_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<module name="Factor of lowest signal"><parameter name="Noise factor">5.0</parameter></module>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
+    }
+
+    #[test]
     fn ms1_content(){
         let mut ms_detector = MSDetectorAdvanced::new();
         assert_eq!(ms_detector.get_name(), "");                                                                                       //test it has been initialized correctly
         ms_detector.set_ms1(Some(0.0));
         assert_eq!(ms_detector.get_name(), "MS1 detector (Advanced)");                                                                //test it has the correct name
-        ms_detector.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(Some(0.0)))); 
+        ms_detector.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new())); 
         assert_eq!(ms_detector.module_length(), 1);                                                                                   //test something has been inserted
-        assert_eq!(ms_detector.get_module(0), MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(Some(0.0)))); //test that it is in fact this type of object
+        assert_eq!(ms_detector.get_module(0).get_value().unwrap(), &None); //test that it is in fact this type of object
         ms_detector.set_ms1(Some(7.0));
         assert_eq!(*ms_detector.get_module(0).get_value().unwrap(), Some(7.0));
     }
@@ -65,9 +152,9 @@ mod tests {
         assert_eq!(ms_detector.get_name(), "", "NOT empty");                                                                                    //test it has been initialized correctly
         ms_detector.set_ms2(Some(0.0));
         assert_eq!(ms_detector.get_name(), "MS2 detector (Advanced)", "NOT same name");                                                             //test it has the correct name
-        ms_detector.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(Some(0.0)))); 
+        ms_detector.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new())); 
         assert_eq!(ms_detector.module_length(), 1, "NOT 1 element pushed");                                                                            //test something has been inserted
-        assert_eq!(ms_detector.get_module(0), MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new(Some(0.0))), "NOT good type inserted"); //test that it is in fact this type of object
+        assert_eq!(ms_detector.get_module(0).get_value().unwrap(), &None, "NOT good type inserted"); //test that it is in fact this type of object
 
         ms_detector.set_ms2(Some(1000.0));
         assert_eq!(*ms_detector.get_module(0).get_value().unwrap(), Some(1000.0), "NOT matching value");
@@ -87,6 +174,31 @@ mod tests {
     }
 
     #[test]
+    fn auto_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut exact_mass_obj = Auto::new();
+        let mut parameter_obj = ParameterAuto::new();
+        exact_mass_obj.set_parameter(parameter_obj);
+
+        // Write the ScanTypes element
+        exact_mass_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<module name="Auto"><parameter name="Noise level"></parameter></module>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
+    }
+
+    #[test]
     fn parameter_auto_initialization(){
         let parameter_auto = ParameterAuto::new();
         assert_eq!(parameter_auto.get_name(), "Noise level");
@@ -95,9 +207,32 @@ mod tests {
     #[test]
     fn parameter_auto_set_get_value(){
         let mut parameter_auto_obj = ParameterAuto::new();
-        assert_eq!(*parameter_auto_obj.get_value(), Some(1000.0));
+        assert_eq!(*parameter_auto_obj.get_value(), None);
         parameter_auto_obj.set_value(Some(28.4));
         assert_eq!(*parameter_auto_obj.get_value(), Some(28.4));
+    }
+
+    #[test]
+    fn auto_parameter_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut parameter_obj = ParameterAuto::new();
+
+        // Write the ScanTypes element
+        parameter_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Noise level"></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
@@ -117,6 +252,31 @@ mod tests {
     }
 
     #[test]
+    fn centroid_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut exact_mass_obj = Centroid::new();
+        let parameter_obj = ParameterCentroid::new();
+        exact_mass_obj.set_parameter(parameter_obj);
+
+        // Write the ScanTypes element
+        exact_mass_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<module name="Centroid"><parameter name="Noise level"></parameter></module>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
+    }
+
+    #[test]
     fn centroid_parameter_initialization(){
         let par_centroid_obj = ParameterCentroid::new();
         assert_eq!(par_centroid_obj.get_name(), "Noise level");
@@ -128,6 +288,29 @@ mod tests {
         assert_eq!(*par_centroid_obj.get_value(), None);
         par_centroid_obj.set_value(Some(12.35));
         assert_eq!(*par_centroid_obj.get_value(), Some(12.35));
+    }
+
+    #[test]
+    fn centroid_parameter_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let parameter_obj = ParameterCentroid::new();
+
+        // Write the ScanTypes element
+        parameter_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Noise level"></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
@@ -147,6 +330,31 @@ mod tests {
     }
 
     #[test]
+    fn exact_mass_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut exact_mass_obj = ExactMass::new();
+        let parameter_obj = ParameterExactMass::new();
+        exact_mass_obj.set_parameter(parameter_obj);
+
+        // Write the ScanTypes element
+        exact_mass_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<module name="Exact mass"><parameter name="Noise level"></parameter></module>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
+    }
+
+    #[test]
     fn exact_mass_parameter_initialization(){
         let par_exact_mass_obj = ParameterExactMass::new();
         assert_eq!(par_exact_mass_obj.get_name(), "Noise level");
@@ -158,6 +366,29 @@ mod tests {
         assert_eq!(*par_centroid_obj.get_value(), None);
         par_centroid_obj.set_value(Some(12.35));
         assert_eq!(*par_centroid_obj.get_value(), Some(12.35));
+    }
+
+    #[test]
+    fn exact_mass_parameter_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let parameter_obj = ParameterExactMass::new();
+
+        // Write the ScanTypes element
+        parameter_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Noise level"></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
@@ -177,6 +408,31 @@ mod tests {
     }
 
     #[test]
+    fn local_maxima_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut maxima_obj = LocalMaxima::new();
+        let parameter_obj = ParameterLocalMaxima::new();
+        maxima_obj.set_parameter(parameter_obj);
+
+        // Write the ScanTypes element
+        maxima_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<module name="Local maxima"><parameter name="Noise level"></parameter></module>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
+    }
+
+    #[test]
     fn local_maxima_parameter_initialization(){
         let par_local_maxima_obj = ParameterLocalMaxima::new();
         assert_eq!(par_local_maxima_obj.get_name(), "Noise level");
@@ -188,6 +444,29 @@ mod tests {
         assert_eq!(*par_local_maxima_obj.get_value(), None);
         par_local_maxima_obj.set_value(Some(12.35));
         assert_eq!(*par_local_maxima_obj.get_value(), Some(12.35));
+    }
+
+    #[test]
+    fn local_maxima_parameter_serialization() -> IoResult<()>{
+        // Create a writer with an in-memory buffer
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let parameter_obj = ParameterLocalMaxima::new();
+
+        // Write the ScanTypes element
+        parameter_obj.write_element(&mut writer)?;
+
+        // Convert buffer to string
+        let result = writer.into_inner().into_inner();
+        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+
+        // Define the expected XML output
+        let expected = r#"<parameter name="Noise level"></parameter>"#;
+
+        // Assert the result matches the expected output
+        assert_eq!(result_str, expected);
+
+        Ok(())
     }
 
     #[test]
