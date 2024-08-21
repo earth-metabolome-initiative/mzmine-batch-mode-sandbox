@@ -53,44 +53,21 @@ impl ScanFilters {
         self.parameters.len()
     }
 
-    pub fn get_parameter_value(&self, parameter:Parameter){
-        // TODO
-    }
-
-    pub fn write_element(&mut self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
-
-        // create XML element -> istantiate element name (batch/batchstep/parameter/module)
-        let mut element = BytesStart::new("parameter");
-
-        // add the attribute(tag) to the element
-        element.push_attribute(("name", self.name.as_str()));
-
-        // add the attribute(tag) to the element
-        element.push_attribute(("selected", self.get_selected_as_str()));
-        
-        // add the value as text
-        writer.write_event(Event::Start(element))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
+    pub fn get_parameter(&mut self, target:&str) -> Option<&Parameter>{
         for parameter in &mut self.parameters{
             match parameter{
-                Parameter::ScanNumber(_f) => _f.write_element(writer)?,
-                Parameter::BaseFilteringInteger(_f) => _f.write_element(writer)?,
-                Parameter::RetentionTime(_f) => _f.write_element(writer)?,
-                Parameter::Mobility(_f) => _f.write_element(writer)?,
-                Parameter::MSLevelFiler(_f) => _f.write_element(writer)?,
-                Parameter::ScanDefinition(_f) => _f.write_element(writer)?,
-                Parameter::Polarity(_f) => _f.write_element(writer)?,
-                Parameter::SpectrumType(_f) => _f.write_element(writer)?,
+                Parameter::ScanNumber(_f) if target == "Scan number" => return Some(parameter),
+                Parameter::BaseFilteringInteger(_f) if target == "Base filtering integer" => return Some(parameter),
+                Parameter::RetentionTime(_f) if target == "Retention time" => return Some(parameter),
+                Parameter::Mobility(_f) if target == "Mobility" => return Some(parameter),
+                Parameter::MSLevelFiler(_f) if target == "MS level filter" => return Some(parameter),
+                Parameter::ScanDefinition(_f) if target == "Scan definition" => return Some(parameter),
+                Parameter::Polarity(_f) if target == "Polarity" => return Some(parameter),
+                Parameter::SpectrumType(_f) if target == "Spectrum type" => return Some(parameter),
                 _ => panic!("No matching parameter")
             }
         }
-
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
+        None
     }
 }
 
@@ -108,19 +85,7 @@ pub enum Parameter{
 }
 
 impl Parameter{
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
-        match self{
-            Parameter::ScanNumber(_f) => return _f.write_element(writer),
-            Parameter::BaseFilteringInteger(_f) => return _f.write_element(writer),
-            Parameter::RetentionTime(_f) => return _f.write_element(writer),
-            Parameter::Mobility(_f) => return _f.write_element(writer),
-            Parameter::MSLevelFiler(_f) => return _f.write_element(writer),
-            Parameter::ScanDefinition(_f) => return _f.write_element(writer),
-            Parameter::Polarity(_f) => return _f.write_element(writer),
-            Parameter::SpectrumType(_f) => return _f.write_element(writer),
-            _ => panic!("No matching parameter")
-        }
-    }
+    // getters / setters
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
@@ -159,30 +124,6 @@ impl ScanNumber{
             Some(v) => v.to_string(),
             None => String::from("None"),
         }
-    }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
-        // create XML element -> istantiate element name (batch/batchstep/parameter/module)
-        let mut element = BytesStart::new("parameter");
-
-        // add the attribute(tag) to the element
-        element.push_attribute(("name", self.name.as_str()));
-        
-        // add the value as text
-        writer.write_event(Event::Start(element))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        // close the XML element
-        if let Some(ref value) = self.value {
-            writer.write_event(Event::Text(BytesText::new(&self.value_to_string().as_str())))
-                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-        }
-
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
     }
 }
 

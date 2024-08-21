@@ -4,9 +4,6 @@ use mzbatch_generator::mass_detection_module_parameters::RawDataFiles;
 mod tests {
     use super::*;
 
-    use quick_xml::writer::Writer;
-    use std::{io::{Cursor, Result as IoResult}, iter::Scan};
-
     #[test]
     fn raw_data_initialization(){
         let raw_data_obj = RawDataFiles::new();
@@ -24,24 +21,16 @@ mod tests {
     }   
 
     #[test]
-    fn raw_data_serialization() -> IoResult<()> {
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
+    fn raw_data_serialization() -> Result<(), Box<dyn std::error::Error>> {
+        let mut buffer = "".to_owned();
 
-        let mut scan_types = RawDataFiles::new();
+        let raw_data = RawDataFiles::new();
 
-        // Write the ScanTypes element
-        scan_types.write_element(&mut writer)?;
+        quick_xml::se::to_writer(&mut buffer, &raw_data)?;
 
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+        let expected = r#"<parameter name="Raw data files" type="BATCH_LAST_FILES"/>"#;
 
-        // Define the expected XML output
-        let expected = r#"<parameter name="Raw data files" type="BATCH_LAST_FILES"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
+        assert_eq!(buffer, expected);
 
         Ok(())
     }

@@ -1,3 +1,5 @@
+use core::panic;
+
 use serde::{Serialize, Deserialize};
 use crate::xml_serialization::*;
 
@@ -69,9 +71,10 @@ pub struct AdvancedImport{
     DenormalizeFragmentScansTraps(DenormalizeFragmentScansTraps),
  }
 
+
 // ### ### ### ### ### ### ###     Scan Filter     ### ### ### ### ### ### ### ### ### ###
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct ScanFilters{
     #[serde(rename = "@name")]
@@ -140,25 +143,25 @@ impl ScanFilters {
         self.selected=false;
     }
 
-    pub fn get_parameter(&mut self, target:&str) -> Option<&ScanFiltersParameters>{
-        for parameter in &mut self.parameters{
+    pub fn get_parameter(&mut self, target: &str) -> Option<&mut ScanFiltersParameters> {
+        for parameter in &mut self.parameters {
             match parameter {
-                ScanFiltersParameters::ScanNumber(_f) if target == "Scan number" => return Some(parameter),
-                ScanFiltersParameters::BaseFilteringInteger(_f) if target == "Base Filtering Integer" => return Some(parameter),
-                ScanFiltersParameters::RetentionTime(_f) if target == "Retention time" => return Some(parameter),
-                ScanFiltersParameters::Mobility(_f) if target == "Mobility" => return Some(parameter),
-                ScanFiltersParameters::MSLevelFilter(_f) if target == "MS Level Filter" => return Some(parameter),
-                ScanFiltersParameters::ScanDefinition(_f) if target == "Scan definition" => return Some(parameter),
-                ScanFiltersParameters::Polarity(_f) if target == "Polarity" => return Some(parameter),
-                ScanFiltersParameters::SpectrumType(_f) if target == "Spectrum type" => return Some(parameter),
-                _ => panic!("No matching parameter")
+                ScanFiltersParameters::ScanNumber(_) if target == "Scan number" => return Some(parameter),
+                ScanFiltersParameters::BaseFilteringInteger(_) if target == "Base Filtering Integer" => return Some(parameter),
+                ScanFiltersParameters::RetentionTime(_) if target == "Retention time" => return Some(parameter),
+                ScanFiltersParameters::Mobility(_) if target == "Mobility" => return Some(parameter),
+                ScanFiltersParameters::MSLevelFilter(_) if target == "MS Level Filter" => return Some(parameter),
+                ScanFiltersParameters::ScanDefinition(_) if target == "Scan definition" => return Some(parameter),
+                ScanFiltersParameters::Polarity(_) if target == "Polarity" => return Some(parameter),
+                ScanFiltersParameters::SpectrumType(_) if target == "Spectrum type" => return Some(parameter),
+                _ => {}
             }
         }
         None
     }
 }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
  #[serde(untagged)]
 pub enum ScanFiltersParameters{
     ScanNumber(ScanNumber),
@@ -184,9 +187,44 @@ impl ScanFiltersParameters{
             ScanFiltersParameters::SpectrumType(_f) => ScanFiltersParameters::SpectrumType(SpectrumType::new())
         }
     }
+
+    pub fn get_name(&self) -> &str{
+        match self{
+            ScanFiltersParameters::ScanNumber(_f) => _f.get_name(),
+            ScanFiltersParameters::BaseFilteringInteger(_f) => _f.get_name(),
+            ScanFiltersParameters::RetentionTime(_f) => _f.get_name(),
+            ScanFiltersParameters::Mobility(_f) => _f.get_name(),
+            ScanFiltersParameters::MSLevelFilter(_f) => _f.get_name(),
+            ScanFiltersParameters::ScanDefinition(_f) => _f.get_name(),
+            ScanFiltersParameters::Polarity(_f) => _f.get_name(),
+            ScanFiltersParameters::SpectrumType(_f) => _f.get_name(),
+            _ => panic!("No matching parameter")
+        }
+    }
+
+    pub fn set_name(&mut self, value:&str){
+        match self{
+            ScanFiltersParameters::MSLevelFilter(_f) => _f.set_name(value),
+            _ => panic!("No matching parameter")
+        }
+    }
+
+    pub fn set_value(&mut self, value: Option<u8>){
+        match self{
+            ScanFiltersParameters::MSLevelFilter(_) => self.set_value(value),
+            _ => panic!("No matching parameter")
+        }
+    }
+
+    pub fn set_selected(&mut self, value:&str){
+        match self{
+            ScanFiltersParameters::MSLevelFilter(_) => self.set_selected(value),
+            _ => panic!("No matching parameter")
+        }
+    }
 }
 
- #[derive(Default, Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize,  Clone, Debug, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct ScanNumber{
     #[serde(rename = "@name")]
@@ -217,7 +255,7 @@ pub struct ScanNumber{
     }
 }
 
- #[derive(Default, Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize,  Clone, Debug, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct BaseFilteringInteger{
     #[serde(rename = "@name")]
@@ -248,7 +286,7 @@ pub struct BaseFilteringInteger{
     }
 }
 
- #[derive(Default, Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize,  Clone, Debug, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct RetentionTime{
     #[serde(rename = "@name")]
@@ -279,7 +317,7 @@ impl RetentionTime {
     }
 }
 
- #[derive(Default, Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize,  Clone, Debug, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct Mobility{
     #[serde(rename = "@name")]
@@ -310,7 +348,7 @@ pub struct Mobility{
     }
 }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Serialize, Deserialize,  Clone, Debug, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct MSLevelFilter{
     #[serde(rename = "@name")]
@@ -346,6 +384,10 @@ pub struct MSLevelFilter{
         &self.name
     }
 
+    pub fn set_name(&mut self, value:&str){
+        self.name = value.to_owned();
+    }
+
     pub fn get_selected(&self) -> &str{
         &self.selected
     }
@@ -364,7 +406,7 @@ pub struct MSLevelFilter{
 }
 
 
- #[derive(Default, Serialize, Deserialize, PartialEq)]
+ #[derive(Default, Serialize, Deserialize,  Clone, Debug, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
  pub struct ScanDefinition{
     #[serde(rename = "@name")]
@@ -395,7 +437,7 @@ pub struct MSLevelFilter{
     }
 }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Serialize, Deserialize,  Clone, Debug, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
  
 pub struct Polarity{
@@ -433,7 +475,7 @@ pub struct Polarity{
     }
 }
 
- #[derive(Serialize, Deserialize, PartialEq)]
+ #[derive(Serialize, Deserialize,  Clone, Debug, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct SpectrumType{
     #[serde(rename = "@name")]
@@ -525,7 +567,7 @@ impl CropMS1mz {
 
 
 
-#[derive(Serialize, Deserialize, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug,PartialEq)]
 #[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct MSDetectorAdvanced{
     #[serde(rename = "@name")]

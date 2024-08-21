@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use crate::mass_detection_module_parameters::*;
+use crate::all_spectral_data_import_module_parameters::{ScanFilters, MSDetectorAdvanced, DenormalizeFragmentScansTraps};
 use crate::prelude::Value;
 
 #[derive(Default, Serialize, Deserialize, PartialEq)]
@@ -45,7 +46,7 @@ impl MassDetectionModule{
                 Parameter::RawDataFiles(_) if target == "RawDataFiles" => return param,
                 Parameter::ScanFilters(_) if target == "ScanFilters" => return param,
                 Parameter::ScanTypes(_) if target == "ScanTypes" => return param,
-                Parameter::MassDetector(_) if target == "MassDetector" => return param,
+                Parameter::MSDetectorAdvanced(_) if target == "MSDetectorAdvanced" => return param,
                 Parameter::DenormalizeFragmentScanTraps(_) if target == "DenormalizeFragmentScanTraps" => return param,
                 _ => continue,
             }
@@ -55,21 +56,24 @@ impl MassDetectionModule{
     
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 #[serde(untagged)]
 pub enum Parameter{
     RawDataFiles(RawDataFiles),
     ScanFilters(ScanFilters),
     ScanTypes(ScanTypes),
-    MassDetector(MassDetector),
-    DenormalizeFragmentScanTraps(DenormalizeFragmentScanTraps)
+    MSDetectorAdvanced(MSDetectorAdvanced),
+    DenormalizeFragmentScanTraps(DenormalizeFragmentScansTraps)
 }
 
 impl Parameter {
-    pub fn get_name(&self) -> Value {
+    pub fn get_name(&self) -> &str {
         match self {
-            Parameter::MassDetector(f) => Value::Str(f.get_name()),
-
+            Parameter::RawDataFiles(f) => f.get_name(),
+            Parameter::ScanFilters(f) => f.get_name(),
+            Parameter::ScanTypes(f) => f.get_name(),
+            Parameter::MSDetectorAdvanced(f) => f.get_name(),
+            Parameter::DenormalizeFragmentScanTraps(f) => f.get_name(),
             _ => panic!("No matching parameter for get_name()"), // Return None for non-matching cases
         }
     }

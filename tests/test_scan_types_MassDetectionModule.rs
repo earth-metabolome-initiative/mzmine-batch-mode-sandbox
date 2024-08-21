@@ -24,25 +24,16 @@ mod tests {
     }
 
     #[test]
-    fn scan_types_serialization() -> IoResult<()> {
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
+    fn scan_types_serialization() -> Result<(), Box<dyn std::error::Error>> {
+        let mut buffer = "".to_owned();
 
         let mut scan_types = ScanTypes::new();
         scan_types.set_value("All scan types");
 
-        // Write the ScanTypes element
-        scan_types.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
         let expected = r#"<parameter name="Scan types (IMS)">All scan types</parameter>"#;
 
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
+        quick_xml::se::to_writer(&mut buffer, &scan_types)?;
+        assert_eq!(buffer, expected);
 
         Ok(())
     }

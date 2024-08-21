@@ -2,6 +2,8 @@ use mzbatch_generator::all_spectral_data_import_module_parameters::*;
 
 #[cfg(test)]
 mod tests {
+    use mzbatch_generator::batchsteps::mass_detection_module_parameters::scan_filters;
+
     use super::*;
 
     #[test]
@@ -18,6 +20,25 @@ mod tests {
         assert_eq!(scan_filter_obj.get_parameters_length(), 0);
         let mut new_parameter = ScanFiltersParameters::Mobility;
         scan_filter_obj.add_parameter(ScanFiltersParameters::Mobility(Mobility::new()));
+        assert_eq!(scan_filter_obj.get_parameters_length(), 1);
+    }
+
+    #[test]
+    fn test_get_parameter() {
+        let mut scan_filters = ScanFilters::default();
+
+        // Test retrieving each parameter
+        assert!(matches!(scan_filters.get_parameter("Scan number"), Some(ScanFiltersParameters::ScanNumber(_))));
+        assert!(matches!(scan_filters.get_parameter("Base Filtering Integer"), Some(ScanFiltersParameters::BaseFilteringInteger(_))));
+        assert!(matches!(scan_filters.get_parameter("Retention time"), Some(ScanFiltersParameters::RetentionTime(_))));
+        assert!(matches!(scan_filters.get_parameter("Mobility"), Some(ScanFiltersParameters::Mobility(_))));
+        assert!(matches!(scan_filters.get_parameter("MS Level Filter"), Some(ScanFiltersParameters::MSLevelFilter(_))));
+        assert!(matches!(scan_filters.get_parameter("Scan definition"), Some(ScanFiltersParameters::ScanDefinition(_))));
+        assert!(matches!(scan_filters.get_parameter("Polarity"), Some(ScanFiltersParameters::Polarity(_))));
+        assert!(matches!(scan_filters.get_parameter("Spectrum type"), Some(ScanFiltersParameters::SpectrumType(_))));
+
+        // Test a non-existing parameter
+        assert_eq!(scan_filters.get_parameter("Nonexistent"), None);
     }
 
     #[test]
