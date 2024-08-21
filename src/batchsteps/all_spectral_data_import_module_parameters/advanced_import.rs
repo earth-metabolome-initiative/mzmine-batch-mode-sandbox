@@ -8,7 +8,7 @@ pub enum Value {
 
 
 #[derive(Default, Serialize, Deserialize, PartialEq)]
- #[serde(default, rename_all = "lowercase")]
+ #[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct AdvancedImport{
     #[serde(rename = "@name")]
     name: String,
@@ -16,6 +16,7 @@ pub struct AdvancedImport{
      #[serde(rename = "@selected")]
     selected: bool,
  
+    #[serde(rename = "parameter")]
     parameters: Vec<AdvancedImportParameters>
  }
 
@@ -70,7 +71,7 @@ pub struct AdvancedImport{
 
 // ### ### ### ### ### ### ###     Scan Filter     ### ### ### ### ### ### ### ### ### ###
 
- #[derive(Default, Serialize, Deserialize, PartialEq)]
+ #[derive(Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct ScanFilters{
     #[serde(rename = "@name")]
@@ -81,6 +82,25 @@ pub struct ScanFilters{
 
     #[serde(rename = "parameter")]
     parameters: Vec<ScanFiltersParameters>,
+ }
+
+ impl Default for ScanFilters{
+    fn default() -> Self{
+        ScanFilters {
+            name: "Scan filters".to_owned(),
+            selected: true,
+            parameters: vec![
+                ScanFiltersParameters::ScanNumber(ScanNumber::new()),
+                ScanFiltersParameters::BaseFilteringInteger(BaseFilteringInteger::new()),
+                ScanFiltersParameters::RetentionTime(RetentionTime::new()),
+                ScanFiltersParameters::Mobility(Mobility::new()),
+                ScanFiltersParameters::MSLevelFilter(MSLevelFilter::default()),
+                ScanFiltersParameters::ScanDefinition(ScanDefinition::new()),
+                ScanFiltersParameters::Polarity(Polarity::default()),
+                ScanFiltersParameters::SpectrumType(SpectrumType::default())
+            ]
+        }
+    }
  }
 
 impl ScanFilters {
@@ -118,6 +138,23 @@ impl ScanFilters {
 
     pub fn deselect(&mut self){
         self.selected=false;
+    }
+
+    pub fn get_parameter(&mut self, target:&str) -> Option<&ScanFiltersParameters>{
+        for parameter in &mut self.parameters{
+            match parameter {
+                ScanFiltersParameters::ScanNumber(_f) if target == "Scan number" => return Some(parameter),
+                ScanFiltersParameters::BaseFilteringInteger(_f) if target == "Base Filtering Integer" => return Some(parameter),
+                ScanFiltersParameters::RetentionTime(_f) if target == "Retention time" => return Some(parameter),
+                ScanFiltersParameters::Mobility(_f) if target == "Mobility" => return Some(parameter),
+                ScanFiltersParameters::MSLevelFilter(_f) if target == "MS Level Filter" => return Some(parameter),
+                ScanFiltersParameters::ScanDefinition(_f) if target == "Scan definition" => return Some(parameter),
+                ScanFiltersParameters::Polarity(_f) if target == "Polarity" => return Some(parameter),
+                ScanFiltersParameters::SpectrumType(_f) if target == "Spectrum type" => return Some(parameter),
+                _ => panic!("No matching parameter")
+            }
+        }
+        None
     }
 }
 
@@ -273,7 +310,7 @@ pub struct Mobility{
     }
 }
 
- #[derive(Default, Serialize, Deserialize, PartialEq)]
+ #[derive(Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct MSLevelFilter{
     #[serde(rename = "@name")]
@@ -284,6 +321,16 @@ pub struct MSLevelFilter{
 
     #[serde(rename = "$text")]
     value: Option<u8>,
+ }
+
+ impl Default for MSLevelFilter{
+    fn default() -> Self{
+        MSLevelFilter{
+            name: "MS level filter".to_owned(),
+            selected: "All MS levels".to_owned(),
+            value: Some(1),
+        }
+    }
  }
 
  impl MSLevelFilter {
@@ -348,7 +395,7 @@ pub struct MSLevelFilter{
     }
 }
 
- #[derive(Default, Serialize, Deserialize, PartialEq)]
+ #[derive(Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
  
 pub struct Polarity{
@@ -357,6 +404,12 @@ pub struct Polarity{
 
     #[serde(rename = "$text")]
     value: String,
+ }
+
+ impl Default for Polarity{
+    fn default() -> Self{
+        Polarity { name: "Polarity".to_owned(), value: "Any".to_owned() }
+    }
  }
 
  impl Polarity {
@@ -380,7 +433,7 @@ pub struct Polarity{
     }
 }
 
- #[derive(Default, Serialize, Deserialize, PartialEq)]
+ #[derive(Serialize, Deserialize, PartialEq)]
  #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct SpectrumType{
     #[serde(rename = "@name")]
@@ -389,6 +442,12 @@ pub struct SpectrumType{
     #[serde(rename = "$text")]
     value: String,
  }
+
+impl Default for SpectrumType{
+fn default() -> Self{
+    SpectrumType { name: "Spectrum type".to_owned(), value: "ANY".to_owned() }
+}
+}
 
 impl SpectrumType {
     pub fn new() -> Self {
@@ -466,7 +525,7 @@ impl CropMS1mz {
 
 
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq)]
 #[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct MSDetectorAdvanced{
     #[serde(rename = "@name")]
@@ -478,6 +537,25 @@ pub struct MSDetectorAdvanced{
 
     #[serde(rename = "module")]
     modules: Vec<MSDetectorAdvancedModules>,
+}
+
+impl Default for MSDetectorAdvanced{
+    fn default() -> Self{
+        MSDetectorAdvanced{
+            name: "".to_owned(),
+            selected: true,
+            selected_item: "Factor of lowest signal".to_owned(),
+            modules: vec![
+                MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new()),
+                MSDetectorAdvancedModules::Auto(Auto::default()),
+                MSDetectorAdvancedModules::Centroid(Centroid::new()),
+                MSDetectorAdvancedModules::ExactMass(ExactMass::new()),
+                MSDetectorAdvancedModules::LocalMaxima(LocalMaxima::new()),
+                MSDetectorAdvancedModules::RecursiveThreshold(RecursiveThreshold::default()),
+                MSDetectorAdvancedModules::WaveletTransform(WaveletTransform::default())
+            ]
+        }
+    }
 }
 
 impl MSDetectorAdvanced {
@@ -656,7 +734,7 @@ impl ParameterFactorOfLowestSignal {
     }
 }
 
-#[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(default, rename_all = "lowercase", rename ="module")]
 pub struct Auto{
     #[serde(rename = "@name")]
@@ -665,11 +743,21 @@ pub struct Auto{
     parameter: ParameterAuto,
 }
 
+impl Default for Auto{
+    fn default() -> Self{
+        Auto { 
+            name: "Auto".to_owned(), 
+            parameter: ParameterAuto::default() 
+        }
+    }
+}
+
 impl Auto{
     pub fn new() -> Self{
         Auto { 
             name: "Auto".to_owned(), 
-            parameter: ParameterAuto::new() }
+            parameter: ParameterAuto::new() 
+        }
     }
 
     pub fn get_name(&self) -> &str{
@@ -689,7 +777,7 @@ impl Auto{
     }
 }
 
-#[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct ParameterAuto{
     #[serde(rename = "@name")]
@@ -697,6 +785,15 @@ pub struct ParameterAuto{
 
     #[serde(rename = "$text")]
     value: Option<f32>,
+}
+
+impl Default for ParameterAuto{
+    fn default() -> Self{
+        ParameterAuto{
+            name: "Noise level".to_owned(),
+            value: Some(1000.0),
+        }
+    }
 }
 
 
@@ -915,7 +1012,7 @@ impl ParameterLocalMaxima{
 }
 
 
-#[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(default, rename_all = "lowercase", rename = "module")]
 pub struct RecursiveThreshold{
     #[serde(rename = "@name")]
@@ -923,6 +1020,19 @@ pub struct RecursiveThreshold{
 
     #[serde(rename ="parameter")]
     parameters: Vec<RecursiveThresholdParameters>,
+}
+
+impl Default for RecursiveThreshold{
+    fn default() -> Self{
+        RecursiveThreshold{
+            name: "Recursive threshold".to_owned(),
+            parameters: vec![
+                RecursiveThresholdParameters::RTNoiseLevel(RTNoiseLevel::new()),
+                RecursiveThresholdParameters::MinMZPeakWidth(MinMZPeakWidth::new()),
+                RecursiveThresholdParameters::MaxMZPeakWidth(MaxMZPeakWidth::new())
+            ],
+        }
+    }
 }
 
 impl RecursiveThreshold{
@@ -1093,7 +1203,7 @@ impl MaxMZPeakWidth {
     }
 }
 
-#[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(default, rename_all = "lowercase", rename="module")]
 pub struct WaveletTransform{
     #[serde(rename = "@name")]
@@ -1101,6 +1211,19 @@ pub struct WaveletTransform{
 
     #[serde(rename ="parameter")]
     parameters: Vec<WaveletTransformParameters>,
+}
+
+impl Default for WaveletTransform{
+    fn default() -> Self {
+        WaveletTransform {
+            name: "Wavelet transform".to_owned(),
+            parameters: vec![
+                WaveletTransformParameters::WTNoiseLevel(WTNoiseLevel::new()),
+                WaveletTransformParameters::ScaleLevel(ScaleLevel::new()),
+                WaveletTransformParameters::WaveletWindowSize(WaveletWindowSize::new())
+            ]
+        }
+    }
 }
 
 impl WaveletTransform {

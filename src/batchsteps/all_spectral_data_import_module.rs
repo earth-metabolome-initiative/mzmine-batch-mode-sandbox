@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::prelude::*;
 
 #[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename = "batchstep")]
 pub struct AllSpectralDataImportModule {
     #[serde(rename = "@method")]
     pub method: String,
@@ -10,6 +10,7 @@ pub struct AllSpectralDataImportModule {
     #[serde(rename = "@parameter_version")]
     pub parameter_version: u8,
 
+    #[serde(rename = "parameter")]
     pub parameters: Vec<Parameter>,
 }
 
