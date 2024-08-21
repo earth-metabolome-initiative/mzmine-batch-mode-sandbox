@@ -36,28 +36,22 @@ mod tests {
     }
 
     #[test]
-    fn spectral_library_empty_serialization() -> IoResult<()>{
+    fn spectral_library_empty_serialization() -> Result<(), Box<dyn std::error::Error>>{
 
-        // IMPORTANT we still don't know how the serialization should look like with some spectral files
-        // TODO: check how this would be and implement it :)
+        //      TODO 
+        // check what happens if we add spectral files
 
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
+        let spectral = SpectralLibrary::new();
 
-        let spect_obj: SpectralLibrary = SpectralLibrary::new();
+        let mut buffer = "".to_owned();
 
-        // Write the ScanTypes element
-        spect_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
+        quick_xml::se::to_writer(&mut buffer, &spectral)?;
 
         // Define the expected XML output
-        let expected = r#"<parameter name="Spectral library files"></parameter>"#;
+        let expected = r#"<parameter name="Spectral library files"/>"#;
 
         // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
+        assert_eq!(buffer, expected);
 
         Ok(())
     }

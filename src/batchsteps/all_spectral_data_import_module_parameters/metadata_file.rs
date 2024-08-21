@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use crate::xml_serialization::*;
 
 #[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct MetaData {
     #[serde(rename = "@name")]
     name: String,
@@ -11,9 +11,10 @@ pub struct MetaData {
     #[serde(rename = "@selected")]
     selected: bool,
 
-    #[serde(rename = "@current_file")]
+    #[serde(rename = "current_file")]
     current_file: MetaDataFile,
     
+    #[serde(rename = "last_file")]
     last_files: Vec<MetaDataFile>,
 }
 
@@ -74,62 +75,6 @@ impl MetaData {
             }
         }
         panic!("No file found")
-    }
-    
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
-
-        let mut metadata = BytesStart::new("parameter");
-
-        metadata.push_attribute(("name", self.get_name()));
-        metadata.push_attribute(("selected", self.is_selected().to_string().as_str()));
-
-            // Write the start tag
-        writer.write_event(Event::Start(metadata))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-
-            //          Writing last file vector
-
-        //<parameter name="Monotonic shape">true</parameter>
-        let current_file = BytesStart::new("current_file");
-
-        //element.push_attribute(("name", self.get_name())); 
-
-        // Write the start tag
-        writer.write_event(Event::Start(current_file))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        writer.write_event(Event::Text(BytesText::new(self.get_current_file().get_name())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("current_file")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-
-            //          Writing last file vector
-
-        for file in &self.last_files{
-            let last_files = BytesStart::new("last_file");
-
-            // Write the start tag
-            writer.write_event(Event::Start(last_files))
-                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-            writer.write_event(Event::Text(BytesText::new(file.get_name())))
-                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-            // Write the end tag
-            writer.write_event(Event::End(BytesEnd::new("last_file")))
-                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-        }
-
-
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-        
-        Ok(())
     }
 
 }

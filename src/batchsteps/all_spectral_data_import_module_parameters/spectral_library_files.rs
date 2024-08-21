@@ -1,9 +1,7 @@
 use serde::{Serialize, Deserialize};
 
-use crate::xml_serialization::*;
-
 #[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct SpectralLibrary {
     #[serde(rename = "@name")]
     name: String,
@@ -43,28 +41,6 @@ impl SpectralLibrary{
         }
         Err("File not found")
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()> {
-        //<parameter name="Monotonic shape">true</parameter>
-        let mut element = BytesStart::new("parameter");
-
-        element.push_attribute(("name", self.get_name())); 
-
-        // Write the start tag
-        writer.write_event(Event::Start(element))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        for file in &self.files{
-            writer.write_event(Event::Text(BytesText::new(file.get_file_name())))
-                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-        }
-
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-        
-        Ok(())
-    } 
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Clone)]
