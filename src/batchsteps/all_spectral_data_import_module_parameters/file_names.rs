@@ -1,7 +1,5 @@
 use serde::{Serialize, Deserialize};
 
-use crate::xml_serialization::*;
-
 #[derive(Default, Serialize, Deserialize, PartialEq)]
 #[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct FileNames {
@@ -40,37 +38,6 @@ impl FileNames{
 
     pub fn remove_file_name(&mut self, name: &str) {
         self.files.retain(|file| file.get_name() != name);
-    }
-    
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        let mut last_files = BytesStart::new("parameter");
-
-        last_files.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(last_files))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        for file in &self.files{
-            let current_file = BytesStart::new("file");
-
-            // Write the start tag
-            writer.write_event(Event::Start(current_file))
-                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-            writer.write_event(Event::Text(BytesText::new(file.get_name())))
-                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-                // Write the end tag
-            writer.write_event(Event::End(BytesEnd::new("file")))
-                .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-        }
-        
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
     }
 }
 

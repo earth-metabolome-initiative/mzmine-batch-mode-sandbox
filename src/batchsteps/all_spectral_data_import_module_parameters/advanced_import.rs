@@ -62,7 +62,7 @@ pub struct AdvancedImport{
  #[derive(Serialize, Deserialize, PartialEq)]
  #[serde(untagged)]
  pub enum AdvancedImportParameters{
-    ScanFilter(ScanFilter),
+    ScanFilters(ScanFilters),
     CropMS1mz(CropMS1mz),
     MSDetectorAdvanced(MSDetectorAdvanced),
     DenormalizeFragmentScansTraps(DenormalizeFragmentScansTraps),
@@ -71,35 +71,36 @@ pub struct AdvancedImport{
 // ### ### ### ### ### ### ###     Scan Filter     ### ### ### ### ### ### ### ### ### ###
 
  #[derive(Default, Serialize, Deserialize, PartialEq)]
- #[serde(default, rename_all = "lowercase")]
-pub struct ScanFilter{
+ #[serde(default, rename_all = "lowercase", rename ="parameter")]
+pub struct ScanFilters{
     #[serde(rename = "@name")]
     name: String,
 
     #[serde(rename = "@selected")]
     selected: bool,
 
-    parameters: Vec<ScanFilterParameters>,
+    #[serde(rename = "parameter")]
+    parameters: Vec<ScanFiltersParameters>,
  }
 
-impl ScanFilter {
+impl ScanFilters {
     pub fn new() -> Self {
-        ScanFilter {
+        ScanFilters {
             name: "Scan filters".to_owned(),
             selected: true,
             parameters: Vec::new(),
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn get_parameters_length(&self) -> usize{
         self.parameters.len()
     }
 
-    pub fn add_parameter(&mut self, parameter:ScanFilterParameters){
+    pub fn add_parameter(&mut self, parameter:ScanFiltersParameters){
         self.parameters.push(parameter)
     }
 
@@ -122,7 +123,7 @@ impl ScanFilter {
 
  #[derive(Serialize, Deserialize, PartialEq)]
  #[serde(untagged)]
-pub enum ScanFilterParameters{
+pub enum ScanFiltersParameters{
     ScanNumber(ScanNumber),
     BaseFilteringInteger(BaseFilteringInteger),
     RetentionTime(RetentionTime),
@@ -133,23 +134,23 @@ pub enum ScanFilterParameters{
     SpectrumType(SpectrumType),
  }
 
-impl ScanFilterParameters{
+impl ScanFiltersParameters{
     pub fn new(&self) -> Self{
         match self {
-            ScanFilterParameters::ScanNumber(_f) => ScanFilterParameters::ScanNumber(ScanNumber::new()),
-            ScanFilterParameters::BaseFilteringInteger(_f) => ScanFilterParameters::BaseFilteringInteger(BaseFilteringInteger::new()),
-            ScanFilterParameters::RetentionTime(_f) => ScanFilterParameters::RetentionTime(RetentionTime::new()),
-            ScanFilterParameters::Mobility(_f) => ScanFilterParameters::Mobility(Mobility::new()),
-            ScanFilterParameters::MSLevelFilter(_f) => ScanFilterParameters::MSLevelFilter(MSLevelFilter::new()),
-            ScanFilterParameters::ScanDefinition(_f) => ScanFilterParameters::ScanDefinition(ScanDefinition::new()),
-            ScanFilterParameters::Polarity(_f) => ScanFilterParameters::Polarity(Polarity::new()),
-            ScanFilterParameters::SpectrumType(_f) => ScanFilterParameters::SpectrumType(SpectrumType::new())
+            ScanFiltersParameters::ScanNumber(_f) => ScanFiltersParameters::ScanNumber(ScanNumber::new()),
+            ScanFiltersParameters::BaseFilteringInteger(_f) => ScanFiltersParameters::BaseFilteringInteger(BaseFilteringInteger::new()),
+            ScanFiltersParameters::RetentionTime(_f) => ScanFiltersParameters::RetentionTime(RetentionTime::new()),
+            ScanFiltersParameters::Mobility(_f) => ScanFiltersParameters::Mobility(Mobility::new()),
+            ScanFiltersParameters::MSLevelFilter(_f) => ScanFiltersParameters::MSLevelFilter(MSLevelFilter::new()),
+            ScanFiltersParameters::ScanDefinition(_f) => ScanFiltersParameters::ScanDefinition(ScanDefinition::new()),
+            ScanFiltersParameters::Polarity(_f) => ScanFiltersParameters::Polarity(Polarity::new()),
+            ScanFiltersParameters::SpectrumType(_f) => ScanFiltersParameters::SpectrumType(SpectrumType::new())
         }
     }
 }
 
  #[derive(Default, Serialize, Deserialize, PartialEq)]
- #[serde(default, rename_all = "lowercase")]
+ #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct ScanNumber{
     #[serde(rename = "@name")]
     name: String,
@@ -166,21 +167,21 @@ pub struct ScanNumber{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn set_value(&mut self, value:Option<u8>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<u8>{
-        self.value
+    pub fn get_value(&self) -> &Option<u8>{
+        &self.value
     }
 }
 
  #[derive(Default, Serialize, Deserialize, PartialEq)]
- #[serde(default, rename_all = "lowercase")]
+ #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct BaseFilteringInteger{
     #[serde(rename = "@name")]
     name: String,
@@ -197,21 +198,21 @@ pub struct BaseFilteringInteger{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn set_value(&mut self, value:Option<u8>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<u8>{
-        self.value
+    pub fn get_value(&self) -> &Option<u8>{
+        &self.value
     }
 }
 
  #[derive(Default, Serialize, Deserialize, PartialEq)]
- #[serde(default, rename_all = "lowercase")]
+ #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct RetentionTime{
     #[serde(rename = "@name")]
     name: String,
@@ -228,21 +229,21 @@ impl RetentionTime {
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn set_value(&mut self, value:Option<u8>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<u8>{
-        self.value
+    pub fn get_value(&self) -> &Option<u8>{
+        &self.value
     }
 }
 
  #[derive(Default, Serialize, Deserialize, PartialEq)]
- #[serde(default, rename_all = "lowercase")]
+ #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct Mobility{
     #[serde(rename = "@name")]
     name: String,
@@ -259,21 +260,21 @@ pub struct Mobility{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
     pub fn set_value(&mut self, value:Option<u8>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<u8>{
-        self.value
+    pub fn get_value(&self) -> &Option<u8>{
+        &self.value
     }
 }
 
  #[derive(Default, Serialize, Deserialize, PartialEq)]
- #[serde(default, rename_all = "lowercase")]
+ #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct MSLevelFilter{
     #[serde(rename = "@name")]
     name: String,
@@ -289,35 +290,35 @@ pub struct MSLevelFilter{
     pub fn new() -> Self {
         MSLevelFilter {
             name: "MS level filter".to_owned(),
-            selected: "All MS levels".to_owned(),
-            value: Some(1),
+            selected: "".to_owned(),
+            value: None,
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn get_selected(&self) -> String{
-        self.selected.clone()
+    pub fn get_selected(&self) -> &str{
+        &self.selected
     }
 
-    pub fn set_selected(&mut self, selection:String){
-        self.selected = selection;
+    pub fn set_selected(&mut self, selection:&str){
+        self.selected = selection.to_owned();
     }
 
     pub fn set_value(&mut self, value: Option<u8>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<u8>{
-        self.value
+    pub fn get_value(&self) -> &Option<u8>{
+        &self.value
     }
 }
 
 
  #[derive(Default, Serialize, Deserialize, PartialEq)]
- #[serde(default, rename_all = "lowercase")]
+ #[serde(default, rename_all = "lowercase", rename = "parameter")]
  pub struct ScanDefinition{
     #[serde(rename = "@name")]
     name: String,
@@ -334,21 +335,21 @@ pub struct MSLevelFilter{
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+       &self.name
     }
 
     pub fn set_value(&mut self, value: Option<u8>){
         self.value = value;
     }
 
-    pub fn get_value(&self) -> Option<u8>{
-        self.value
+    pub fn get_value(&self) -> &Option<u8>{
+        &self.value
     }
 }
 
  #[derive(Default, Serialize, Deserialize, PartialEq)]
- #[serde(default, rename_all = "lowercase")]
+ #[serde(default, rename_all = "lowercase", rename = "parameter")]
  
 pub struct Polarity{
     #[serde(rename = "@name")]
@@ -362,25 +363,25 @@ pub struct Polarity{
     pub fn new() -> Self {
         Polarity {
             name: "Polarity".to_owned(),
-            value: "Any".to_owned(),
+            value: "".to_owned(),
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn set_value(&mut self, value: String){
-        self.value = value;
+    pub fn set_value(&mut self, value: &str){
+        self.value = value.to_owned();
     }
 
-    pub fn get_value(&self) -> String{
-        self.value.clone()
+    pub fn get_value(&self) -> &str{
+        &self.value
     }
 }
 
  #[derive(Default, Serialize, Deserialize, PartialEq)]
- #[serde(default, rename_all = "lowercase")]
+ #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct SpectrumType{
     #[serde(rename = "@name")]
     name: String,
@@ -393,20 +394,20 @@ impl SpectrumType {
     pub fn new() -> Self {
         SpectrumType {
             name: "Spectrum type".to_owned(),
-            value: "ANY".to_owned(),
+            value: "".to_owned(),
         }
     }
 
-    pub fn get_name(&self) -> String{
-        self.name.clone()
+    pub fn get_name(&self) -> &str{
+        &self.name
     }
 
-    pub fn set_value(&mut self, value: String){
-        self.value = value;
+    pub fn set_value(&mut self, value: &str){
+        self.value = value.to_owned();
     }
 
-    pub fn get_value(&self) -> String{
-        self.value.clone()
+    pub fn get_value(&self) -> &str{
+        &self.value
     }
 }
 
@@ -414,13 +415,14 @@ impl SpectrumType {
 // Package of Crop MS1 m/z and its subparameters
 
 #[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct CropMS1mz{
     #[serde(rename = "@name")]
     name: String,
     #[serde(rename = "@selected")]
     selected: bool,
 
+    #[serde(rename = "$text")]
     value: Option<u8>
 }
 

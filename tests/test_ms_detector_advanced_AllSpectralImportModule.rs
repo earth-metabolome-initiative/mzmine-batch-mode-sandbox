@@ -1,5 +1,4 @@
 use mzbatch_generator::all_spectral_data_import_module_parameters::*;
-use mzbatch_generator::xml_serialization::*;
 
 #[cfg(test)]
 mod tests {
@@ -50,7 +49,8 @@ mod tests {
     fn ms_detector_serialization() -> Result<(), Box<dyn std::error::Error>>{
         let mut ms_detector_obj = MSDetectorAdvanced::new();
         
-        let mut factor = FactorOfLowestSignal::new();
+        let factor = FactorOfLowestSignal::new();
+
         // add here otherwise .set_ms1() does not add the parameter value
         ms_detector_obj.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(factor));
         ms_detector_obj.set_ms1(Some(5.0));
@@ -94,13 +94,29 @@ mod tests {
         // IMPORTANT
         // serializer print int if float is .0
         let expected = r#"<parameter name="MS1 detector (Advanced)" selected="true" selected_item="Factor of lowest signal"><module name="Factor of lowest signal"><parameter name="Noise factor">5</parameter></module><module name="Auto"><parameter name="Noise level">1000</parameter></module><module name="Centroid"><parameter name="Noise level"/></module><module name="Exact mass"><parameter name="Noise level"/></module><module name="Local maxima"><parameter name="Noise level"/></module><module name="Recursive threshold"><parameter name="Noise level"/><parameter name="Min m/z peak width"/><parameter name="Max m/z peak width"/></module><module name="Wavelet transform"><parameter name="Noise level"/><parameter name="Scale level"/><parameter name="Wavelet window size (%)"/></module></parameter>"#;
+       
+        assert_eq!(buffer, expected, ".set_ms1() failed to serialize correctly");
+
+//
+//                                       ########################################
+//                                       ###      Test MS2 serialization      ###
+//                                       ########################################
+//
+
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+
+        ms_detector_obj.set_ms2(Some(0.0));
+
+        quick_xml::se::to_writer(&mut buffer, &ms_detector_obj)?;
+    
+        // IMPORTANT
+        // serializer print int if float is .0
+        let expected = r#"<parameter name="MS2 detector (Advanced)" selected="true" selected_item="Factor of lowest signal"><module name="Factor of lowest signal"><parameter name="Noise factor">0</parameter></module><module name="Auto"><parameter name="Noise level">1000</parameter></module><module name="Centroid"><parameter name="Noise level"/></module><module name="Exact mass"><parameter name="Noise level"/></module><module name="Local maxima"><parameter name="Noise level"/></module><module name="Recursive threshold"><parameter name="Noise level"/><parameter name="Min m/z peak width"/><parameter name="Max m/z peak width"/></module><module name="Wavelet transform"><parameter name="Noise level"/><parameter name="Scale level"/><parameter name="Wavelet window size (%)"/></module></parameter>"#;
         
-        assert_eq!(buffer, expected);
+        assert_eq!(buffer, expected, ".set_ms2() failed to serialize correctly");
 
         Ok(())
     }
-
- 
  
     #[test]
     fn ms1_content(){
@@ -496,7 +512,7 @@ mod tests {
 
     #[test]
     fn max_mz_peak_width_serialization() -> Result<(), Box<dyn std::error::Error>>{
-        let mut max_mz_peak_width_obj = MaxMZPeakWidth::new();
+        let max_mz_peak_width_obj = MaxMZPeakWidth::new();
     
         let mut buffer = "".to_owned(); // Create the string buffer for the XML content
         quick_xml::se::to_writer(&mut buffer, &max_mz_peak_width_obj)?;

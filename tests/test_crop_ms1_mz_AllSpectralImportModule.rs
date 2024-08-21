@@ -2,6 +2,8 @@ use mzbatch_generator::all_spectral_data_import_module_parameters::*;
 
 #[cfg(test)]
 mod tests {
+    use quick_xml::writer;
+
     use super::*;
     // Crop MS1 m/z
 
@@ -31,5 +33,23 @@ mod tests {
         assert_eq!(crop_msmz_obj.get_value(), None);
         crop_msmz_obj.set_value(Some(4));
         assert_eq!(crop_msmz_obj.get_value(), Some(4));
+    }
+
+    #[test]
+    fn crop_msmz_serialization() -> Result<(), Box<dyn std::error::Error>>{
+    // <parameter name="Crop MS1 m/z" selected="false"/>
+        let mut crop = CropMS1mz::new();
+        crop.deselect();
+
+        let mut buffer = "".to_owned();
+
+        quick_xml::se::to_writer(&mut buffer, &crop)?;
+
+
+        let expected = r#"<parameter name="Crop MS1 m/z" selected="false"/>"#;
+
+        assert_eq!(buffer, expected);
+        
+        Ok(())
     }
 }

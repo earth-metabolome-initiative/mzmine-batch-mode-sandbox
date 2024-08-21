@@ -18,10 +18,11 @@ mod tests {
     fn advanced_import_add_parameter(){
         let mut advanced_obj = AdvancedImport::new();
         assert_eq!(advanced_obj.get_parameters_length(), 0);
-        advanced_obj.add_parameter(AdvancedImportParameters::ScanFilter(ScanFilter::new()));
+        advanced_obj.add_parameter(AdvancedImportParameters::ScanFilters(ScanFilters::new()));
         assert_eq!(advanced_obj.get_parameters_length(), 1);
     }
 
+    #[test]
     fn advanced_import_invert_selected(){
         let mut advanced_obj = AdvancedImport::new();
         assert_eq!(advanced_obj.is_selected(), false);
