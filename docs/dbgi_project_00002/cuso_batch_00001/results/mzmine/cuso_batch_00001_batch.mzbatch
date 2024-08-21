@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?><batch mzmine_version="4.1.0">
     <batchstep method="io.github.mzmine.modules.io.import_rawdata_all.AllSpectralDataImportModule" parameter_version="1">
         <parameter name="File names">
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003101_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003140_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003151_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003154_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003155_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003164_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003179_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003180_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003185_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003187_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003196_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003198_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003214_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003223_01_01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_blk_pre01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_post01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_post02.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_post03.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_pre01.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_pre02.mzML</file>
-            <file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_pre03.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003101_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003140_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003151_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003154_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003155_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003164_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003179_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003180_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003185_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003187_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003196_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003198_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003214_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_003223_01_01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_blk_pre01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_post01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_post02.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_post03.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_pre01.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_pre02.mzML</file>
+            <file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/202406251749_PMA_dbgi_mapp_bk_blk_pre03.mzML</file>
         </parameter>
         <parameter name="Advanced import" selected="false">
             <parameter name="Scan filters" selected="true">
@@ -92,7 +92,7 @@
             <parameter name="Denormalize fragment scans (traps)">true</parameter>
         </parameter>
         <parameter name="Metadata file" selected="true">
-            <current_file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/docs/dbgi_project_00002/cuso_batch_00001/metadata/treated/cuso_batch_00001_metadata.tsv</current_file>
+            <current_file>/home/jopitim/mzmine-batch-mode-sandbox/docs/dbgi_project_00002/cuso_batch_00001/metadata/treated/cuso_batch_00001_metadata.tsv</current_file>
             <last_file>/home/allardpm/git_repos/DBGI/dbgi-metabolomics/docs/dbgi_project_00001/dbgi_batch_00001/metadata/treated/dbgi_batch_00001_metadata.tsv</last_file>
             <last_file>/home/allardpm/git_repos/DBGI/dbgi-metabolomics/docs/dbgi_project_00001/dbgi_batch_00001/metadata/treated/dbgi_batch_00001_metadata_fully_resolved.csv</last_file>
             <last_file>/home/allardpm/git_repos/mapp-metabolomics-unit/adria-leboeuf-group/docs/mapp_project_00014/mapp_batch_00074/metadata/treated/mapp_batch_00074_metadata.tsv</last_file>
@@ -392,7 +392,7 @@
     <batchstep method="io.github.mzmine.modules.io.export_features_gnps.fbmn.GnpsFbmnExportAndSubmitModule" parameter_version="2">
         <parameter name="Feature lists" type="BATCH_LAST_FEATURELISTS"/>
         <parameter name="Filename">
-            <current_file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/docs/dbgi_project_00002/cuso_batch_00001/results/mzmine/{}</current_file>
+            <current_file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/{}</current_file>
             <last_file>/tmp/cli/dbgi_batch_00001/{}</last_file>
         </parameter>
         <parameter name="Merge MS/MS (experimental)" selected="false">
@@ -426,9 +426,9 @@
     <batchstep method="io.github.mzmine.modules.io.export_features_sirius.SiriusExportModule" parameter_version="1">
         <parameter name="Feature lists" type="BATCH_LAST_FEATURELISTS"/>
         <parameter name="Filename">
-            <current_file>/home/allardpm/git_repos/EMI/mzmine-batch-mode-sandbox/docs/dbgi_project_00002/cuso_batch_00001/results/mzmine/{}_sirius</current_file>
+            <current_file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/{}_sirius</current_file>
             <last_file>/tmp/cli/dbgi_batch_00001/{}_sirius</last_file>
-            <last_file>/home/allardpm/git_repos/mapp-metabolomics-unit/adria-leboeuf-group/docs/mapp_project_00014/mapp_batch_00074/results/mzmine/mapp_batch_00074_sirius.mgf</last_file>
+            <last_file>/home/jopitim/mzmine-batch-mode-sandbox/data/mzml/mapp_batch_00074_sirius.mgf</last_file>
         </parameter>
         <parameter name="Merge MS/MS" selected="true">
             <parameter name="Select spectra to merge">across samples</parameter>

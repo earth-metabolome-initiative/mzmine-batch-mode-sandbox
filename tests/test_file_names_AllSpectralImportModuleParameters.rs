@@ -1,5 +1,4 @@
 use mzbatch_generator::all_spectral_data_import_module_parameters::*;
-use mzbatch_generator::xml_serialization::*;
 
 #[cfg(test)]
 mod tests {
@@ -30,6 +29,29 @@ mod tests {
     }
 
     #[test]
+    fn file_names_serialization() ->  Result<(), Box<dyn std::error::Error>>{
+        let mut file_names = FileNames::new();
+
+        let mut file_1 = InputFile::new();
+        file_1.set_name("file1");
+
+        let mut file_2 = InputFile::new();
+        file_2.set_name("file2");
+
+        file_names.add_file_name(file_1);
+        file_names.add_file_name(file_2);
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &file_names)?;
+        
+        let expected = r#"<parameter name="File names"><file>file1</file><file>file2</file></parameter>"#;
+        
+        assert_eq!(buffer, expected);
+        
+        Ok(())
+    }
+
+    #[test]
     fn input_file_initialization(){
         let input_file = InputFile::new();
         assert_eq!(input_file.get_name(), "")
@@ -44,37 +66,19 @@ mod tests {
     }
 
     #[test]
-    fn file_names_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut file_names: FileNames = FileNames::new();
-
-        let mut file1 = InputFile::new();
-        file1.set_name("file1");
-        file_names.add_file_name(file1);
-
-        let mut file2 = InputFile::new();
-        file2.set_name("file2");
-        file_names.add_file_name(file2);
-
-        let mut file3 = InputFile::new();
-        file3.set_name("file3");
-        file_names.add_file_name(file3);
-
-        // Write the ScanTypes element
-        file_names.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="File names"><file>file1</file><file>file2</file><file>file3</file></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn input_serialization() ->  Result<(), Box<dyn std::error::Error>>{
+        let mut input_file = InputFile::new();
+        input_file.set_name("this_file");
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &input_file)?;
+        
+        // IMPORTANT
+        // serializer print int if float is .0
+        let expected = r#"<file>this_file</file>"#;
+        
+        assert_eq!(buffer, expected);
+        
         Ok(())
     }
 }

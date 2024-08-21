@@ -2,6 +2,8 @@ use mzbatch_generator::smoothing_module_parameters::FeatureLists;
 
 #[cfg(test)]
 mod tests {
+    use mzbatch_generator::batchsteps::isotope_grouper_module_parameters::feature_lists;
+
     use super::*;
 
     #[test]
@@ -27,4 +29,19 @@ mod tests {
         feature_lists_obj.set_value(Some(12.3));
         assert_eq!(*feature_lists_obj.get_value(), Some(12.3));
     }
+
+    #[test]
+    fn feature_lists_serialization() -> Result<(), Box<dyn std::error::Error>> {
+        let mut feature_lists = FeatureLists::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &feature_lists)?;
+    
+        let expected = r#"<parameter name="Feature lists" type="BATCH_LAST_FEATURELISTS"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
+        Ok(())
+    }
+    
 }

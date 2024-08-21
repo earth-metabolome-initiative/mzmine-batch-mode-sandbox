@@ -465,7 +465,7 @@ impl CropMS1mz {
 
 
 #[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct MSDetectorAdvanced{
     #[serde(rename = "@name")]
     name: String,
@@ -474,6 +474,7 @@ pub struct MSDetectorAdvanced{
     #[serde(rename = "@selected_item")]
     selected_item: String,
 
+    #[serde(rename = "module")]
     modules: Vec<MSDetectorAdvancedModules>,
 }
 
@@ -550,28 +551,6 @@ impl MSDetectorAdvanced {
     pub fn get_module(&self, index:usize) -> MSDetectorAdvancedModules{
         self.modules[index].clone()
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut ms_detector_obj = BytesStart::new("parameter");
-        ms_detector_obj.push_attribute(("name", self.get_name()));
-        ms_detector_obj.push_attribute(("selected", self.is_selected().to_string().as_str()));
-        ms_detector_obj.push_attribute(("selected_item", self.get_selected_item()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(ms_detector_obj))
-        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        for module in &self.modules{
-            module.write_element(writer)?;
-        }
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
@@ -608,25 +587,11 @@ impl MSDetectorAdvancedModules {
             _ => panic!("No matching parameter found"),
         }
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        match self{
-            MSDetectorAdvancedModules::FactorOfLowestSignal(_f) => _f.write_element(writer)?,
-            MSDetectorAdvancedModules::Auto(_f) => _f.write_element(writer)?,
-            MSDetectorAdvancedModules::Centroid(_f) => _f.write_element(writer)?,
-            MSDetectorAdvancedModules::ExactMass(_f) => _f.write_element(writer)?,
-            MSDetectorAdvancedModules::LocalMaxima(_f) => _f.write_element(writer)?,
-            MSDetectorAdvancedModules::RecursiveThreshold(_f) => _f.write_element(writer)?,
-            MSDetectorAdvancedModules::WaveletTransform(_f) => _f.write_element(writer)?,
-            _ => panic!("No matching parameter")
-        }
-        Ok(())
-    }
 }
 
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="module")]
 pub struct FactorOfLowestSignal{
     #[serde(rename = "@name")]
     name: String,
@@ -657,28 +622,10 @@ impl FactorOfLowestSignal{
     pub fn set_parameter(&mut self, parameter:ParameterFactorOfLowestSignal){
         self.parameter = parameter;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut exact_mass_obj = BytesStart::new("module");
-        exact_mass_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(exact_mass_obj))
-        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        self.parameter.write_element(writer)?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("module")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct ParameterFactorOfLowestSignal{
     #[serde(rename = "@name")]
     name: String,
@@ -705,35 +652,10 @@ impl ParameterFactorOfLowestSignal {
     pub fn get_value(& self) -> &Option<f32>{
         &self.value
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut parameter_obj = BytesStart::new("parameter");
-
-        parameter_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(parameter_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => format!("{:.1}", value),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="module")]
 pub struct Auto{
     #[serde(rename = "@name")]
     name: String,
@@ -763,28 +685,10 @@ impl Auto{
     pub fn set_parameter(&mut self, parameter:ParameterAuto){
         self.parameter = parameter;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut exact_mass_obj = BytesStart::new("module");
-        exact_mass_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(exact_mass_obj))
-        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        self.parameter.write_element(writer)?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("module")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct ParameterAuto{
     #[serde(rename = "@name")]
     name: String,
@@ -814,35 +718,10 @@ impl ParameterAuto{
     pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut parameter_obj = BytesStart::new("parameter");
-
-        parameter_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(parameter_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => format!("{:.1}", value),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="module")]
 pub struct Centroid{
     #[serde(rename = "@name")]
     name: String,
@@ -873,28 +752,10 @@ impl Centroid{
     pub fn set_parameter(&mut self, parameter: ParameterCentroid){
         self.parameter = parameter;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut exact_mass_obj = BytesStart::new("module");
-        exact_mass_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(exact_mass_obj))
-        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        self.parameter.write_element(writer)?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("module")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct ParameterCentroid{
     #[serde(rename = "@name")]
     name: String,
@@ -922,35 +783,10 @@ impl ParameterCentroid{
     pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut parameter_obj = BytesStart::new("parameter");
-
-        parameter_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(parameter_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => value.to_string(),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="module")]
 pub struct ExactMass{
     #[serde(rename = "@name")]
     name: String,
@@ -981,28 +817,10 @@ impl ExactMass{
     pub fn set_parameter(&mut self, parameter:ParameterExactMass){
         self.parameter = parameter;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut exact_mass_obj = BytesStart::new("module");
-        exact_mass_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(exact_mass_obj))
-        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        self.parameter.write_element(writer)?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("module")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct ParameterExactMass{
     #[serde(rename = "@name")]
     name: String,
@@ -1029,35 +847,10 @@ impl ParameterExactMass{
     pub fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut parameter_obj = BytesStart::new("parameter");
-
-        parameter_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(parameter_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => value.to_string(),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="module")]
 pub struct LocalMaxima{
     #[serde(rename = "@name")]
     name: String,
@@ -1088,28 +881,10 @@ impl LocalMaxima{
     pub fn set_parameter(&mut self, parameter:ParameterLocalMaxima){
         self.parameter = parameter;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut local_maxima_obj = BytesStart::new("module");
-        local_maxima_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(local_maxima_obj))
-        .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        self.parameter.write_element(writer)?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("module")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct ParameterLocalMaxima{
     #[serde(rename = "@name")]
     name: String,
@@ -1135,40 +910,16 @@ impl ParameterLocalMaxima{
     pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut parameter_obj = BytesStart::new("parameter");
-
-        parameter_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(parameter_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => value.to_string(),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename = "module")]
 pub struct RecursiveThreshold{
     #[serde(rename = "@name")]
     name: String,
 
+    #[serde(rename ="parameter")]
     parameters: Vec<RecursiveThresholdParameters>,
 }
 
@@ -1214,27 +965,6 @@ impl RecursiveThreshold{
         }
         &None
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Min m/z peak width"/>
-        let mut max_obj = BytesStart::new("module");
-
-        max_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(max_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        for parameter in &self.parameters{
-            parameter.write_element(writer)?;
-        }
-
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("module")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
@@ -1269,19 +999,10 @@ impl RecursiveThresholdParameters{
             RecursiveThresholdParameters::MaxMZPeakWidth(f) => f.set_value(value),
         }
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        match self{
-            RecursiveThresholdParameters::RTNoiseLevel(_f) => _f.write_element(writer)?,
-            RecursiveThresholdParameters::MinMZPeakWidth(_f) => _f.write_element(writer)?,
-            RecursiveThresholdParameters::MaxMZPeakWidth(_f) => _f.write_element(writer)?,
-        }
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct RTNoiseLevel{
     #[serde(rename = "@name")]
     name: String,
@@ -1308,35 +1029,10 @@ impl RTNoiseLevel{
     pub fn get_value(&self) -> &Option<f32>{
         &self.value
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut noise_obj = BytesStart::new("parameter");
-
-        noise_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(noise_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => value.to_string(),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct MinMZPeakWidth{
     #[serde(rename = "@name")]
     name: String,
@@ -1363,35 +1059,10 @@ impl MinMZPeakWidth{
     pub fn get_value(&self) -> &Option<f32>{
         &self.value
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Min m/z peak width"/>
-        let mut max_obj = BytesStart::new("parameter");
-
-        max_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(max_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => value.to_string(),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct MaxMZPeakWidth{
     #[serde(rename = "@name")]
     name: String,
@@ -1418,39 +1089,15 @@ impl MaxMZPeakWidth {
     pub fn get_value(&self) -> &Option<f32>{
         &self.value
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Max m/z peak width"/>
-        let mut max_obj = BytesStart::new("parameter");
-
-        max_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(max_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => value.to_string(),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename="module")]
 pub struct WaveletTransform{
     #[serde(rename = "@name")]
     name: String,
 
+    #[serde(rename ="parameter")]
     parameters: Vec<WaveletTransformParameters>,
 }
 
@@ -1496,26 +1143,6 @@ impl WaveletTransform {
         }
         &None
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        let mut noise_obj = BytesStart::new("module");
-
-        noise_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(noise_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        for parameter in &self.parameters{
-            parameter.write_element(writer)?;
-        }
-
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("module")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
@@ -1542,20 +1169,10 @@ impl WaveletTransformParameters{
             WaveletTransformParameters::WaveletWindowSize(f) => f.set_value(value),
         }
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        match self{
-            WaveletTransformParameters::ScaleLevel(_f) => _f.write_element(writer)?,
-            WaveletTransformParameters::WTNoiseLevel(_f) => _f.write_element(writer)?,
-            WaveletTransformParameters::WaveletWindowSize(_f) => _f.write_element(writer)?,
-            _ => panic!("No matching parameter for write_element()")
-        }
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename="parameter")]
 pub struct WTNoiseLevel{
     #[serde(rename = "@name")]
     name: String,
@@ -1582,35 +1199,10 @@ impl WTNoiseLevel {
     pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Noise level"/>
-        let mut noise_obj = BytesStart::new("parameter");
-
-        noise_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(noise_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => value.to_string(),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename="parameter")]
 pub struct ScaleLevel{
     #[serde(rename = "@name")]
     name: String,
@@ -1637,35 +1229,10 @@ impl ScaleLevel {
     pub fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Scale level"/>
-        let mut scale_obj = BytesStart::new("parameter");
-
-        scale_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(scale_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => value.to_string(),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename="parameter")]
 pub struct WaveletWindowSize{
     #[serde(rename = "@name")]
     name: String,
@@ -1692,35 +1259,10 @@ impl WaveletWindowSize {
     pub fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Wavelet window size (%)"/>
-        let mut wavelet_obj = BytesStart::new("parameter");
-
-        wavelet_obj.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(wavelet_obj))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        let value = match *self.get_value(){
-            Some(value) => value.to_string(),
-            None => "".to_owned()
-        };
-
-        writer.write_event(Event::Text(BytesText::new(value.as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
-    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename="parameter")]
 pub struct DenormalizeFragmentScansTraps{
     #[serde(rename = "@name")]
     name: String,
@@ -1759,25 +1301,5 @@ impl DenormalizeFragmentScansTraps{
 
     pub fn set_false(&mut self){
         self.value = false;
-    }
-
-    pub fn write_element(&self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <parameter name="Denormalize fragment scans (traps)">true</parameter>
-        let mut last_files = BytesStart::new("parameter");
-
-        last_files.push_attribute(("name", self.get_name()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(last_files))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        writer.write_event(Event::Text(BytesText::new(self.get_value().to_string().as_str())))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-    
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("parameter")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        Ok(())
     }
 }

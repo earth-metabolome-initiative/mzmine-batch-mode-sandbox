@@ -3,11 +3,12 @@ use serde::{Serialize, Deserialize};
 use crate::xml_serialization::*;
 
 #[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct FileNames {
     #[serde(rename = "@name")]
     name: String,
     
+    #[serde(rename = "file")]
     files: Vec<InputFile>,
 }
 

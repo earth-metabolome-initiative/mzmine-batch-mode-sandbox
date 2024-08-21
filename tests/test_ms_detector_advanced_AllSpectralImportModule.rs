@@ -47,10 +47,7 @@ mod tests {
     }
 
     #[test]
-    fn ms_detector_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
+    fn ms_detector_serialization() -> Result<(), Box<dyn std::error::Error>>{
         let mut ms_detector_obj = MSDetectorAdvanced::new();
         
         let mut factor = FactorOfLowestSignal::new();
@@ -91,48 +88,20 @@ mod tests {
         ms_detector_obj.add_module(MSDetectorAdvancedModules::RecursiveThreshold(recursive));
         ms_detector_obj.add_module(MSDetectorAdvancedModules::WaveletTransform(wavelet));
 
-        // Write the ScanTypes element
-        ms_detector_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="MS1 detector (Advanced)" selected="true" selected_item="Factor of lowest signal"><module name="Factor of lowest signal"><parameter name="Noise factor">5.0</parameter></module><module name="Auto"><parameter name="Noise level">1000.0</parameter></module><module name="Centroid"><parameter name="Noise level"></parameter></module><module name="Exact mass"><parameter name="Noise level"></parameter></module><module name="Local maxima"><parameter name="Noise level"></parameter></module><module name="Recursive threshold"><parameter name="Noise level"></parameter><parameter name="Min m/z peak width"></parameter><parameter name="Max m/z peak width"></parameter></module><module name="Wavelet transform"><parameter name="Noise level"></parameter><parameter name="Scale level"></parameter><parameter name="Wavelet window size (%)"></parameter></module></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &ms_detector_obj)?;
+    
+        // IMPORTANT
+        // serializer print int if float is .0
+        let expected = r#"<parameter name="MS1 detector (Advanced)" selected="true" selected_item="Factor of lowest signal"><module name="Factor of lowest signal"><parameter name="Noise factor">5</parameter></module><module name="Auto"><parameter name="Noise level">1000</parameter></module><module name="Centroid"><parameter name="Noise level"/></module><module name="Exact mass"><parameter name="Noise level"/></module><module name="Local maxima"><parameter name="Noise level"/></module><module name="Recursive threshold"><parameter name="Noise level"/><parameter name="Min m/z peak width"/><parameter name="Max m/z peak width"/></module><module name="Wavelet transform"><parameter name="Noise level"/><parameter name="Scale level"/><parameter name="Wavelet window size (%)"/></module></parameter>"#;
+        
+        assert_eq!(buffer, expected);
 
         Ok(())
     }
 
-    #[test]
-    fn factor_of_lowest_signal_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut exact_mass_obj = FactorOfLowestSignal::new();
-        let mut parameter_obj = ParameterFactorOfLowestSignal::new();
-        parameter_obj.set_value(Some(5.0));
-        exact_mass_obj.set_parameter(parameter_obj);
-
-        // Write the ScanTypes element
-        exact_mass_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<module name="Factor of lowest signal"><parameter name="Noise factor">5.0</parameter></module>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
-        Ok(())
-    }
-
+ 
+ 
     #[test]
     fn ms1_content(){
         let mut ms_detector = MSDetectorAdvanced::new();
@@ -161,6 +130,23 @@ mod tests {
     }
 
     #[test]
+    fn factor_of_lowest_signal_parameter_serialization()-> Result<(), Box<dyn std::error::Error>>{
+        let mut par_factor_obj = ParameterFactorOfLowestSignal::new();
+        par_factor_obj.set_value(Some(5.0));
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &par_factor_obj)?;
+        
+        // IMPORTANT
+        // serializer print int if float is .0
+        let expected = r#"<parameter name="Noise factor">5</parameter>"#;
+        
+        assert_eq!(buffer, expected);
+        
+        Ok(())
+    }
+
+    #[test]
     fn auto_initialization(){
         let auto_obj = Auto::new();
         assert_eq!(auto_obj.get_name(), "Auto");
@@ -174,29 +160,19 @@ mod tests {
     }
 
     #[test]
-    fn auto_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut exact_mass_obj = Auto::new();
-        let mut parameter_obj = ParameterAuto::new();
-        exact_mass_obj.set_parameter(parameter_obj);
-
-        // Write the ScanTypes element
-        exact_mass_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<module name="Auto"><parameter name="Noise level"></parameter></module>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn auto_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let auto_obj = Auto::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &auto_obj)?;
+    
+        let expected = r#"<module name="Auto"><parameter name="Noise level"/></module>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
-    }
+    }  
+   
 
     #[test]
     fn parameter_auto_initialization(){
@@ -213,27 +189,18 @@ mod tests {
     }
 
     #[test]
-    fn auto_parameter_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut parameter_obj = ParameterAuto::new();
-
-        // Write the ScanTypes element
-        parameter_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="Noise level"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn parameter_auto_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let parameter_auto = ParameterAuto::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &parameter_auto)?;
+    
+        let expected = r#"<parameter name="Noise level"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
-    }
+    }  
 
     #[test]
     fn centroid_initialization(){
@@ -252,29 +219,18 @@ mod tests {
     }
 
     #[test]
-    fn centroid_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut exact_mass_obj = Centroid::new();
-        let parameter_obj = ParameterCentroid::new();
-        exact_mass_obj.set_parameter(parameter_obj);
-
-        // Write the ScanTypes element
-        exact_mass_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<module name="Centroid"><parameter name="Noise level"></parameter></module>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn centroid_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let centroid_obj = Centroid::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &centroid_obj)?;
+    
+        let expected = r#"<module name="Centroid"><parameter name="Noise level"/></module>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
-    }
+    }  
 
     #[test]
     fn centroid_parameter_initialization(){
@@ -291,27 +247,19 @@ mod tests {
     }
 
     #[test]
-    fn centroid_parameter_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let parameter_obj = ParameterCentroid::new();
-
-        // Write the ScanTypes element
-        parameter_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="Noise level"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn centroid_parameter_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let par_centroid_obj = ParameterCentroid::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &par_centroid_obj)?;
+    
+        let expected = r#"<parameter name="Noise level"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
+    
 
     #[test]
     fn exact_mass_initialization(){
@@ -330,27 +278,16 @@ mod tests {
     }
 
     #[test]
-    fn exact_mass_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut exact_mass_obj = ExactMass::new();
-        let parameter_obj = ParameterExactMass::new();
-        exact_mass_obj.set_parameter(parameter_obj);
-
-        // Write the ScanTypes element
-        exact_mass_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<module name="Exact mass"><parameter name="Noise level"></parameter></module>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn exact_mass_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let exact_mass_obj = ExactMass::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &exact_mass_obj)?;
+    
+        let expected = r#"<module name="Exact mass"><parameter name="Noise level"/></module>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
 
@@ -369,28 +306,19 @@ mod tests {
     }
 
     #[test]
-    fn exact_mass_parameter_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let parameter_obj = ParameterExactMass::new();
-
-        // Write the ScanTypes element
-        parameter_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="Noise level"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn exact_mass_parameter_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let par_centroid_obj = ParameterExactMass::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &par_centroid_obj)?;
+    
+        let expected = r#"<parameter name="Noise level"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
-
+ 
     #[test]
     fn local_maxima_initialization(){
         let centroid_obj = LocalMaxima::new();
@@ -408,27 +336,16 @@ mod tests {
     }
 
     #[test]
-    fn local_maxima_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut maxima_obj = LocalMaxima::new();
-        let parameter_obj = ParameterLocalMaxima::new();
-        maxima_obj.set_parameter(parameter_obj);
-
-        // Write the ScanTypes element
-        maxima_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<module name="Local maxima"><parameter name="Noise level"></parameter></module>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn local_maxima_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let local_maxima_obj = LocalMaxima::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &local_maxima_obj)?;
+    
+        let expected = r#"<module name="Local maxima"><parameter name="Noise level"/></module>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
 
@@ -447,25 +364,16 @@ mod tests {
     }
 
     #[test]
-    fn local_maxima_parameter_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let parameter_obj = ParameterLocalMaxima::new();
-
-        // Write the ScanTypes element
-        parameter_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="Noise level"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn local_maxima_parameter_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let par_local_maxima_obj = ParameterLocalMaxima::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &par_local_maxima_obj)?;
+    
+        let expected = r#"<parameter name="Noise level"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
 
@@ -495,35 +403,23 @@ mod tests {
     } 
 
     #[test]
-    fn recursive_threshold_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
+    fn recursive_threshold_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let mut recursive_thr_obj = RecursiveThreshold::new();
 
-        let mut recursive_obj = RecursiveThreshold::new();
-
-        let noise = RTNoiseLevel::new();
-        let min = MinMZPeakWidth::new();
-        let max = MaxMZPeakWidth::new();
-
-        recursive_obj.add_parameter(RecursiveThresholdParameters::RTNoiseLevel(noise));
-        recursive_obj.add_parameter(RecursiveThresholdParameters::MinMZPeakWidth(min));
-        recursive_obj.add_parameter(RecursiveThresholdParameters::MaxMZPeakWidth(max));
-
-        // Write the ScanTypes element
-        recursive_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<module name="Recursive threshold"><parameter name="Noise level"></parameter><parameter name="Min m/z peak width"></parameter><parameter name="Max m/z peak width"></parameter></module>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+        recursive_thr_obj.add_parameter(RecursiveThresholdParameters::RTNoiseLevel(RTNoiseLevel::new()));
+        recursive_thr_obj.add_parameter(RecursiveThresholdParameters::MinMZPeakWidth(MinMZPeakWidth::new()));
+        recursive_thr_obj.add_parameter(RecursiveThresholdParameters::MaxMZPeakWidth(MaxMZPeakWidth::new()));
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &recursive_thr_obj)?;
+    
+        let expected = r#"<module name="Recursive threshold"><parameter name="Noise level"/><parameter name="Min m/z peak width"/><parameter name="Max m/z peak width"/></module>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
+  
 
     #[test]
     fn rtnoise_level_initialization(){
@@ -541,28 +437,19 @@ mod tests {
     }
 
     #[test]
-    fn rtnoise_level_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut noise_obj = RTNoiseLevel::new();
-
-        // Write the ScanTypes element
-        noise_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="Noise level"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn rtnoise_level_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let rtnoise_obj = RTNoiseLevel::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &rtnoise_obj)?;
+    
+        let expected = r#"<parameter name="Noise level"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
-
+    
     #[test]
     fn min_mz_peak_width_initialization(){
         let min_mz_peak_width_obj = MinMZPeakWidth::new();
@@ -579,25 +466,16 @@ mod tests {
     }
 
     #[test]
-    fn min_mz_peak_width_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut min_obj = MinMZPeakWidth::new();
-
-        // Write the ScanTypes element
-        min_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="Min m/z peak width"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn min_mz_peak_width_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let min_mz_peak_width_obj = MinMZPeakWidth::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &min_mz_peak_width_obj)?;
+    
+        let expected = r#"<parameter name="Min m/z peak width"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
 
@@ -617,28 +495,19 @@ mod tests {
     }
 
     #[test]
-    fn max_mz_peak_width_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut max_obj = MaxMZPeakWidth::new();
-
-        // Write the ScanTypes element
-        max_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="Max m/z peak width"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn max_mz_peak_width_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let mut max_mz_peak_width_obj = MaxMZPeakWidth::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &max_mz_peak_width_obj)?;
+    
+        let expected = r#"<parameter name="Max m/z peak width"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
-
+    
     #[test]
     fn wavelet_transform_initialization(){
         let wavelet_obj = WaveletTransform::new();
@@ -666,33 +535,19 @@ mod tests {
     }
 
     #[test]
-    fn wavelet_transform_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
+    fn wavelet_transform_serialization() -> Result<(), Box<dyn std::error::Error>>{
         let mut wavelet_obj = WaveletTransform::new();
-
-        let noise_par = WTNoiseLevel::new();
-        let scale_par = ScaleLevel::new();
-        let window_par = WaveletWindowSize::new();
-
-        wavelet_obj.add_parameter(WaveletTransformParameters::WTNoiseLevel(noise_par));
-        wavelet_obj.add_parameter(WaveletTransformParameters::ScaleLevel(scale_par));
-        wavelet_obj.add_parameter(WaveletTransformParameters::WaveletWindowSize(window_par));
-
-        // Write the ScanTypes element
-        wavelet_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<module name="Wavelet transform"><parameter name="Noise level"></parameter><parameter name="Scale level"></parameter><parameter name="Wavelet window size (%)"></parameter></module>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+        wavelet_obj.add_parameter(WaveletTransformParameters::WTNoiseLevel(WTNoiseLevel::new()));
+        wavelet_obj.add_parameter(WaveletTransformParameters::ScaleLevel(ScaleLevel::new()));
+        wavelet_obj.add_parameter(WaveletTransformParameters::WaveletWindowSize(WaveletWindowSize::new()));
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &wavelet_obj)?;
+    
+        let expected = r#"<module name="Wavelet transform"><parameter name="Noise level"/><parameter name="Scale level"/><parameter name="Wavelet window size (%)"/></module>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
 
@@ -712,25 +567,16 @@ mod tests {
     }
 
     #[test]
-    fn wt_noise_level_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut noise_obj = WTNoiseLevel::new();
-
-        // Write the ScanTypes element
-        noise_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="Noise level"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn wt_noise_level_serialization() -> Result<(), Box<dyn std::error::Error>> {
+        let wt_obj = WTNoiseLevel::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &wt_obj)?;
+    
+        let expected = r#"<parameter name="Noise level"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
 
@@ -750,25 +596,16 @@ mod tests {
     }
 
     #[test]
-    fn scale_level_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut wavelet_obj = ScaleLevel::new();
-
-        // Write the ScanTypes element
-        wavelet_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="Scale level"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn scale_level_serialization() -> Result<(), Box<dyn std::error::Error>> {
+        let scale_obj = ScaleLevel::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &scale_obj)?;
+    
+        let expected = r#"<parameter name="Scale level"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
 
@@ -788,25 +625,16 @@ mod tests {
     }
 
     #[test]
-    fn wavelet_window_size_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut wavelet_obj = WaveletWindowSize::new();
-
-        // Write the ScanTypes element
-        wavelet_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
-        let expected = r#"<parameter name="Wavelet window size (%)"></parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+    fn wavelet_window_size_serialization() -> Result<(), Box<dyn std::error::Error>> {
+        let window_obj = WaveletWindowSize::new();
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &window_obj)?;
+    
+        let expected = r#"<parameter name="Wavelet window size (%)"/>"#;
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
 
@@ -828,26 +656,17 @@ mod tests {
     }
 
     #[test]
-    fn denormalize_fragment_scan_traps_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
-
-        let mut denormalize_obj: DenormalizeFragmentScansTraps = DenormalizeFragmentScansTraps::new();
+    fn denormalize_fragment_scan_traps_serialization() -> Result<(), Box<dyn std::error::Error>> {
+        let mut denormalize_obj = DenormalizeFragmentScansTraps::new();
         denormalize_obj.set_true();
-
-        // Write the ScanTypes element
-        denormalize_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &denormalize_obj)?;
+    
         let expected = r#"<parameter name="Denormalize fragment scans (traps)">true</parameter>"#;
-
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
-
+        
+        assert_eq!(buffer, expected);
+    
         Ok(())
     }
 }
