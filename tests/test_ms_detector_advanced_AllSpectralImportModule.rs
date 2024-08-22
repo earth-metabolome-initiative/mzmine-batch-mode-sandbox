@@ -8,7 +8,7 @@ mod tests {
         let ms_detector_obj = MSDetectorAdvanced::new();
         assert_eq!(ms_detector_obj.get_name(), "");
         assert_eq!(ms_detector_obj.is_selected(), true);
-        assert_eq!(ms_detector_obj.module_length(), 0)
+        assert_eq!(ms_detector_obj.get_module_length(), 0)
     }
 
     #[test]
@@ -41,7 +41,7 @@ mod tests {
         for module in modules{
             ms_detector_obj.add_module(module);
             length += 1;
-            assert_eq!(ms_detector_obj.module_length(), length);
+            assert_eq!(ms_detector_obj.get_module_length(), length);
         }
     }
 
@@ -125,10 +125,10 @@ mod tests {
         ms_detector.set_ms1(Some(0.0));
         assert_eq!(ms_detector.get_name(), "MS1 detector (Advanced)");                                                                //test it has the correct name
         ms_detector.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new())); 
-        assert_eq!(ms_detector.module_length(), 1);                                                                                   //test something has been inserted
-        assert_eq!(ms_detector.get_module(0).get_value().unwrap(), &None); //test that it is in fact this type of object
+        assert_eq!(ms_detector.get_module_length(), 1);                                                                                   //test something has been inserted
+        assert_eq!(ms_detector.get_module("FactorOfLowestSignal").get_value().unwrap(), &None); //test that it is in fact this type of object
         ms_detector.set_ms1(Some(7.0));
-        assert_eq!(*ms_detector.get_module(0).get_value().unwrap(), Some(7.0));
+        assert_eq!(*ms_detector.get_module("FactorOfLowestSignal").get_value().unwrap(), Some(7.0));
     }
 
     #[test]
@@ -138,11 +138,11 @@ mod tests {
         ms_detector.set_ms2(Some(0.0));
         assert_eq!(ms_detector.get_name(), "MS2 detector (Advanced)", "NOT same name");                                                             //test it has the correct name
         ms_detector.add_module(MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new())); 
-        assert_eq!(ms_detector.module_length(), 1, "NOT 1 element pushed");                                                                            //test something has been inserted
-        assert_eq!(ms_detector.get_module(0).get_value().unwrap(), &None, "NOT good type inserted"); //test that it is in fact this type of object
+        assert_eq!(ms_detector.get_module_length(), 1, "NOT 1 element pushed");                                                                            //test something has been inserted
+        assert_eq!(ms_detector.get_module("FactorOfLowestSignal").get_value().unwrap(), &None, "NOT good type inserted"); //test that it is in fact this type of object
 
         ms_detector.set_ms2(Some(1000.0));
-        assert_eq!(*ms_detector.get_module(0).get_value().unwrap(), Some(1000.0), "NOT matching value");
+        assert_eq!(*ms_detector.get_module("FactorOfLowestSignal").get_value().unwrap(), Some(1000.0), "NOT matching value");
     }
 
     #[test]

@@ -1,10 +1,9 @@
 use serde::{Serialize, Deserialize};
 use crate::mass_detection_module_parameters::*;
 use crate::all_spectral_data_import_module_parameters::{ScanFilters, MSDetectorAdvanced, DenormalizeFragmentScansTraps};
-use crate::prelude::Value;
 
 #[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename = "batchstep")]
 pub struct MassDetectionModule {
     #[serde(rename = "@method")]
     method: String,
@@ -12,6 +11,7 @@ pub struct MassDetectionModule {
     #[serde(rename = "@parameter_version")]
     parameter_version: u8,
 
+    #[serde(rename = "parameter")]
     parameters: Vec<Parameter>,
 }
 

@@ -211,14 +211,14 @@ impl ScanFiltersParameters{
 
     pub fn set_value(&mut self, value: Option<u8>){
         match self{
-            ScanFiltersParameters::MSLevelFilter(_) => self.set_value(value),
+            ScanFiltersParameters::MSLevelFilter(_f) => _f.set_value(value),
             _ => panic!("No matching parameter")
         }
     }
 
     pub fn set_selected(&mut self, value:&str){
         match self{
-            ScanFiltersParameters::MSLevelFilter(_) => self.set_selected(value),
+            ScanFiltersParameters::MSLevelFilter(_f) => _f.set_selected(value),
             _ => panic!("No matching parameter")
         }
     }
@@ -572,8 +572,8 @@ impl CropMS1mz {
 pub struct MSDetectorAdvanced{
     #[serde(rename = "@name")]
     name: String,
-    #[serde(rename = "@selected")]
-    selected: bool,
+    #[serde(rename = "@selected", skip_serializing_if = "Option::is_none")]
+    selected: Option<bool>,
     #[serde(rename = "@selected_item")]
     selected_item: String,
 
@@ -585,7 +585,7 @@ impl Default for MSDetectorAdvanced{
     fn default() -> Self{
         MSDetectorAdvanced{
             name: "".to_owned(),
-            selected: true,
+            selected: Some(true),
             selected_item: "Factor of lowest signal".to_owned(),
             modules: vec![
                 MSDetectorAdvancedModules::FactorOfLowestSignal(FactorOfLowestSignal::new()),
@@ -604,7 +604,7 @@ impl MSDetectorAdvanced {
     pub fn new() -> Self {
         MSDetectorAdvanced {
             name: "".to_owned(),
-            selected: true,
+            selected: Some(true),
             selected_item: "Factor of lowest signal".to_owned(),
             modules: Vec::new(),
         }
@@ -614,20 +614,28 @@ impl MSDetectorAdvanced {
         &self.name
     }
 
+    pub fn set_name(&mut self, name:&str){
+        self.name = name.to_owned();
+    } 
+
     pub fn invert_selected(&mut self){
-        self.selected = !self.selected;
+        self.selected = Some(!self.selected.unwrap());
     }
 
     pub fn is_selected(&self) -> bool{
-        self.selected
+        self.selected.unwrap()
     }
 
     pub fn select(&mut self) {
-        self.selected = true;
+        self.selected = Some(true);
     }
 
     pub fn deselect(&mut self){
-        self.selected=false;
+        self.selected = Some(false);
+    }
+
+    pub fn not_selected(&mut self){
+        self.selected = None;
     }
 
     pub fn get_selected_item(&self) -> &str{
@@ -666,13 +674,39 @@ impl MSDetectorAdvanced {
         self.modules.push(module);
     }
 
-    pub fn module_length(&self) -> usize{
+    pub fn get_module_length(&self) -> usize{
         self.modules.len()
     }
 
-    pub fn get_module(&self, index:usize) -> MSDetectorAdvancedModules{
-        self.modules[index].clone()
+    pub fn get_module(&mut self, target:&str) -> &mut MSDetectorAdvancedModules{
+        for module in &mut self.modules{
+            match module{
+                MSDetectorAdvancedModules::FactorOfLowestSignal(_f) if target == "FactorOfLowestSignal" => return module,
+                MSDetectorAdvancedModules::Auto(_f) if target == "Auto" => return module,
+                MSDetectorAdvancedModules::Centroid(_f) if target == "Centroid" => return module,
+                MSDetectorAdvancedModules::ExactMass(_f) if target == "ExactMass" => return module,
+                MSDetectorAdvancedModules::LocalMaxima(_f) if target == "LocalMaxima" => return module,
+                MSDetectorAdvancedModules::RecursiveThreshold(_f) if target == "RecursiveThreshold" => return module,
+                MSDetectorAdvancedModules::WaveletTransform(_f) if target == "WaveletTransform" => return module,
+                _ => continue,
+            }
+        } 
+        panic!("No matching parameter {}", target)
     }
+
+    // pub fn get_parameter(&mut self, target: &str) -> &mut Parameter {
+    //     for param in &mut self.parameters {
+    //         match param {
+    //             Parameter::RawDataFiles(_) if target == "RawDataFiles" => return param,
+    //             Parameter::ScanFilters(_) if target == "ScanFilters" => return param,
+    //             Parameter::ScanTypes(_) if target == "ScanTypes" => return param,
+    //             Parameter::MSDetectorAdvanced(_) if target == "MSDetectorAdvanced" => return param,
+    //             Parameter::DenormalizeFragmentScanTraps(_) if target == "DenormalizeFragmentScanTraps" => return param,
+    //             _ => continue,
+    //         }
+    //     }
+    //     panic!("Parameter '{}' not found", target)
+    // }
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
@@ -688,6 +722,18 @@ pub enum MSDetectorAdvancedModules {
 }
 
 impl MSDetectorAdvancedModules {
+
+    pub fn get_name(&self) -> &str{
+        match self {
+            MSDetectorAdvancedModules::FactorOfLowestSignal(f) => f.get_name(),
+            MSDetectorAdvancedModules::Auto(f) => f.get_name(),
+            MSDetectorAdvancedModules::Centroid(f) => f.get_name(),
+            MSDetectorAdvancedModules::ExactMass(f) => f.get_name(),
+            MSDetectorAdvancedModules::LocalMaxima(f) => f.get_name(),
+            _ => panic!("No matching parameter found"),
+        }
+    }
+
     pub fn get_value(&self) -> Result<&Option<f32>, &'static str>{
         match self {
             MSDetectorAdvancedModules::FactorOfLowestSignal(f) => Ok(f.get_value()),
