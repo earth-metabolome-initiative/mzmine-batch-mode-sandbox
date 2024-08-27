@@ -9,7 +9,6 @@ pub mod all_spectral_data_import_module_parameters {
 pub mod mass_detection_module;
 pub mod mass_detection_module_parameters{
     pub mod raw_data_files;
-    pub mod scan_filters;
     pub mod scan_types;
     pub mod mass_detector;
     pub mod denormalize_fragment_scan_traps;
@@ -38,17 +37,25 @@ pub mod minimum_search_feature_resolver_module_parameters{
     pub mod chromatographic_threshold;
     pub mod dimension;
     pub mod feature_lists;
-    pub mod limit_by_ion_mobility_edges;
     pub mod minimum_absolute_height;
     pub mod minimum_relative_height;
     pub mod minimum_scans_data_points;
     pub mod minimum_search_range_rt_mobility_absolute;
     pub mod min_ratio_of_peak_top_edge;
     pub mod ms_ms_scan_pairing;
-    pub mod ms_ms_scan_pairing_parameters;
+    pub mod ms_ms_scan_pairing_parameters{
+        pub mod retention_time_filter;
+        pub mod limit_by_ion_mobility_edges;
+        pub mod ms1_to_ms2_precursor_tolerance;
+        pub mod minimum_required_signals;
+        pub mod merge_ms_ms_spectra_TIMS;
+        pub mod minimum_signal_intensity_absolute_TIMS;
+        pub mod minimum_signal_intensity_relative_TIMS;
+        pub mod minimum_relative_feature_height;
+    }
     pub mod original_feature_list;
-    pub mod retention_time_filter;
     pub mod suffix;
+    pub mod peak_duration;
 }
 
 pub mod isotope_grouper_module;

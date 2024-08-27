@@ -1,12 +1,12 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct FeatureLists{
     #[serde(rename="@name")]
     name: String,
 
-    #[serde(rename = "@name")]
+    #[serde(rename = "@type")]
     _type: String,
 }
 
@@ -14,7 +14,7 @@ impl FeatureLists{
     pub fn new() -> Self{
         FeatureLists{
             name: "Feature lists".to_owned(),
-            _type: "BATCH_LAST_FEATURELISTS".to_owned(),
+            _type: "".to_owned(),
         }
     }
 

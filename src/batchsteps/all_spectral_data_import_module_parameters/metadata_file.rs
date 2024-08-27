@@ -1,7 +1,5 @@
 use serde::{Serialize, Deserialize};
 
-use crate::xml_serialization::*;
-
 #[derive(Default, Serialize, Deserialize, PartialEq)]
 #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct MetaData {

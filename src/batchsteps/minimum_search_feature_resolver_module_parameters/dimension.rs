@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(default, rename_all = "lowercase", rename="parameter")]
 pub struct Dimension{
     #[serde(rename="@name")]
     name: String,
@@ -14,7 +14,7 @@ impl Dimension{
     pub fn new() -> Self{
         Dimension{
             name: "Dimension".to_owned(),
-            value: "Retention time".to_owned(),
+            value: "".to_owned(),
         }
     }
 

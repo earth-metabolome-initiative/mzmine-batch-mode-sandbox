@@ -28,7 +28,7 @@ mod test{
     fn minimum_signal_intensity_relative_TIMS_get_set_value(){
         let mut msirTIMS_obj = MinimumSignalIntensityRelativeTIMS::new();
         assert_eq!(*msirTIMS_obj.get_value(), None);
-        msirTIMS_obj.set_value(Some(2));
-        assert_eq!(*msirTIMS_obj.get_value(), Some(2));
+        msirTIMS_obj.set_value(Some(2.0));
+        assert_eq!(*msirTIMS_obj.get_value(), Some(2.0));
     }
 }

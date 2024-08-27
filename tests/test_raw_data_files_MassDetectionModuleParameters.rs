@@ -8,13 +8,17 @@ mod tests {
     fn raw_data_initialization(){
         let raw_data_obj = RawDataFiles::new();
         assert_eq!(raw_data_obj.get_name(), "Raw data files".to_owned(), "NOT correct object name");
+        assert_eq!(raw_data_obj.get_type(), "".to_owned(), "NOT correct type name");
+        
+        let raw_data_obj = RawDataFiles::default();
+        assert_eq!(raw_data_obj.get_name(), "Raw data files".to_owned(), "NOT correct object name");
         assert_eq!(raw_data_obj.get_type(), "BATCH_LAST_FILES".to_owned(), "NOT correct type name");
     }
 
 
     #[test]
     fn raw_data_set_type(){
-        let mut raw_data_obj = RawDataFiles::new();
+        let mut raw_data_obj = RawDataFiles::default();
         assert_eq!(raw_data_obj.get_type(), "BATCH_LAST_FILES".to_owned(), "NOT correct type name");
         raw_data_obj.set_type("New type".to_owned());
         assert_eq!(raw_data_obj.get_type(), "New type", "Type not changed correctly");
@@ -24,7 +28,7 @@ mod tests {
     fn raw_data_serialization() -> Result<(), Box<dyn std::error::Error>> {
         let mut buffer = "".to_owned();
 
-        let raw_data = RawDataFiles::new();
+        let raw_data = RawDataFiles::default();
 
         quick_xml::se::to_writer(&mut buffer, &raw_data)?;
 

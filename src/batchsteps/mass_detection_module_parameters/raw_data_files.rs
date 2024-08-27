@@ -1,10 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use quick_xml::events::{Event, BytesEnd, BytesStart, BytesText};
-use quick_xml::writer::Writer;
-use std::io::{Cursor, Result as IoResult, Error as IoError, ErrorKind};
-
-#[derive(Default, Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct RawDataFiles {
     #[serde(rename = "@name")]
@@ -15,11 +11,20 @@ pub struct RawDataFiles {
     _type: String,
 }
 
+impl Default for RawDataFiles{
+    fn default() -> Self{
+        RawDataFiles { 
+            name: "Raw data files".to_owned(), 
+            _type: "BATCH_LAST_FILES".to_owned(),
+        }
+    }
+}
+
 impl RawDataFiles {
     pub fn new() -> Self{
         RawDataFiles { 
             name: "Raw data files".to_owned(), 
-            _type: "BATCH_LAST_FILES".to_owned(),
+            _type: "".to_owned(),
         }
     }
 

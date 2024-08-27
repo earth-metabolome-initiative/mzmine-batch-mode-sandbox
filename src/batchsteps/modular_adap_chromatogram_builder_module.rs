@@ -1,11 +1,8 @@
-use core::panic;
-
 use serde::{Serialize, Deserialize};
+use crate::all_spectral_data_import_module_parameters::{ScanFilters, ScanFiltersParameters};
+use crate::mass_detection_module_parameters::{RawDataFiles};
 
 use crate::prelude::Value;
-
-use crate::prelude::RawDataFiles;
-use crate::prelude::ScanFilters;
 
 use crate::prelude::AllowSingleScanChromatograms;
 use crate::prelude::MinimumConsecutiveScans;
@@ -14,15 +11,35 @@ use crate::prelude::ADAPMinimumAbsoluteHeight;
 use crate::prelude::MzToleranceScanToScan;
 use crate::prelude::ADAPSuffix;
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[derive(Serialize, Deserialize, PartialEq)]
+#[serde(default, rename_all = "lowercase", rename = "batchstep")]
 pub struct ModularADAPChromatogramBuilderModule{
     #[serde(rename = "@method")]
     method: String,
     #[serde(rename = "@parameter_version")]
     parameter_version: u8,
 
+    #[serde(rename = "parameter")]
     parameters: Vec<ModularADAPChromatogramBuilderModuleParameter>
+}
+
+impl Default for ModularADAPChromatogramBuilderModule{
+    fn default() -> Self{
+        ModularADAPChromatogramBuilderModule{
+            method: "io.github.mzmine.modules.dataprocessing.featdet_adapchromatogrambuilder.ModularADAPChromatogramBuilderModule".to_owned(),
+            parameter_version: 1,
+            parameters: vec![
+                ModularADAPChromatogramBuilderModuleParameter::RawDataFiles(RawDataFiles::default()),
+                ModularADAPChromatogramBuilderModuleParameter::ScanFilters(ScanFilters::default()),
+                ModularADAPChromatogramBuilderModuleParameter::MinimumConsecutiveScans(MinimumConsecutiveScans::new()),
+                ModularADAPChromatogramBuilderModuleParameter::MinimumIntensityForConsecutiveScans(MinimumIntensityForConsecutiveScans::new()),
+                ModularADAPChromatogramBuilderModuleParameter::MinimumAbsoluteHeight(ADAPMinimumAbsoluteHeight::new()),
+                ModularADAPChromatogramBuilderModuleParameter::MzToleranceScanToScan(MzToleranceScanToScan::new()),
+                ModularADAPChromatogramBuilderModuleParameter::Suffix(ADAPSuffix::new()),
+                ModularADAPChromatogramBuilderModuleParameter::AllowSingleScanChromatograms(AllowSingleScanChromatograms::new())
+            ],
+        }
+    }
 }
 
 impl ModularADAPChromatogramBuilderModule{
@@ -50,21 +67,21 @@ impl ModularADAPChromatogramBuilderModule{
         self.parameters.push(parameter);
     }
 
-    pub fn get_parameter(&mut self, target:&str) -> Option<&ModularADAPChromatogramBuilderModuleParameter>{
+    pub fn get_parameter(&mut self, target:&str) -> &mut ModularADAPChromatogramBuilderModuleParameter{
         for parameter in &mut self.parameters{
             match parameter{
-                ModularADAPChromatogramBuilderModuleParameter::RawDataFiles(_) if target == "Raw data files" => return Some(parameter),
-                ModularADAPChromatogramBuilderModuleParameter::ScanFilters(_) if target == "Scan filters" => return Some(parameter),
-                ModularADAPChromatogramBuilderModuleParameter::MinimumConsecutiveScans(_) if target == "Minimum consecutive scans" => return Some(parameter),
-                ModularADAPChromatogramBuilderModuleParameter::MinimumIntensityForConsecutiveScans(_) if target == "Minimum intensity for consecutive scans" => return Some(parameter),
-                ModularADAPChromatogramBuilderModuleParameter::MinimumAbsoluteHeight(_) if target == "Minimum absolute height" => return Some(parameter),
-                ModularADAPChromatogramBuilderModuleParameter::MzToleranceScanToScan(_) if target == "Mz tolerance scan to scan" => return Some(parameter),
-                ModularADAPChromatogramBuilderModuleParameter::Suffix(_) if target == "Suffix" => return Some(parameter),
-                ModularADAPChromatogramBuilderModuleParameter::AllowSingleScanChromatograms(_) if target == "Allow single scan chromatogram" => return Some(parameter),
-                _ => panic!("No target matched")
+                ModularADAPChromatogramBuilderModuleParameter::RawDataFiles(_) if target == "Raw data files" => return parameter,
+                ModularADAPChromatogramBuilderModuleParameter::ScanFilters(_) if target == "Scan filters" => return parameter,
+                ModularADAPChromatogramBuilderModuleParameter::MinimumConsecutiveScans(_) if target == "Minimum consecutive scans" => return parameter,
+                ModularADAPChromatogramBuilderModuleParameter::MinimumIntensityForConsecutiveScans(_) if target == "Minimum intensity for consecutive scans" => return parameter,
+                ModularADAPChromatogramBuilderModuleParameter::MinimumAbsoluteHeight(_) if target == "Minimum absolute height" => return parameter,
+                ModularADAPChromatogramBuilderModuleParameter::MzToleranceScanToScan(_) if target == "Mz tolerance scan to scan" => return parameter,
+                ModularADAPChromatogramBuilderModuleParameter::Suffix(_) if target == "Suffix" => return parameter,
+                ModularADAPChromatogramBuilderModuleParameter::AllowSingleScanChromatograms(_) if target == "Allow single scan chromatogram" => return parameter,
+                _ => continue
             }
         }
-        None
+        panic!("No target {} matched", target)
     }
 }
 
@@ -138,4 +155,5 @@ impl ModularADAPChromatogramBuilderModuleParameter{
             _ => panic!("Parameter does not have get_absolute_tolerance() method")
         }
     }
+
 }

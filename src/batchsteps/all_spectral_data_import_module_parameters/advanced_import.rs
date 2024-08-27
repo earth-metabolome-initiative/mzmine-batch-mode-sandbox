@@ -1,7 +1,6 @@
 use core::panic;
 
 use serde::{Serialize, Deserialize};
-use crate::xml_serialization::*;
 
 pub enum Value {
     Single(Option<f32>),
@@ -143,21 +142,21 @@ impl ScanFilters {
         self.selected=false;
     }
 
-    pub fn get_parameter(&mut self, target: &str) -> Option<&mut ScanFiltersParameters> {
+    pub fn get_parameter(&mut self, target: &str) -> &mut ScanFiltersParameters{
         for parameter in &mut self.parameters {
             match parameter {
-                ScanFiltersParameters::ScanNumber(_) if target == "Scan number" => return Some(parameter),
-                ScanFiltersParameters::BaseFilteringInteger(_) if target == "Base Filtering Integer" => return Some(parameter),
-                ScanFiltersParameters::RetentionTime(_) if target == "Retention time" => return Some(parameter),
-                ScanFiltersParameters::Mobility(_) if target == "Mobility" => return Some(parameter),
-                ScanFiltersParameters::MSLevelFilter(_) if target == "MS Level Filter" => return Some(parameter),
-                ScanFiltersParameters::ScanDefinition(_) if target == "Scan definition" => return Some(parameter),
-                ScanFiltersParameters::Polarity(_) if target == "Polarity" => return Some(parameter),
-                ScanFiltersParameters::SpectrumType(_) if target == "Spectrum type" => return Some(parameter),
-                _ => {}
+                ScanFiltersParameters::ScanNumber(_) if target == "Scan number" => return parameter,
+                ScanFiltersParameters::BaseFilteringInteger(_) if target == "Base Filtering Integer" => return parameter,
+                ScanFiltersParameters::RetentionTime(_) if target == "Retention time" => return parameter,
+                ScanFiltersParameters::Mobility(_) if target == "Mobility" => return parameter,
+                ScanFiltersParameters::MSLevelFilter(_) if target == "MS Level Filter" => return parameter,
+                ScanFiltersParameters::ScanDefinition(_) if target == "Scan definition" => return parameter,
+                ScanFiltersParameters::Polarity(_) if target == "Polarity" => return parameter,
+                ScanFiltersParameters::SpectrumType(_) if target == "Spectrum type" => return parameter,
+                _ => continue
             }
         }
-        None
+        panic!("No matching parameter {}", target)
     }
 }
 
@@ -292,15 +291,25 @@ pub struct RetentionTime{
     #[serde(rename = "@name")]
     name: String,
 
-    #[serde(rename = "$text")]
-    value: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    values: Option<Vec<RetentionTimeMinMax>>,
  }
 
 impl RetentionTime {
     pub fn new() -> Self {
         RetentionTime {
             name: "Retention time".to_owned(),
-            value: None,
+            values: None,
+        }
+    }
+
+    pub fn m_adap_default(min:u8, max:u8) -> Self{
+        RetentionTime{
+            name: "Retention time".to_owned(),
+            values: Some(vec![
+                RetentionTimeMinMax::RetentionTimeMin(RetentionTimeMin::new(min)),
+                RetentionTimeMinMax::RetentionTimeMax(RetentionTimeMax::new(max)),
+            ])
         }
     }
 
@@ -308,12 +317,42 @@ impl RetentionTime {
         &self.name
     }
 
-    pub fn set_value(&mut self, value:Option<u8>){
-        self.value = value;
-    }
+}
 
-    pub fn get_value(&self) -> &Option<u8>{
-        &self.value
+#[derive(Serialize, Deserialize,  Clone, Debug, PartialEq)]
+#[serde(untagged)]
+enum RetentionTimeMinMax{
+    RetentionTimeMin(RetentionTimeMin),
+    RetentionTimeMax(RetentionTimeMax)
+}
+
+#[derive(Default, Serialize, Deserialize,  Clone, Debug, PartialEq)]
+#[serde(default, rename_all = "lowercase", rename = "min")]
+pub struct RetentionTimeMin{
+    #[serde(rename ="$text")]
+    value: u8,
+}
+
+impl RetentionTimeMin{
+    pub fn new(value:u8) -> Self{
+        RetentionTimeMin{
+            value: value,
+        }
+    }
+}
+
+#[derive(Default, Serialize, Deserialize,  Clone, Debug, PartialEq)]
+#[serde(default, rename_all = "lowercase", rename = "max")]
+pub struct RetentionTimeMax{
+    #[serde(rename ="$text")]
+    value: u8,
+}
+
+impl RetentionTimeMax{
+    pub fn new(value:u8) -> Self{
+        RetentionTimeMax{
+            value: value,
+        }
     }
 }
 
@@ -693,20 +732,6 @@ impl MSDetectorAdvanced {
         } 
         panic!("No matching parameter {}", target)
     }
-
-    // pub fn get_parameter(&mut self, target: &str) -> &mut Parameter {
-    //     for param in &mut self.parameters {
-    //         match param {
-    //             Parameter::RawDataFiles(_) if target == "RawDataFiles" => return param,
-    //             Parameter::ScanFilters(_) if target == "ScanFilters" => return param,
-    //             Parameter::ScanTypes(_) if target == "ScanTypes" => return param,
-    //             Parameter::MSDetectorAdvanced(_) if target == "MSDetectorAdvanced" => return param,
-    //             Parameter::DenormalizeFragmentScanTraps(_) if target == "DenormalizeFragmentScanTraps" => return param,
-    //             _ => continue,
-    //         }
-    //     }
-    //     panic!("Parameter '{}' not found", target)
-    // }
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]

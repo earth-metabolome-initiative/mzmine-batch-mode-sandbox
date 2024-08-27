@@ -1,26 +1,31 @@
-use core::panic;
-
 use serde::{Serialize, Deserialize};
-//use crate::prelude::*;
 
 use crate::minimum_search_feature_resolver_module_parameters::*;
-use crate::smoothing_module_parameters::SmoothSuffix;
 use crate::batchsteps::return_types::*;
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(default, rename_all = "lowercase", rename = "batchstep")]
 pub struct MinimumSearchFeatureResolverModule{
-    #[serde(rename="@name")]
+    #[serde(rename="@method")]
     method: String,
     
-    #[serde(rename="@name")]
+    #[serde(rename="@parameter_version")]
     parameter_version: u8,
 
+    #[serde(rename="parameter")]
     parameters: Vec<MinimumSearchFeatureResolverModuleParameters>
 }
 
 impl MinimumSearchFeatureResolverModule{
-    pub fn new(&self) -> &str{
+    pub fn new() -> Self{
+        MinimumSearchFeatureResolverModule{
+            method: "io.github.mzmine.modules.dataprocessing.featdet_chromatogramdeconvolution.minimumsearch.MinimumSearchFeatureResolverModule".to_owned(),
+            parameter_version: 2,
+            parameters: Vec::new()
+        }
+    }
+
+    pub fn get_method(&self) -> &str{
         &self.method
     }
 
@@ -41,6 +46,17 @@ impl MinimumSearchFeatureResolverModule{
             match parameter{
                 MinimumSearchFeatureResolverModuleParameters::ChromaticThreshold(_) if target == "Chromatic threshold" => return Some(parameter),
                 MinimumSearchFeatureResolverModuleParameters::Dimension(_) if target == "Dimension" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::FeatureList(_) if target == "FeatureList" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::LimitByIonMobilityEdges(_) if target == "LimitByIonMobilityEdges" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::MinRatioOfPeakTopEdge(_) if target == "MinRatioOfPeakTopEdge" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::MinimumAbsoluteHeight(_) if target == "MinimumAbsoluteHeight" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::MinimumRelativeHeight(_) if target == "MinimumRelativeHeight" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::MinimumScansDataPoints(_) if target == "MinimumScansDataPoints" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::MinimumSearchRangeRTMobilityAbsolute(_) if target == "MinimumSearchRangeRTMobilityAbsolute" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::MsMsScanPairing(_) if target == "MsMsScanPairing" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::OriginalFeatureList(_) if target == "OriginalFeatureList" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::RetentionTimeFilter(_) if target == "RetentionTimeFilter" => return Some(parameter),
+                MinimumSearchFeatureResolverModuleParameters::Suffix(_) if target == "Suffix" => return Some(parameter),
                 _ => panic!("No matching parameter!")
             }
         }
@@ -48,8 +64,8 @@ impl MinimumSearchFeatureResolverModule{
     }
 }
 
-#[derive(Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "lowercase")]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(untagged)]
 pub enum MinimumSearchFeatureResolverModuleParameters{
     ChromaticThreshold(ChromatographicThreshold),
     Dimension(Dimension),
@@ -63,10 +79,31 @@ pub enum MinimumSearchFeatureResolverModuleParameters{
     MsMsScanPairing(MsMsScanPairing),
     OriginalFeatureList(OriginalFeatureList),
     RetentionTimeFilter(RetentionTimeFilter),
-    Suffix(SmoothSuffix)
+    Suffix(Suffix),
+    PeakDuration(PeakDuration)
 }
 
 impl MinimumSearchFeatureResolverModuleParameters {
+    pub fn get_name(&self) -> &str{
+        match self{
+            MinimumSearchFeatureResolverModuleParameters::ChromaticThreshold(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::Dimension(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::FeatureList(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::FeatureList(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::LimitByIonMobilityEdges(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::MinRatioOfPeakTopEdge(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::MinimumAbsoluteHeight(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::MinimumRelativeHeight(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::MinimumScansDataPoints(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::MinimumSearchRangeRTMobilityAbsolute(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::MsMsScanPairing(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::OriginalFeatureList(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::RetentionTimeFilter(_f) => _f.get_name(),
+            MinimumSearchFeatureResolverModuleParameters::Suffix(_f) => _f.get_name(),
+            _ => panic!("No matching parameter found")
+        }
+    }
+
     /// gets parameter value, it can be of type &Option<f32> (ChromaticThreshold) or &str (Dimension)
     pub fn get_value(&self) -> Value {
         match self {

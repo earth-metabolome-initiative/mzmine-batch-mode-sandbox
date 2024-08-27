@@ -2,8 +2,6 @@ use mzbatch_generator::all_spectral_data_import_module_parameters::*;
 
 #[cfg(test)]
 mod tests {
-    use mzbatch_generator::batchsteps::mass_detection_module_parameters::scan_filters;
-
     use super::*;
 
     #[test]
@@ -28,17 +26,14 @@ mod tests {
         let mut scan_filters = ScanFilters::default();
 
         // Test retrieving each parameter
-        assert!(matches!(scan_filters.get_parameter("Scan number"), Some(ScanFiltersParameters::ScanNumber(_))));
-        assert!(matches!(scan_filters.get_parameter("Base Filtering Integer"), Some(ScanFiltersParameters::BaseFilteringInteger(_))));
-        assert!(matches!(scan_filters.get_parameter("Retention time"), Some(ScanFiltersParameters::RetentionTime(_))));
-        assert!(matches!(scan_filters.get_parameter("Mobility"), Some(ScanFiltersParameters::Mobility(_))));
-        assert!(matches!(scan_filters.get_parameter("MS Level Filter"), Some(ScanFiltersParameters::MSLevelFilter(_))));
-        assert!(matches!(scan_filters.get_parameter("Scan definition"), Some(ScanFiltersParameters::ScanDefinition(_))));
-        assert!(matches!(scan_filters.get_parameter("Polarity"), Some(ScanFiltersParameters::Polarity(_))));
-        assert!(matches!(scan_filters.get_parameter("Spectrum type"), Some(ScanFiltersParameters::SpectrumType(_))));
-
-        // Test a non-existing parameter
-        assert_eq!(scan_filters.get_parameter("Nonexistent"), None);
+        assert!(matches!(scan_filters.get_parameter("Scan number"), ScanFiltersParameters::ScanNumber(_)));
+        assert!(matches!(scan_filters.get_parameter("Base Filtering Integer"), ScanFiltersParameters::BaseFilteringInteger(_)));
+        assert!(matches!(scan_filters.get_parameter("Retention time"), ScanFiltersParameters::RetentionTime(_)));
+        assert!(matches!(scan_filters.get_parameter("Mobility"), ScanFiltersParameters::Mobility(_)));
+        assert!(matches!(scan_filters.get_parameter("MS Level Filter"), ScanFiltersParameters::MSLevelFilter(_)));
+        assert!(matches!(scan_filters.get_parameter("Scan definition"), ScanFiltersParameters::ScanDefinition(_)));
+        assert!(matches!(scan_filters.get_parameter("Polarity"), ScanFiltersParameters::Polarity(_)));
+        assert!(matches!(scan_filters.get_parameter("Spectrum type"), ScanFiltersParameters::SpectrumType(_)));
     }
 
     #[test]
@@ -123,7 +118,7 @@ mod tests {
 
     #[test]
     fn base_filetering_get_set_value(){
-        let mut base_obj = RetentionTime::new();
+        let mut base_obj = BaseFilteringInteger::new();
         base_obj.set_value(Some(2));
         assert_eq!(*base_obj.get_value(), Some(2));
     }
@@ -142,19 +137,22 @@ mod tests {
         Ok(())
     }
 
-    #[test]
-    fn retention_time_initialization(){
-        let retention = RetentionTime::new();
-        assert_eq!(retention.get_name(), "Retention time");
-        assert_eq!(*retention.get_value(), None);
-    }
+    // TODO
+    // test the initialization of min and max of RetentionTimeMinMax
 
-    #[test]
-    fn retention_time_get_set_value(){
-        let mut retention = RetentionTime::new();
-        retention.set_value(Some(2));
-        assert_eq!(*retention.get_value(), Some(2));
-    }
+    // #[test]
+    // fn retention_time_initialization(){
+    //     let retention = RetentionTime::new();
+    //     assert_eq!(retention.get_name(), "Retention time");
+    //     assert_eq!(*retention.get_value(), None);
+    // }
+
+    // #[test]
+    // fn retention_time_get_set_value(){
+    //     let mut retention = RetentionTime::new();
+    //     retention.set_value(Some(2));
+    //     assert_eq!(*retention.get_value(), Some(2));
+    // }
 
     #[test]
     fn retention_time_serialization() -> Result<(), Box<dyn std::error::Error>>{

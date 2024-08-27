@@ -1,12 +1,12 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct MinimumAbsoluteHeight{
     #[serde(rename="@name")]
     name: String,
 
-    #[serde(rename = "@name")]
+    #[serde(rename = "$text")]
     value: Option<f32>,
 }
 

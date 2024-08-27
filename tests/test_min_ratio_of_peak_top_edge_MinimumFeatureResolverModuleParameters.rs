@@ -7,7 +7,7 @@ mod test{
     #[test]
     fn min_ratio_of_peak_top_edge_initialization(){
         let mropte_obj = MinRatioOfPeakTopEdge::new();
-        assert_eq!(mropte_obj.get_name(), "Min ratio of peak top edge");
+        assert_eq!(mropte_obj.get_name(), "Min ratio of peak top/edge");
     }
 
     #[test]

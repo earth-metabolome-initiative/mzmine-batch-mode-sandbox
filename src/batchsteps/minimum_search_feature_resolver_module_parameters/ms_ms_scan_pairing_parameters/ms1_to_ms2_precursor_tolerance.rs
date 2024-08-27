@@ -1,21 +1,24 @@
-use core::panic;
-
 use serde::{Serialize, Deserialize};
 
 #[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct Ms1Ms2PrecursorTolerance{
     #[serde(rename = "@name")]
     name: String,
 
-    parameter: Vec<ToleranceParameters>
+    #[serde(rename = "absolutetolerance")]
+    absolute_tolerance: Tolerance,
+
+    #[serde(rename = "ppmtolerance")]  
+    ppm_tolerance: Tolerance
 }
 
 impl Ms1Ms2PrecursorTolerance{
     pub fn new() -> Self{
         Ms1Ms2PrecursorTolerance{
             name: "MS1 to MS2 precursor tolerance (m/z)".to_owned(),
-            parameter: Vec::new()
+            absolute_tolerance: Tolerance::new(),
+            ppm_tolerance: Tolerance::new()
         }
     }
 
@@ -23,98 +26,42 @@ impl Ms1Ms2PrecursorTolerance{
         &self.name
     }
 
-    pub fn get_parameter_length(&self) -> usize{
-        self.parameter.len()
+    pub fn get_absolute_value(&self) -> &Option<f32>{
+        self.absolute_tolerance.get_value()
     }
 
-    pub fn add_parameter(&mut self, parameter:ToleranceParameters){
-        self.parameter.push(parameter);
+    pub fn get_ppm_value(&self) -> &Option<f32>{
+        self.ppm_tolerance.get_value()
     }
 
-    pub fn get_parameter(&mut self, target: &str) -> Option<&mut ToleranceParameters> {
-        for parameter in &mut self.parameter {
-            match (&mut *parameter, target) {
-                (ToleranceParameters::PpmTolerance(_), "Ppmtolerance") => return Some(parameter),
-                (ToleranceParameters::AbsoluteTolerance(_), "Absolutetolerance") => return Some(parameter),
-                _ => (),
-            }
-        }
-        None
-    }
-    
-    
-
-}
-
-#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[serde(untagged)]
-pub enum ToleranceParameters{
-    PpmTolerance(PpmTolerance),
-    AbsoluteTolerance(AbsoluteTolerance),
-}
-
-impl ToleranceParameters{
-    pub fn get_value(&self) -> &Option<f32>{
-        match self{
-            ToleranceParameters::AbsoluteTolerance(_f) => _f.get_value(),
-            ToleranceParameters::PpmTolerance(_f) => _f.get_value(),
-            _ => panic!("No matching parameter")
-        }
+    pub fn set_absolute_value(&mut self, value: Option<f32>){
+        self.absolute_tolerance.set_value(value);
     }
 
-    pub fn set_value(&mut self, value:Option<f32>){
-        match self{
-            ToleranceParameters::AbsoluteTolerance(_f) => _f.set_value(value),
-            ToleranceParameters::PpmTolerance(_f) => _f.set_value(value),
-            _ => panic!("No matching parameter")
-        }
+    pub fn set_ppm_value(&mut self, value: Option<f32>){
+        self.ppm_tolerance.set_value(value);
     }
 }
 
 #[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq)]
-#[serde(default, rename_all = "lowercase", rename = "ppmtolerance")]
-pub struct PpmTolerance{
+#[serde(default, rename_all = "lowercase")]
+struct Tolerance{
     #[serde(rename = "$text")]
-    value: Option<f32>,
+    value: Option<f32>
 }
 
-impl PpmTolerance{
+impl Tolerance{
     pub fn new() -> Self{
-        PpmTolerance{
+        Tolerance{
             value: None
         }
     }
 
-    pub fn get_value(&self) -> &Option<f32>{
-        &self.value
-    }
-
-    pub fn set_value(&mut self, value: Option<f32>){
+    fn set_value(&mut self, value: Option<f32>){
         self.value = value;
     }
 
-}
-
-#[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq)]
-#[serde(default, rename_all = "lowercase", rename = "absolutetolerance")]
-pub struct AbsoluteTolerance{
-    #[serde(rename = "$text")]
-    value: Option<f32>,
-}
-
-impl AbsoluteTolerance{
-    pub fn new() -> Self{
-        AbsoluteTolerance{
-            value: None
-        }
-    }
-
-    pub fn get_value(&self) -> &Option<f32>{
+    fn get_value(&self) -> &Option<f32>{
         &self.value
     }
-
-    pub fn set_value(&mut self, value: Option<f32>){
-        self.value = value;
-    }
-
 }

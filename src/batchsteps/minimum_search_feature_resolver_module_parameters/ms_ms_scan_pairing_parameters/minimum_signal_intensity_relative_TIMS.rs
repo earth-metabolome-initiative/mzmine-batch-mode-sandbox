@@ -8,7 +8,7 @@ pub struct MinimumSignalIntensityRelativeTIMS{
     #[serde(rename = "@selected")]
     selected: bool,
     #[serde(rename = "$text")]
-    value: Option<u8>,
+    value: Option<f32>,
 }
 
 impl MinimumSignalIntensityRelativeTIMS{
@@ -40,11 +40,11 @@ impl MinimumSignalIntensityRelativeTIMS{
         self.selected=false;
     }
 
-    pub fn get_value(&self) -> &Option<u8>{
+    pub fn get_value(&self) -> &Option<f32>{
         &self.value
     }
 
-    pub fn set_value(&mut self, value:Option<u8>){
+    pub fn set_value(&mut self, value:Option<f32>){
         self.value = value;
     } 
 }

@@ -18,4 +18,19 @@ mod tests {
         min_rel_height_obj.set_value(Some(13.8));
         assert_eq!(*min_rel_height_obj.get_value(), Some(13.8));
     }
+
+    #[test]
+    fn minimum_absolute_height_serialization() -> Result<(), Box<dyn std::error::Error>> {
+        let mut buffer = "".to_owned();
+        let mut chr_obj = MinimumAbsoluteHeight::new();
+        chr_obj.set_value(Some(50000.0));
+
+        quick_xml::se::to_writer(&mut buffer, &chr_obj)?;
+
+        let expected = r#"<parameter name="Minimum absolute height">50000</parameter>"#;
+        
+        assert_eq!(buffer, expected);
+        
+        Ok(())
+    }
 }

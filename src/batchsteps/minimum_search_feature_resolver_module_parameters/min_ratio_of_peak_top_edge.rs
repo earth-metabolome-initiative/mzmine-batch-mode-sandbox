@@ -1,18 +1,19 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
-#[serde(default, rename_all = "lowercase")]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct MinRatioOfPeakTopEdge{
     #[serde(rename="@name")]
     name: String,
 
+    #[serde(rename = "$text")]
     value: Option<f32>,
 }
 
 impl MinRatioOfPeakTopEdge{
     pub fn new() -> Self{
         MinRatioOfPeakTopEdge{
-            name: "Min ratio of peak top edge".to_owned(),
+            name: "Min ratio of peak top/edge".to_owned(),
             value: None,
         }
     }

@@ -1,7 +1,4 @@
 use mzbatch_generator::minimum_search_feature_resolver_module_parameters::Ms1Ms2PrecursorTolerance;
-use mzbatch_generator::minimum_search_feature_resolver_module_parameters::AbsoluteTolerance;
-use mzbatch_generator::minimum_search_feature_resolver_module_parameters::ToleranceParameters;
-use mzbatch_generator::minimum_search_feature_resolver_module_parameters::PpmTolerance;
 
 #[cfg(test)]
 mod test{
@@ -10,53 +7,27 @@ mod test{
 
     #[test]
     fn ms1_to_ms2_precursor_tolerance_initialization(){
-        let mut ms12pt_obj = Ms1Ms2PrecursorTolerance::new();
+        let ms12pt_obj = Ms1Ms2PrecursorTolerance::new();
         assert_eq!(ms12pt_obj.get_name(), "MS1 to MS2 precursor tolerance (m/z)");
-        assert_eq!(ms12pt_obj.get_parameter_length(), 0);
+        assert_eq!(*ms12pt_obj.get_absolute_value(), None);
+        assert_eq!(*ms12pt_obj.get_ppm_value(), None)
     }
 
     #[test]
-    fn ms1_to_ms2_precursor_tolerance_add_get_parameter(){
-        let mut ms12pt_obj = Ms1Ms2PrecursorTolerance::new();
-        assert_eq!(ms12pt_obj.get_parameter_length(), 0);
-        let mut parameter = AbsoluteTolerance::new();
-        parameter.set_value(Some(1.1));
-        ms12pt_obj.add_parameter(ToleranceParameters::AbsoluteTolerance(parameter));
-        assert_eq!(ms12pt_obj.get_parameter_length(), 1);
-        assert_eq!(*ms12pt_obj.get_parameter("Absolutetolerance").unwrap().get_value(), Some(1.1));
-        let mut another_parameter = PpmTolerance::new();
-        another_parameter.set_value(Some(2.2));
-        ms12pt_obj.add_parameter(ToleranceParameters::PpmTolerance(another_parameter));
-        assert_eq!(ms12pt_obj.get_parameter_length(), 2);
-        assert_eq!(*ms12pt_obj.get_parameter("Ppmtolerance").unwrap().get_value(), Some(2.2));
-    }
+    fn ms1_to_ms2_precursor_tolerance_serialization() -> Result<(), Box<dyn std::error::Error>> {
+        let mut buffer = "".to_owned();
 
-    #[test]
-    fn ppm_tolerance_initialization(){
-        let ppm = PpmTolerance::new();
-        assert_eq!(*ppm.get_value(), None);
-    }
+        let mut obj = Ms1Ms2PrecursorTolerance::new();
 
-    #[test]
-    fn ppm_tolerance_set_get_value(){
-        let mut ppm = PpmTolerance::new();
-        assert_eq!(*ppm.get_value(), None);
-        ppm.set_value(Some(123.3));
-        assert_eq!(*ppm.get_value(), Some(123.3));
+        obj.set_absolute_value(Some(0.01));
+        obj.set_ppm_value(Some(10.0));
+    
+        quick_xml::se::to_writer(&mut buffer, &obj)?;
+    
+        let expected = r#"<parameter name="MS1 to MS2 precursor tolerance (m/z)"><absolutetolerance>0.01</absolutetolerance><ppmtolerance>10</ppmtolerance></parameter>"#;
+    
+        assert_eq!(buffer, expected);
+    
+        Ok(())
     }
-
-    #[test]
-    fn absolute_tolerance_initialization(){
-        let ppm = AbsoluteTolerance::new();
-        assert_eq!(*ppm.get_value(), None);
-    }
-
-    #[test]
-    fn absolute_tolerance_set_get_value(){
-        let mut ppm = AbsoluteTolerance::new();
-        assert_eq!(*ppm.get_value(), None);
-        ppm.set_value(Some(123.3));
-        assert_eq!(*ppm.get_value(), Some(123.3));
-    }
-
 }
