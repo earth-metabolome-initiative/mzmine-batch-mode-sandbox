@@ -1,18 +1,22 @@
 use serde::{Serialize, Deserialize};
 
-use crate::xml_serialization::*;
-
 use crate::prelude::Value;
 
 use crate::isotope_grouper_module_parameters::*;
+use crate::minimum_search_feature_resolver_module_parameters::FeatureLists;
+use crate::minimum_search_feature_resolver_module_parameters::Ms1Ms2PrecursorTolerance as MzToleranceIntraSample;
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(default, rename_all= "lowercase", rename = "batchstep")]
 pub struct IsotopeGrouper{
+    #[serde(rename = "@method")]
     method: String,
 
+    #[serde(rename = "@parameter_version")]
     parameter_version: u8,
 
-    parameter: Vec<IsotopeGrouperParameters>
+    #[serde(rename = "parameter")]
+    parameters: Vec<IsotopeGrouperParameters>
 }
 
 impl IsotopeGrouper{
@@ -20,7 +24,7 @@ impl IsotopeGrouper{
         IsotopeGrouper{
             method: "io.github.mzmine.modules.dataprocessing.filter_isotopegrouper.IsotopeGrouperModule".to_owned(),
             parameter_version: 1,
-            parameter: Vec::new(),
+            parameters: Vec::new(),
         }
     }
 
@@ -33,81 +37,33 @@ impl IsotopeGrouper{
     }
 
     pub fn get_parameters_length(&self) -> usize{
-        self.parameter.len()
+        self.parameters.len()
     }
 
     pub fn add_parameter(&mut self, parameter: IsotopeGrouperParameters){
-        self.parameter.push(parameter)
+        self.parameters.push(parameter)
     } 
 
     pub fn get_parameter(&mut self, target: &str) -> &mut IsotopeGrouperParameters {
-        for parameter in &mut self.parameter {
+        for parameter in &mut self.parameters {
             match parameter {
-                IsotopeGrouperParameters::FeatureLists(_) if target == "Feature lists" => return parameter,
-                IsotopeGrouperParameters::NameSuffix(_) if target == "Name suffix" => return parameter,
-                IsotopeGrouperParameters::MzToleranceIntraSample(_) if target == "Mz tolerance intra sample" => return parameter,
-                IsotopeGrouperParameters::MobilityTolerance(_) if target == "Mobility tolerance" => return parameter,
-                IsotopeGrouperParameters::MonotonicShape(_) if target == "Monotonic shape" => return parameter,
-                IsotopeGrouperParameters::MaximumCharge(_) if target == "Maximum charge" => return parameter,
-                IsotopeGrouperParameters::RepresentativeIsotope(_) if target == "Representative isotope" => return parameter,
-                IsotopeGrouperParameters::NeverRemoveFeatureWithMs2(_) if target == "Never remove feature with MS2" => return parameter,
-                IsotopeGrouperParameters::OriginalFeatureList(_) if target == "Original feature lists" => return parameter,
-                IsotopeGrouperParameters::RetentionTimeTolerance(_) if target == "Retention time tolerance" => return parameter,
+                IsotopeGrouperParameters::FeatureLists(_) if target == "FeatureLists" => return parameter,
+                IsotopeGrouperParameters::NameSuffix(_) if target == "NameSuffix" => return parameter,
+                IsotopeGrouperParameters::MzToleranceIntraSample(_) if target == "MzToleranceIntraSample" => return parameter,
+                IsotopeGrouperParameters::MobilityTolerance(_) if target == "MobilityTolerance" => return parameter,
+                IsotopeGrouperParameters::MonotonicShape(_) if target == "MonotonicShape" => return parameter,
+                IsotopeGrouperParameters::MaximumCharge(_) if target == "MaximumCharge" => return parameter,
+                IsotopeGrouperParameters::RepresentativeIsotope(_) if target == "RepresentativeIsotope" => return parameter,
+                IsotopeGrouperParameters::NeverRemoveFeatureWithMs2(_) if target == "NeverRemoveFeatureWithMs2" => return parameter,
+                IsotopeGrouperParameters::OriginalFeatureList(_) if target == "OriginalFeatureList" => return parameter,
+                IsotopeGrouperParameters::RetentionTimeTolerance(_) if target == "RetentionTimeTolerance" => return parameter,
                 _ => continue,
             }
         }
         panic!("Parameter '{}' not found", target)
     }
     
-
-    pub fn write_element(&mut self, writer: &mut Writer<Cursor<Vec<u8>>>) -> IoResult<()>{
-        // <batchstep method="io.github.mzmine.modules.dataprocessing.filter_isotopegrouper.IsotopeGrouperModule" parameter_version="1">
-        //      <parameter name="Feature lists" type="BATCH_LAST_FEATURELISTS"/>
-        //      <parameter name="Name suffix">deiso</parameter>
-        //      <parameter name="m/z tolerance (intra-sample)">
-        //          <absolutetolerance>0.0015</absolutetolerance>
-        //          <ppmtolerance>3.0</ppmtolerance>
-        //      </parameter>
-        //      <parameter name="Retention time tolerance" unit="MINUTES">0.04</parameter>
-        //      <parameter name="Mobility tolerance" selected="false">1.0</parameter>
-        //      <parameter name="Monotonic shape">true</parameter>
-        //      <parameter name="Maximum charge">2</parameter>
-        //      <parameter name="Representative isotope">Most intense</parameter>
-        //      <parameter name="Never remove feature with MS2">true</parameter>
-        //      <parameter name="Original feature list">KEEP</parameter>
-        // </batchstep>
-        let mut element = BytesStart::new("batchstep");
-
-        element.push_attribute(("method", self.get_method())); 
-        element.push_attribute(("parameter_version", self.get_parameter_version().to_string().as_str()));
-
-        // Write the start tag
-        writer.write_event(Event::Start(element))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-
-        for parameter in &mut self.parameter{
-            match parameter{
-                IsotopeGrouperParameters::FeatureLists(_f) => _f.write_element(writer)?,
-                IsotopeGrouperParameters::NameSuffix(_f) => _f.write_element(writer)?,
-                IsotopeGrouperParameters::MzToleranceIntraSample(_f) => _f.write_element(writer)?,
-                IsotopeGrouperParameters::MobilityTolerance(_f) => _f.write_element(writer)?,
-                IsotopeGrouperParameters::MonotonicShape(_f) => _f.write_element(writer)?,
-                IsotopeGrouperParameters::MaximumCharge(_f) => _f.write_element(writer)?,
-                IsotopeGrouperParameters::RepresentativeIsotope(_f) => _f.write_element(writer)?,
-                IsotopeGrouperParameters::OriginalFeatureList(_f) => _f.write_element(writer)?,
-                IsotopeGrouperParameters::NeverRemoveFeatureWithMs2(_f) => _f.write_element(writer)?,
-                IsotopeGrouperParameters::RetentionTimeTolerance(_f) => _f.write_element(writer)?,
-                _ => panic!("No matching parameter")
-            }
-        }
-
-        // Write the end tag
-        writer.write_event(Event::End(BytesEnd::new("batchstep")))
-            .map_err(|e| IoError::new(ErrorKind::Other, e.to_string()))?;
-        Ok(())
-    }
 }
-
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(untagged)]

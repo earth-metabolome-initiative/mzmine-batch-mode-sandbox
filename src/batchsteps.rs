@@ -60,7 +60,6 @@ pub mod minimum_search_feature_resolver_module_parameters{
 
 pub mod isotope_grouper_module;
 pub mod isotope_grouper_module_parameters{
-    pub mod feature_lists;
     pub mod name_suffix;
     pub mod m_z_tolerance_intra_sample;
     pub mod mobility_tolerance;

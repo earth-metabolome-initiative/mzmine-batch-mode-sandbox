@@ -88,7 +88,7 @@ pub mod minimum_search_feature_resolver_module_parameters{
 }
 
 pub mod isotope_grouper_module_parameters{
-    pub use crate::batchsteps::isotope_grouper_module_parameters::feature_lists::FeatureLists;
+    //pub use crate::batchsteps::isotope_grouper_module_parameters::feature_lists::FeatureLists;
     pub use crate::batchsteps::isotope_grouper_module_parameters::name_suffix::NameSuffix;
     pub use crate::batchsteps::isotope_grouper_module_parameters::mobility_tolerance::MobilityTolerance;
     pub use crate::batchsteps::isotope_grouper_module_parameters::monotonic_shape::MonotonicShape;
@@ -97,8 +97,8 @@ pub mod isotope_grouper_module_parameters{
     pub use crate::batchsteps::isotope_grouper_module_parameters::never_remove_feature_with_MS2::NeverRemoveFeatureWithMs2;
     pub use crate::batchsteps::isotope_grouper_module_parameters::original_feature_list::OriginalFeatureList;
     pub use crate::batchsteps::isotope_grouper_module_parameters::retention_time_tolerance::RetentionTimeTolerance;
-    pub use crate::batchsteps::isotope_grouper_module_parameters::m_z_tolerance_intra_sample::MzToleranceIntraSample;
-    pub use crate::batchsteps::isotope_grouper_module_parameters::m_z_tolerance_intra_sample::MzToleranceIntraSampleParameters;
+    // pub use crate::batchsteps::isotope_grouper_module_parameters::m_z_tolerance_intra_sample::MzToleranceIntraSample;
+    // pub use crate::batchsteps::isotope_grouper_module_parameters::m_z_tolerance_intra_sample::MzToleranceIntraSampleParameters;
     pub use crate::batchsteps::isotope_grouper_module_parameters::m_z_tolerance_intra_sample::AbsoluteTolerance;
     pub use crate::batchsteps::isotope_grouper_module_parameters::m_z_tolerance_intra_sample::PpmTolerance;
 }
@@ -174,7 +174,6 @@ pub mod prelude {
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::ms_ms_scan_pairing_parameters::retention_time_filter::RetentionTimeFilter;
     pub use crate::batchsteps::minimum_search_feature_resolver_module_parameters::suffix::Suffix;
 
-    pub use crate::batchsteps::isotope_grouper_module_parameters::feature_lists::FeatureLists as IsotopeFeatureLists;
     pub use crate::batchsteps::isotope_grouper_module_parameters::name_suffix::NameSuffix;
     pub use crate::batchsteps::isotope_grouper_module_parameters::m_z_tolerance_intra_sample::*;
     pub use crate::batchsteps::isotope_grouper_module_parameters::mobility_tolerance::MobilityTolerance;

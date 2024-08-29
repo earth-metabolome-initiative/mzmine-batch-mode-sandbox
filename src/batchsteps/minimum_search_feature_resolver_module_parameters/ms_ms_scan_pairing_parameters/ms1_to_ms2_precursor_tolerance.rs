@@ -22,8 +22,20 @@ impl Ms1Ms2PrecursorTolerance{
         }
     }
 
+    pub fn new_isotope_grouper_module() -> Self{
+        Ms1Ms2PrecursorTolerance{
+            name: "m/z tolerance (intra-sample)".to_string(),
+            absolute_tolerance: Tolerance::new(),
+            ppm_tolerance: Tolerance::new()
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
+    }
+
+    pub fn set_name(&mut self, name:&str){
+        self.name = name.to_owned();
     }
 
     pub fn get_absolute_value(&self) -> &Option<f32>{

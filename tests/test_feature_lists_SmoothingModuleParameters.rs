@@ -2,8 +2,6 @@ use mzbatch_generator::smoothing_module_parameters::FeatureLists;
 
 #[cfg(test)]
 mod tests {
-    use mzbatch_generator::batchsteps::isotope_grouper_module_parameters::feature_lists;
-
     use super::*;
 
     #[test]
