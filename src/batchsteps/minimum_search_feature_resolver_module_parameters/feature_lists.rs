@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
-#[serde(default, rename_all = "lowercase", rename = "parameter")]
+#[serde(rename_all = "lowercase", rename = "parameter")]
 pub struct FeatureLists{
     #[serde(rename="@name")]
     name: String,

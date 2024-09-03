@@ -58,7 +58,7 @@ impl MinMax{
         }
     }
 
-    fn get_value(&self) -> &str{
+    pub fn get_value(&self) -> &str{
         &self.value
     }
 

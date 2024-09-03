@@ -13,6 +13,8 @@ pub mod modules{
     pub use crate::batchsteps::smoothing_module::{SmoothingModule, SmoothingModuleParameters};
 
     pub use crate::batchsteps::isotope_grouper_module::{IsotopeGrouper, IsotopeGrouperParameters};
+    
+    pub use crate::batchsteps::rows_filter_module::{RowsFilterModule, RowsFilterModuleParameters};
 }
 
 pub mod all_spectral_data_import_module_parameters{
@@ -103,10 +105,15 @@ pub mod isotope_grouper_module_parameters{
     pub use crate::batchsteps::isotope_grouper_module_parameters::m_z_tolerance_intra_sample::PpmTolerance;
 }
 
-pub mod rows_filter_module{
-    pub use crate::batchsteps::rows_filter_module::*;
-
-    pub use crate::batchsteps::rows_filter_module_parameters::minimum_aligned_features_samples;
+pub mod rows_filter_module_parameters{
+    pub use crate::batchsteps::rows_filter_module_parameters::parameter::Parameter;
+    pub use crate::batchsteps::rows_filter_module_parameters::minimum_aligned_feature_samples::MinimumAlignedFeaturesSamples;
+    pub use crate::batchsteps::rows_filter_module_parameters::minimum_feature_in_an_isotope_pattern::MinimumFeaturesInAnIsotopePattern;
+    pub use crate::batchsteps::rows_filter_module_parameters::validate_13C_isotope_rows::*;
+    pub use crate::batchsteps::rows_filter_module_parameters::chromatographic_FWHM::*;
+    pub use crate::batchsteps::rows_filter_module_parameters::charge::Charge;
+    pub use crate::batchsteps::rows_filter_module_parameters::features_duration_range::FeaturesDurationRange;
+    pub use crate::batchsteps::rows_filter_module_parameters::kendrick_mass_defect::*;
 }
 
 pub mod xml_serialization{

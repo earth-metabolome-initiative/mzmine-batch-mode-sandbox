@@ -1,17 +1,21 @@
 use serde::{Serialize, Deserialize};
 
+use crate::rows_filter_module_parameters::*;
+
 use crate::prelude::Value;
-use crate::prelude::FeatureLists;
-use crate::prelude::NameSuffix;
+use crate::minimum_search_feature_resolver_module_parameters::FeatureLists;
+use crate::isotope_grouper_module_parameters::NameSuffix;
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(rename_all ="lowercase", rename = "batchstep")]
 pub struct RowsFilterModule{
-    #[serde(rename = "@name")]
+    #[serde(rename = "@method")]
     method: String,
 
     #[serde(rename = "@parameter_version")]
     parameter_version: u8,
 
+    #[serde(rename = "parameter")]
     parameters: Vec<RowsFilterModuleParameters>
 }
 
@@ -28,6 +32,10 @@ impl RowsFilterModule{
         &self.method
     }
 
+    pub fn get_parameter_version(&self) -> &u8{
+        &self.parameter_version
+    }
+
     pub fn get_parameters_length(&self) -> usize{
         self.parameters.len()
     }
@@ -36,10 +44,17 @@ impl RowsFilterModule{
         self.parameters.push(parameter);
     }
 
-    pub fn get_parameter(&self, target:&str) -> Option<&RowsFilterModuleParameters>{
-        // TODO
-        None
-    }
+    // TODO : How to select the Parameters?
+    // pub fn get_parameter(&mut self, target:&str) -> Option<&RowsFilterModuleParameters>{
+    //     for parameter in &mut self.parameters{
+    //         match parameter{
+
+    //             RowsFilterModuleParameters::Parameter(_) if target == "Parameter" => return Some(parameter),
+    //             _ => panic!("No matching parameter {}", target)
+    //         }
+    //     }
+    //     None
+    // }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -47,7 +62,15 @@ impl RowsFilterModule{
 pub enum RowsFilterModuleParameters{
     FeatureLists(FeatureLists),
     NameSuffix(NameSuffix),
-    
+    MinimumAlignedFeaturesSamples(MinimumAlignedFeaturesSamples),
+    MinimumFeaturesInAnIsotopePattern(MinimumFeaturesInAnIsotopePattern),
+    Validate13CIsotopeRows(Validate13CIsotopeRows),
+    KendrickMassDefect(KendrickMassDefect),
+    ChromatographicFWHM(ChromatographicFWHM),
+    FeaturesDurationRange(FeaturesDurationRange),
+    Charge(Charge),
+    // If only selected and or value is present, the object is defined like Parameter!
+    Parameter(Parameter)
 }
 
 impl RowsFilterModuleParameters{

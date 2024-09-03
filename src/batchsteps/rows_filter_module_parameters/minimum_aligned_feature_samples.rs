@@ -1,28 +1,28 @@
 use serde::{Serialize, Deserialize};
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
-#[serde(rename_all ="lowercase", rename = "parameter")]
-pub struct ChromatographicFWHM{
+#[serde(rename = "parameter")]
+pub struct MinimumAlignedFeaturesSamples{
     #[serde(rename = "@name")]
     name: String,
 
     #[serde(rename = "@selected")]
     selected: bool,
 
-    #[serde(rename = "min")]
-    min: MinMax,
+    #[serde(rename = "abs")]
+    abs: AbsRel,
 
-    #[serde(rename = "max")]
-    max: MinMax
+    #[serde(rename = "rel")]
+    rel: AbsRel
 }
 
-impl ChromatographicFWHM{
+impl MinimumAlignedFeaturesSamples{
     pub fn new() -> Self{
-        ChromatographicFWHM{
-            name: "Chromatographic FWHM".to_owned(),
+        MinimumAlignedFeaturesSamples{
+            name: "Minimum aligned features (samples)".to_owned(),
             selected: false,
-            min: MinMax::new(),
-            max: MinMax::new()
+            abs: AbsRel::new(),
+            rel: AbsRel::new(),
         }
     }
 
@@ -37,42 +37,42 @@ impl ChromatographicFWHM{
     pub fn select(&mut self){
         self.selected = true;
     }
-
+    
     pub fn deselect(&mut self){
         self.selected = false;
     }
 
-    pub fn get_min_value(&self) -> &Option<f32>{
-        self.min.get_value()
+    pub fn get_abs_value(&self) -> &Option<f32>{
+        self.abs.get_value()
     }
 
-    pub fn get_max_value(&self) -> &Option<f32>{
-        self.max.get_value()
+    pub fn get_rel_value(&self) -> &Option<f32>{
+        self.rel.get_value()
     }
 
-    pub fn set_min_value(&mut self, value:Option<f32>){
-        self.min.set_value(value);
+    pub fn set_abs_value(&mut self, value:Option<f32>){
+        self.abs.set_value(value);
     }
 
-    pub fn set_max_value(&mut self, value:Option<f32>){
-        self.max.set_value(value);
+    pub fn set_rel_value(&mut self, value:Option<f32>){
+        self.rel.set_value(value);
     }
 }
+
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
-//#[serde(rename_all ="lowercase", rename = "parameter")]
-pub struct MinMax{
+struct AbsRel{
     #[serde(rename = "$text")]
-    value: Option<f32>
+    value: Option<f32>,
 }
 
-impl MinMax{
+impl AbsRel{
     pub fn new() -> Self{
-        MinMax{
-            value: None,
+        AbsRel{
+            value: None
         }
     }
-    
+
     pub fn get_value(&self) -> &Option<f32>{
         &self.value
     }

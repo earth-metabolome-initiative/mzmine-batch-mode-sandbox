@@ -73,7 +73,14 @@ pub mod isotope_grouper_module_parameters{
 
 pub mod rows_filter_module;
 pub mod rows_filter_module_parameters{
-    pub mod minimum_aligned_features_samples;
+    pub mod parameter;
+    pub mod minimum_aligned_feature_samples;
+    pub mod minimum_feature_in_an_isotope_pattern;
+    pub mod validate_13C_isotope_rows;
+    pub mod chromatographic_FWHM;
+    pub mod charge;
+    pub mod features_duration_range;
+    pub mod kendrick_mass_defect;
 }
 
 pub mod return_types;

@@ -22,10 +22,10 @@ mod tests {
     #[test]
     fn feature_lists_serialization() -> Result<(), Box<dyn std::error::Error>> {
         let mut buffer = "".to_owned();
-        let mut chr_obj = FeatureLists::new();
-        chr_obj.set_type("BATCH_LAST_FEATURELISTS");
+        let mut feature_lists_obj = FeatureLists::new();
+        feature_lists_obj.set_type("BATCH_LAST_FEATURELISTS");
 
-        quick_xml::se::to_writer(&mut buffer, &chr_obj)?;
+        quick_xml::se::to_writer(&mut buffer, &feature_lists_obj)?;
 
         let expected = r#"<parameter name="Feature lists" type="BATCH_LAST_FEATURELISTS"/>"#;
         
