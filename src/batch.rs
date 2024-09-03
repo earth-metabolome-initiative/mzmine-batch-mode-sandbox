@@ -11,7 +11,7 @@ pub enum Modules {
     SmoothinModule(SmoothingModule),
     MinimumSearchFeatureResolverModule(MinimumSearchFeatureResolverModule),
     IsotopeGrouper(IsotopeGrouper),
-    //RowsFilterModule(RowsFilterModule),
+    RowsFilterModule(RowsFilterModule),
     // RowsFilterModule2(batchsteps::rows_filter_module_2::RowsFilterModule2),
     // GnpsFbmnExportAndSubmitModule(batchsteps::gnps_fbmn_export_and_submit_module::GnpsFbmnExportAndSubmitModule),
     // SiriusExportModule(batchsteps::sirius_export_module::SiriusExportModule)

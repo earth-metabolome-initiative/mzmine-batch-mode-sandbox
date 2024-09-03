@@ -15,6 +15,8 @@ pub mod modules{
     pub use crate::batchsteps::isotope_grouper_module::{IsotopeGrouper, IsotopeGrouperParameters};
     
     pub use crate::batchsteps::rows_filter_module::{RowsFilterModule, RowsFilterModuleParameters};
+
+    pub use crate::batchsteps::isotope_finder_module::{IsotopeFinderModule, IsotopeFinderModuleParameters};
 }
 
 pub mod all_spectral_data_import_module_parameters{

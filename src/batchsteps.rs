@@ -83,6 +83,8 @@ pub mod rows_filter_module_parameters{
     pub mod kendrick_mass_defect;
 }
 
+pub mod isotope_finder_module;
+
 pub mod return_types;
 
 pub use crate::batchsteps::all_spectral_data_import_module::AllSpectralDataImportModule;
