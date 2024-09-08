@@ -8,27 +8,26 @@ mod tests {
 
     #[test]
     fn meta_data_initialization(){
-        let metadata_obj = MetaData::new();
+        let metadata_obj = MetaData::default();
         assert_eq!(metadata_obj.get_name(), "Metadata file", "NOT correct name");
-        assert_eq!(metadata_obj.is_selected(), true, "NOT selected=true");
-        assert_eq!(*metadata_obj.get_current_file(), MetaDataFile::new(), "NOT MetaDataFile type");
+        assert_eq!(*metadata_obj.is_selected(), Some(true), "NOT selected=true");
+        assert_eq!(*metadata_obj.get_current_file(), MetaDataFile::default(), "NOT MetaDataFile type");
         assert_eq!(metadata_obj.last_files_length(), 0, "NOT empty vector");
     }
 
     #[test]
     fn meta_data_exchange_current_file(){
-        let mut metadata_obj = MetaData::new();
-        let new_exchange_file: MetaDataFile = MetaDataFile::new();
+        let mut metadata_obj = MetaData::default();
+        let new_exchange_file: MetaDataFile = MetaDataFile::default();
         metadata_obj.set_current_file(new_exchange_file);
         assert_eq!(metadata_obj.get_current_file().get_name(), "");
     }
 
     #[test]
     fn add_last_file_name(){
-        let mut metadata_obj = MetaData::new();
-        let mut new_metadata_file = MetaDataFile::new();
+        let mut metadata_obj = MetaData::default();
+        let mut new_metadata_file = MetaDataFile::new("Added File");
         assert_eq!(metadata_obj.last_files_length(), 0);
-        new_metadata_file.set_name("Added File");
         metadata_obj.add_last_file_name(new_metadata_file);
         assert_eq!(metadata_obj.last_files_length(), 1);
         assert_eq!(metadata_obj.get_last_file("Added File").get_name(), "Added File");
@@ -36,8 +35,8 @@ mod tests {
 
     #[test]
     fn remove_last_file_name(){
-        let mut metadata_obj = MetaData::new();
-        let mut new_metadata_file = MetaDataFile::new();
+        let mut metadata_obj = MetaData::default();
+        let mut new_metadata_file = MetaDataFile::default();
         new_metadata_file.set_name("Added File");
         metadata_obj.add_last_file_name(new_metadata_file);
         assert_eq!(metadata_obj.get_last_files()[0].get_name(), "Added File");
@@ -48,30 +47,30 @@ mod tests {
 
     #[test]
     fn meta_data_file_initialization(){
-        let metadatafile_obj = MetaDataFile::new();
+        let metadatafile_obj = MetaDataFile::default();
         assert_eq!(metadatafile_obj.get_name(), "");
     }
     
     #[test]
     fn meta_data_file_set_name(){
-        let mut metadatafile_obj = MetaDataFile::new();
+        let mut metadatafile_obj = MetaDataFile::default();
         metadatafile_obj.set_name("New Name");
         assert_eq!(metadatafile_obj.get_name(), "New Name");
     }
 
     #[test]
     fn metadata_serialization() -> Result<(), Box<dyn std::error::Error>>{
-        let mut metadata = MetaData::new();
+        let mut metadata = MetaData::default();
         metadata.select();
 
-        let mut current = MetaDataFile::new();
+        let mut current = MetaDataFile::default();
         current.set_name("current");
         metadata.set_current_file(current);
 
-        let mut file1 = MetaDataFile::new();
+        let mut file1 = MetaDataFile::default();
         file1.set_name("file1");
 
-        let mut file2 = MetaDataFile::new();
+        let mut file2 = MetaDataFile::default();
         file2.set_name("file2");
 
         metadata.add_last_file_name(file1);

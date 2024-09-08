@@ -1,5 +1,4 @@
 use mzbatch_generator::all_spectral_data_import_module_parameters::*;
-use mzbatch_generator::xml_serialization::*;
 
 #[cfg(test)]
 mod tests {

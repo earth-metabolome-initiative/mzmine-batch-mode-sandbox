@@ -1,7 +1,5 @@
 use mzbatch_generator::isotope_grouper_module_parameters::NeverRemoveFeatureWithMs2;
 
-use mzbatch_generator::xml_serialization::*;
-
 #[cfg(test)]
 mod test{
     use super::*;
@@ -22,25 +20,17 @@ mod test{
     }
 
     #[test]
-    fn maximum_charge_serialization() -> IoResult<()>{
-        // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
+    fn maximum_charge_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let mut buffer = "".to_owned();
 
         let mut never_obj = NeverRemoveFeatureWithMs2::new();
         never_obj.set_value(true);
 
-        // Write the ScanTypes element
-        never_obj.write_element(&mut writer)?;
+        quick_xml::se::to_writer(&mut buffer, &never_obj)?;
 
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
         let expected = r#"<parameter name="Never remove feature with MS2">true</parameter>"#;
 
-        // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
+        assert_eq!(buffer, expected);
 
         Ok(())
     }

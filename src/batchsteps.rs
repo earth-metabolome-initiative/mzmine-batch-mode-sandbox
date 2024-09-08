@@ -85,6 +85,15 @@ pub mod rows_filter_module_parameters{
 
 pub mod isotope_finder_module;
 
+pub mod gnps_fbmn_export_and_submit_module;
+pub mod gnps_fbmn_export_and_submit_module_parameters{
+    pub mod merge_MSMS_experimental;
+    pub mod submit_to_GNPS;
+}
+
+pub mod sirius_export_module;
+
+
 pub mod return_types;
 
 pub use crate::batchsteps::all_spectral_data_import_module::AllSpectralDataImportModule;

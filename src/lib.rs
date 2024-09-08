@@ -17,6 +17,10 @@ pub mod modules{
     pub use crate::batchsteps::rows_filter_module::{RowsFilterModule, RowsFilterModuleParameters};
 
     pub use crate::batchsteps::isotope_finder_module::{IsotopeFinderModule, IsotopeFinderModuleParameters};
+
+    pub use crate::batchsteps::gnps_fbmn_export_and_submit_module::{GnpsFbmnExportAndSubmitModule, GnpsParameter};
+
+    pub use crate::batchsteps::sirius_export_module::{SiriusExportModule, SiriusExportModuleParameter};
 }
 
 pub mod all_spectral_data_import_module_parameters{
@@ -118,15 +122,14 @@ pub mod rows_filter_module_parameters{
     pub use crate::batchsteps::rows_filter_module_parameters::kendrick_mass_defect::*;
 }
 
-pub mod xml_serialization{
-    pub use quick_xml::events::{Event, BytesEnd, BytesStart, BytesText};
-    pub use quick_xml::writer::Writer;
-    pub use std::io::{Cursor, Result as IoResult, Error as IoError, ErrorKind};
+pub mod gnps_fbmn_export_and_submit_module_parameters{
+    pub use crate::batchsteps::gnps_fbmn_export_and_submit_module_parameters::merge_MSMS_experimental::{MergeMSMSExperimental, MergeMSMSExperimentalParameter};
+    pub use crate::batchsteps::gnps_fbmn_export_and_submit_module_parameters::submit_to_GNPS::SubmitToGNPS;
 }
 
 pub mod prelude {
     pub use crate::batch::Batch;
-    pub use crate::batch::Modules;
+    pub use crate::batch::Batchstep;
 
     pub use crate::batchsteps::return_types::Value;
 

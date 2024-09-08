@@ -1,13 +1,13 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(default, rename_all = "lowercase", rename = "parameter")]
 pub struct MetaData {
     #[serde(rename = "@name")]
     name: String,
 
-    #[serde(rename = "@selected")]
-    selected: bool,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "@selected")]
+    selected: Option<bool>,
 
     #[serde(rename = "current_file")]
     current_file: MetaDataFile,
@@ -16,13 +16,24 @@ pub struct MetaData {
     last_files: Vec<MetaDataFile>,
 }
 
-impl MetaData {
-    pub fn new() -> Self {
+impl Default for MetaData{
+    fn default() -> Self{
         MetaData {
             name: "Metadata file".to_owned(),
-            selected: true,
-            current_file: MetaDataFile::new(),
+            selected: Some(true),
+            current_file: MetaDataFile::default(),
             last_files: Vec::new(),
+        }
+    }
+}
+
+impl MetaData {
+    pub fn new(current: &str, last: Vec<MetaDataFile>) -> Self {
+        MetaData {
+            name: "Metadata file".to_owned(),
+            selected: Some(true),
+            current_file: MetaDataFile::new(current),
+            last_files: last,
         }
     }
 
@@ -30,16 +41,24 @@ impl MetaData {
         &self.name
     }
 
-    pub fn is_selected(&self) -> bool{
-        self.selected
+    pub fn set_name(&mut self, name:&str){
+        self.name = name.to_owned();
+    }
+
+    pub fn is_selected(&self) -> &Option<bool>{
+        &self.selected
     }
 
     pub fn select(&mut self){
-        self.selected = true;
+        self.selected = Some(true);
     }
 
     pub fn deselect(&mut self){
-        self.selected = false;
+        self.selected = Some(false);
+    }
+
+    pub fn set_selected_to_none(&mut self){
+        self.selected = None;
     }
 
     pub fn get_last_files(&self) -> &Vec<MetaDataFile>{
@@ -77,17 +96,25 @@ impl MetaData {
 
 }
 
-#[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(default, rename = "last_file", rename_all = "lowercase")]
 pub struct MetaDataFile {
     #[serde(rename = "$text")]
     name: String
 }
 
-impl MetaDataFile {
-    pub fn new() -> Self {
+impl Default for MetaDataFile{
+    fn default() -> Self{
         MetaDataFile {
             name: "".to_owned(),
+        }
+    }
+}
+
+impl MetaDataFile {
+    pub fn new(name: &str) -> Self {
+        MetaDataFile {
+            name: name.to_owned(),
         }
     }
 

@@ -1,6 +1,0 @@
-use serde::{Serialize, Deserialize};
-
-#[derive(Default, Serialize, Deserialize)]
-pub struct RowsFilterModule2{
-    selected: bool,
-}

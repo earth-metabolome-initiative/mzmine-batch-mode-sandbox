@@ -29,11 +29,6 @@ mod tests {
 
         let mut batchstep = AllSpectralDataImportModule::new();
 
-        // FileNames
-        // AdvancedImport
-        // MetadataFile
-        // SpectralLibraryFiles
-
         let mut file_names = FileNames::new();
 
         for i in 1..=17 {
@@ -72,16 +67,13 @@ mod tests {
         batchstep.add_parameter(Parameter::AdvancedImport(advanced_import));
 
         // Metadata
-        let mut metadata_files = MetaData::new();
-        let mut current_file = MetaDataFile::new();
-        current_file.set_name("path/to/metadata1.csv");
-        metadata_files.set_current_file(current_file);
-
+        let mut last_names:Vec<MetaDataFile> = Vec::new();
         for i in 2..=4 {
-            let mut file = MetaDataFile::new();
-            file.set_name(&format!("path/to/metadata{}.csv", i));
-            metadata_files.add_last_file_name(file);
+            let mut file = MetaDataFile::new(&format!("path/to/metadata{}.csv", i));
+            last_names.push(file);
         }
+        let mut metadata_files = MetaData::new("path/to/metadata1.csv", last_names);
+
 
         batchstep.add_parameter(Parameter::MetadataFile(metadata_files));
 

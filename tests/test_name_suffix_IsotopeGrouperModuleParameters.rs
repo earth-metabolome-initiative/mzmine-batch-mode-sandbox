@@ -1,5 +1,4 @@
 use mzbatch_generator::isotope_grouper_module_parameters::NameSuffix;
-use mzbatch_generator::xml_serialization::*;
 
 #[cfg(test)]
 mod test{
@@ -21,25 +20,19 @@ mod test{
     }
 
     #[test]
-    fn maximum_charge_serialization() -> IoResult<()>{
+    fn maximum_charge_serialization() -> Result<(), Box<dyn std::error::Error>>{
         // Create a writer with an in-memory buffer
-        let mut writer = Writer::new(Cursor::new(Vec::new()));
+        let mut buffer = "".to_owned();
 
         let mut name_obj = NameSuffix::new();
         name_obj.set_value("deiso");
 
-        // Write the ScanTypes element
-        name_obj.write_element(&mut writer)?;
-
-        // Convert buffer to string
-        let result = writer.into_inner().into_inner();
-        let result_str = String::from_utf8(result).expect("Failed to convert result to string");
-
-        // Define the expected XML output
+        quick_xml::se::to_writer(&mut buffer, &name_obj)?;
+        
         let expected = r#"<parameter name="Name suffix">deiso</parameter>"#;
 
         // Assert the result matches the expected output
-        assert_eq!(result_str, expected);
+        assert_eq!(buffer, expected);
 
         Ok(())
     }
