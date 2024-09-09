@@ -34,7 +34,7 @@ Create struct representing the parameter characteristics in order to be able to 
 Let's say we want to recreate the following parameter:
 
 ```xml
-<parameter name="Text in identity" selected="false">a random string</parameter>
+<parameter name="name" selected="false">value</parameter>
 ```
 
 The relative struct to exploit quick-xml serialization will look like:
