@@ -69,6 +69,14 @@ impl Parameter {
 // implement as you need or following already existing parameters with similar structures
 }
 ```
+Please note that the use of decorators like #[serde(rename = "@name")] are used to serialize the struct via quick-xml (and serde), and is key to for the correct XML element generation. <br>
+In brief:
+```txt
+@ -> Node's attribute
+$ -> Node's value
+  -> (nothing) Node's name
+```
+For more info on @/$ or blank, please consult quick-xml's [documentation](https://docs.rs/quick-xml/latest/quick_xml/index.html).<br>
 
 ### Add new struct to batchstep_parameters.rs, batchsteps.rs and lib.rs
 Move back one directory to exit parameters and go to the batchstep_parameters.rs and add a new line with the name of the file in which the new struct is present (without .rs extension):
@@ -112,15 +120,6 @@ pub enum PossibleParameters{
     Parameter(Parameter) // <- inserting our new parameter
 }
 ```
-
-Please note that the use of decorators like #[serde(rename = "@name")] are used to serialize the struct via quick-xml (and serde), and is key to for the correct XML element generation. <br>
-In brief:
-```txt
-@ -> Node's attribute
-$ -> Node's value
-  -> (nothing) Node's name
-```
-For more info on @/$ or blank, please consult quick-xml's [documentation](https://docs.rs/quick-xml/latest/quick_xml/index.html).<br>
 The Parameter is now ready to be serialized in the selected batchstep.
 
 ## Add nested parameters
