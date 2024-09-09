@@ -28,18 +28,18 @@ If not already present, the implementation of a new batchstep/parameter/module s
 
 ### implement new parameter/module
 Move to the desired [batchstep parameters directory](https://github.com/earth-metabolome-initiative/mzmine-batch-mode-sandbox/tree/main/src/batchsteps) and create the realtive parameter rust file:
-'''bash
+```bash
 cd src/batchsteps/desired_batchstep_parameters
 touch parameter_name.rs
-'''
+```
 
 Create struct representing the parameter characteristics in order to be able to serialize it and correctly generate the parameter string in the final XML file.
 Let's say we want to recreate the following parameter:
-'''xml
+```xml
 <parameter name="Text in identity" selected="false">a random string</parameter>
-'''
+```
 The relative struct to exploit quick-xml serialization will look like:
-'''rust
+```rust
 use serde::{Serialize, Deserialize};
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -92,7 +92,7 @@ impl Parameter {
         self.value = value.to_owned();
     }
 }
-'''
+```
 
 - **Github repository**: <https://github.com/earth-metabolome-initiative/mzmine-batch-mode-sandbox/>
 - **Documentation**: <https://earth-metabolome-initiative.github.io/mzmine-batch-mode-sandbox/>
