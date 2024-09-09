@@ -1,10 +1,10 @@
 # ! This crate is currently under construction !
 
-# Mzmine
+# mzmine
 Mzmine is a Java based tool used for Mass Spectrometry data analysis. For more information please consult the [website](http://mzmine.github.io/) and the [github page](https://github.com/mzmine/mzmine).
 
 ## Installation
-To install Mzmine, please follow the official steps as requested in the [documentation](https://mzmine.github.io/mzmine_documentation/getting_started.html) by downloading [mzmine portable versions or installers](https://github.com/mzmine/mzmine3/releases/latest).
+To install mzmine, please follow the official steps as requested in the [documentation](https://mzmine.github.io/mzmine_documentation/getting_started.html) by downloading [mzmine portable versions or installers](https://github.com/mzmine/mzmine3/releases/latest).
 
 # mzbatch_generator
 Here we present a Rust crate to generate mzbatch file (XML format) used to lauch the batch mode without passing through the GUI.
@@ -23,12 +23,13 @@ mzmine4 -batch /path/to/file.mzbatch
 ```
 
 ## Add new batchstep/parameter/module
+### move to the directory
 Move to the desired [batchstep parameters directory](https://github.com/earth-metabolome-initiative/mzmine-batch-mode-sandbox/tree/main/src/batchsteps) and create the realtive parameter rust file:
 ```bash
 cd src/batchsteps/desired_batchstep_parameters
 touch parameter_name.rs
 ```
-
+### create the struct
 Create struct representing the parameter characteristics in order to be able to serialize it and correctly generate the parameter string in the final XML file.
 Let's say we want to recreate the following parameter:
 
@@ -92,6 +93,45 @@ impl Parameter {
     }
 }
 ```
+
+### add new struct to batchstep/parameter_parameter.rs, batchstep.rs and lib.rs
+
+// TODO
+
+### add the new struct to batchstep/parameter enum
+Move to the batchstep/parameter in which the new parameter/module needs to be added and look for the enum which is used to populate the batchstep/parameter vector, finally add the new variat:
+```rust
+use serde::{Serialize, Deserialize};
+
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(rename = "batchstep")]
+pub struct DesiredBatchstep {
+    #[serde(rename = "@method")]
+    method: String,
+
+    #[serde(rename = "@parameter_version")]
+    parameter_version: u8,
+
+    #[serde(rename = "parameter")]
+    parameters: Vec<PossibleParameters>,
+}
+...
+...
+...
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(untagged)]
+pub enum PossibleParameters{
+    OldParameter(OldParameter),
+    Parameter(Parameter) // <- inserting our new parameter
+}
+```
+
+Please note that the use of #[serde(rename = "@/$/_name")] is used to serialize the struct via quick-xml, and is key to for the correct file generation.
+For more info, please consult quick-xml's [documentation](https://docs.rs/quick-xml/latest/quick_xml/index.html).
+
+In the same 
 
 - **Github repository**: <https://github.com/earth-metabolome-initiative/mzmine-batch-mode-sandbox/>
 - **Documentation**: <https://earth-metabolome-initiative.github.io/mzmine-batch-mode-sandbox/>
