@@ -23,8 +23,8 @@ mzmine4 -batch /path/to/file.mzbatch
 ```
 
 ## Add new batchstep/parameter/module
-### move to the directory
-Move to the desired [batchstep parameters directory](https://github.com/earth-metabolome-initiative/mzmine-batch-mode-sandbox/tree/main/src/batchsteps) and create the realtive parameter rust file:
+### Move to the directory
+Move to the desired [batchstep parameters directory](https://github.com/earth-metabolome-initiative/mzmine-batch-mode-sandbox/tree/main/src/batchsteps) and create the relative parameter rust file:
 ```bash
 cd src/batchsteps/desired_batchstep_parameters
 touch parameter_name.rs
@@ -76,9 +76,6 @@ Move back one directory to exit parameters and go to the batchstep_parameters.rs
 pub mod parameter_name;
 ```
 Move back once more and in batchstep.rs, look for the pub mod batchstep_parameters{} desired and inside the curly brackets add the following rust snippet:
-```bash
-cd ..
-```
 ```rust
 pub mod parameter_name;
 ```
