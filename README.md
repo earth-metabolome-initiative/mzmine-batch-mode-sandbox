@@ -9,7 +9,7 @@ To install mzmine, please follow the official steps illustrated in the [document
 # mzbatch_generator
 Here we present a Rust crate to generate mzbatch file (XML format) used to lauch the batch mode without passing through the GUI.
 
-This crate provides an automatized way to produce .mzbatch files (XML format) to fully launch mzmine4 from the command line in batch mode.<br>
+This crate provides an automatized way to produce .mzbatch files (XML format) to fully launch mzmine4 from the CLI in batch mode.<br>
 It's important to notice that it *does not* implement all possibile parameters/modules for all batchsteps, but offers an easy way to implement further batchsteps/parameters/modules when needed.
 
 ## Create mzbatch file
