@@ -9,7 +9,7 @@ To install mzmine, please follow the official steps as requested in the [documen
 # mzbatch_generator
 Here we present a Rust crate to generate mzbatch file (XML format) used to lauch the batch mode without passing through the GUI.
 
-This crate provides an automatized way to produce .mzbatch files (XML format) to fully launch mzmine4 from the command line in batch mode.
+This crate provides an automatized way to produce .mzbatch files (XML format) to fully launch mzmine4 from the command line in batch mode.<br>
 It's important to notice that it *does not* implement all possibile parameters/modules for all batchsteps, but offers an easy way to implement further batchsteps/parameters/modules when needed.
 
 ## Create mzbatch file
@@ -30,7 +30,7 @@ cd src/batchsteps/desired_batchstep_parameters
 touch parameter_name.rs
 ```
 ### create the struct
-Create struct representing the parameter characteristics in order to be able to serialize it and correctly generate the parameter string in the final XML file.
+Create struct representing the parameter characteristics in order to be able to serialize it and correctly generate the parameter string in the final XML file.<br>
 Let's say we want to recreate the following parameter:
 
 ```xml
@@ -94,15 +94,30 @@ impl Parameter {
 }
 ```
 
-### add new struct to batchstep/parameter_parameter.rs, batchstep.rs and lib.rs
-
-// TODO
+### add new struct to batchstep_parameters.rs, batchsteps.rs and lib.rs
+Move back one directory to exit parameters:
+```bash
+cd ..
+```
+Go to the batchstep_parameters.rs and add a new line with the name of the file in which the new struct is present (without .rs extension):
+```rust
+pub mod parameter_name;
+```
+Move back once more and in batchstep.rs, look for the pub mod batchstep_parameters{} needed and inside the curly brackets add the following rust snippet:
+```bash
+cd ..
+```
+```rust
+pub mod parameter_name;
+```
+Finally, move back once more and in lib.rs, search for the pub mod batchstep_parameters{} needed and the same code line as before.
 
 ### add the new struct to batchstep/parameter enum
-Move to the batchstep/parameter in which the new parameter/module needs to be added and look for the enum which is used to populate the batchstep/parameter vector, finally add the new variat:
+Move to the batchstep/parameter in which the new parameter/module needs to be added, import the struct at the beginning of the file and look for the enum which is used to populate the batchstep/parameter vector, finally add the new variat:
 ```rust
 use serde::{Serialize, Deserialize};
 
+// import struct
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(rename = "batchstep")]
