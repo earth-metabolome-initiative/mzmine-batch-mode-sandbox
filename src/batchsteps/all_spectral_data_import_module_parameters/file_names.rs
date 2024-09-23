@@ -1,6 +1,7 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Serialize, Deserialize, PartialEq)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 #[serde(default, rename_all = "lowercase", rename ="parameter")]
 pub struct FileNames {
     #[serde(rename = "@name")]
@@ -19,6 +20,19 @@ impl FileNames{
         }
     }
 
+    pub fn generate(files:Vec<String>) -> Self{
+        let mut generated_files: Vec<InputFile> = Vec::new();
+
+        for file in files{
+            generated_files.push(InputFile::generate(file))
+        }
+
+        FileNames {
+            name: "File names".to_owned(),
+            files: generated_files,
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -26,7 +40,6 @@ impl FileNames{
     pub fn get_file(&self, name: &str) -> Option<&InputFile> {
         self.files.iter().find(|file| file.get_name() == name)
     }
-    
 
     pub fn files_length(&self) -> usize{
         self.files.len()
@@ -39,9 +52,14 @@ impl FileNames{
     pub fn remove_file_name(&mut self, name: &str) {
         self.files.retain(|file| file.get_name() != name);
     }
+
+    pub fn files(&self) -> &[InputFile]{
+        &self.files
+    }
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 #[serde(default, rename = "file", rename_all = "lowercase")]
 pub struct InputFile {
     #[serde(rename = "$text")]
@@ -51,7 +69,13 @@ pub struct InputFile {
 impl InputFile{
     pub fn new() -> Self{
         InputFile{
-            name: "".to_owned()
+            name: "".to_string()
+        }
+    }
+
+    pub fn generate(file_name:String) -> Self{
+        InputFile{
+            name: file_name
         }
     }
 

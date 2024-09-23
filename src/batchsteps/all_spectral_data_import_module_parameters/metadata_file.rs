@@ -37,6 +37,25 @@ impl MetaData {
         }
     }
 
+    /// First element is the current file, every other is last_files
+    pub fn generate(values: Vec<String>) -> Self {
+        let current = &values[0];
+
+        let mut last_files = Vec::new();
+
+        // All but the first element
+        for file in &values[1..] {
+            last_files.push(MetaDataFile::new(file));
+        }
+
+        MetaData {
+            name: "Metadata file".to_owned(),
+            selected: Some(true),
+            current_file: MetaDataFile::new(current),
+            last_files: last_files,
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }

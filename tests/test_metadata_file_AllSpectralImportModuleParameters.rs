@@ -4,6 +4,8 @@ use mzbatch_generator::all_spectral_data_import_module_parameters::MetaDataFile;
 #[cfg(test)]
 mod tests {
 
+    use std::vec;
+
     use super::*;
 
     #[test]
@@ -76,6 +78,20 @@ mod tests {
         metadata.add_last_file_name(file1);
         metadata.add_last_file_name(file2);
 
+
+        let mut buffer = "".to_owned();
+
+        quick_xml::se::to_writer(&mut buffer, &metadata)?;
+
+        let expected = r#"<parameter name="Metadata file" selected="true"><current_file>current</current_file><last_file>file1</last_file><last_file>file2</last_file></parameter>"#;
+
+        assert_eq!(buffer, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn metadata_generate_serialization() -> Result<(), Box<dyn std::error::Error>>{
+        let metadata = MetaData::generate(vec!["current".to_string(), "file1".to_string(), "file2".to_string()]);
 
         let mut buffer = "".to_owned();
 

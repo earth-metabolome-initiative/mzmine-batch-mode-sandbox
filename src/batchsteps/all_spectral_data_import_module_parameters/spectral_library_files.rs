@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 pub struct SpectralLibrary {
     #[serde(rename = "@name")]
     name: String,
-
+    #[serde(rename = "file")]
     files: Vec<SpectralLibraryFile>
 }
 
@@ -14,6 +14,17 @@ impl SpectralLibrary{
         SpectralLibrary {
             name: "Spectral library files".to_owned(),
             files: Vec::new(),
+        }
+    }
+
+    pub fn generate(files:Vec<String>) -> Self{
+        let mut generated_files = Vec::new();
+        for file in files{
+            generated_files.push(SpectralLibraryFile::generate(file))
+        }
+        SpectralLibrary {
+            name: "Spectral library files".to_owned(),
+            files: generated_files,
         }
     }
 
@@ -35,7 +46,7 @@ impl SpectralLibrary{
 
     pub fn get_file_by_name(&self, name:&str) -> Result<&SpectralLibraryFile, &'static str>{
         for file in &self.files{
-            if file.get_name() == name{
+            if file.get_file_name() == name{
                 return Ok(&file);
             }
         }
@@ -44,11 +55,8 @@ impl SpectralLibrary{
 }
 
 #[derive(Default, Serialize, Deserialize, PartialEq, Clone)]
-#[serde(default, rename_all = "lowercase", rename = "file")]
+#[serde(default, rename = "file", rename_all = "lowercase")]
 pub struct SpectralLibraryFile{
-    #[serde(rename = "@name")]
-    name: String,
-
     #[serde(rename = "$text")]
     file_name: String,
 }
@@ -56,13 +64,14 @@ pub struct SpectralLibraryFile{
 impl SpectralLibraryFile{
     pub fn new() -> Self{
         SpectralLibraryFile{
-            name: "Spectral library files".to_owned(),
-            file_name: "File name".to_owned(),
+            file_name: "".to_string(),
         }
     }
 
-    pub fn get_name(&self) -> &str{
-        &self.name
+    pub fn generate(file_name:String) -> Self{
+        SpectralLibraryFile{
+            file_name: file_name,
+        }
     }
 
     pub fn get_file_name(&self) -> &str{

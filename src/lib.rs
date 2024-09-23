@@ -1,5 +1,6 @@
 pub mod batchsteps;
 pub mod batch;
+pub mod parameter;
 
 pub mod modules{
     pub use crate::batchsteps::AllSpectralDataImportModule;

@@ -1,4 +1,5 @@
 use core::panic;
+use std::collections::HashMap;
 
 use serde::{Serialize, Deserialize};
 
@@ -27,6 +28,74 @@ pub struct AdvancedImport{
             name: "Advanced import".to_owned(),
             selected: false,
             parameters: Vec::new(),
+        }
+    }
+
+    /// Generate the predifined XML template with the new values inputted
+    /// The order is: \n \t - ScanFilters \n->\t CropMS1mz \n->\t MSDetectorAdvanced \n->\t DenormalizeFragmentScansTraps
+    /// 
+    pub fn generate(values:Vec<String>) -> Self{
+        let mut generated_parameters: Vec<AdvancedImportParameters> = Vec::new();
+
+        // Vec to associate parameter's modules/parameters to positions in the array
+        let mut parameter_indexes: Vec<(String, usize)> = Vec::new();
+
+        //parameters that are present in advanced parameter
+        let strings_to_match = vec![
+            "ScanFilters".to_string(),
+            "CropMS1mz".to_string(),
+            "MSDetectorAdvanced".to_string(),
+            "DenormalizeFragmentScansTraps".to_string(),
+        ];
+
+        // Search for the modules
+        for (index, string) in values.iter().enumerate() {
+            if strings_to_match.contains(string) {
+                parameter_indexes.push((string.clone(), index));
+            }
+        }
+
+        // Create a mapping of strings to their order
+            // Order has to be specified in strings_to_match -> equivalent to order in the XML [predifined]
+            // Order is maintained with insertion (from Rust 1.63 and on) -> we exploit it
+        let order_map: std::collections::HashMap<_, _> = strings_to_match
+                        .iter()
+                        .enumerate()
+                        .map(|(index, string)| (string.clone(), index))
+                        .collect();
+
+        // Iterate through the keys to retrieve which parameters are selected
+        for key in order_map.keys() {
+            // if match, pass a sub-set of values (aka pass the values associated to said parameter)
+            match key.as_str() {
+                "ScanFilters" => {
+                    generated_parameters.push(AdvancedImportParameters::ScanFilters(
+                        ScanFilters::generate(&values[1..=*order_map.get("CropMS1mz").unwrap()]) // Adjust slice based on crop_index
+                    ));
+                }
+                "CropMS1mz" => {
+                    generated_parameters.push(AdvancedImportParameters::CropMS1mz(
+                        CropMS1mz::generate(&values[*order_map.get("CropMS1mz").unwrap()+1..=*order_map.get("MSDetectorAdvanced").unwrap()])
+                    ));
+                }
+                "MSDetectorAdvanced" => {
+                    generated_parameters.push(AdvancedImportParameters::MSDetectorAdvanced(
+                        MSDetectorAdvanced::generate(&values[*order_map.get("MSDetectorAdvanced").unwrap()+1..=*order_map.get("DenormalizeFragmentScansTraps").unwrap()])
+                    ));
+                }
+                "DenormalizeFragmentScansTraps" => {
+                    generated_parameters.push(AdvancedImportParameters::MSDetectorAdvanced(
+                        MSDetectorAdvanced::generate(&values[*order_map.get("DenormalizeFragmentScansTraps").unwrap()+1..])
+                    ));
+                }
+                _ => panic!("No matching parameter {}", values[0]),
+            }
+        }
+
+        AdvancedImport {
+            name: "Advanced import".to_owned(),
+            selected: false,
+            parameters: generated_parameters,
         }
     }
 
@@ -114,6 +183,97 @@ impl ScanFilters {
         }
     }
 
+    /// Generate the sub parameters automatically from the parameters present passed to the method
+    /// Order is: \n \t - ScanNumber \n->\t BaseFilteringInteger \n->\t RetentionTime \n->\t Mobility \n->\t MSLevelFilter \n->\t ScanDefinition \n->\t Polarity\n->\t SpectrumType
+    pub fn generate(values: &[String]) -> Self{
+        let mut generated_parameters = Vec::new();
+
+        // Vec to associate parameter's modules/parameters to positions in the array
+        let mut parameter_indexes: Vec<(String, usize)> = Vec::new();
+
+        //parameters that are present in advanced parameter
+        let strings_to_match = vec![
+            "ScanNumber".to_string(),
+            "BaseFilteringInteger".to_string(),
+            "RetentionTime".to_string(),
+            "Mobility".to_string(),
+            "MSLevelFilter".to_string(),
+            "ScanDefinition".to_string(),
+            "Polarity".to_string(),
+            "SpectrumType".to_string(),
+        ];
+
+        // Search for the modules
+        for (index, string) in values.iter().enumerate() {
+            if strings_to_match.contains(string) {
+                parameter_indexes.push((string.clone(), index));
+            }
+        }
+
+        // Create a mapping of strings to their order
+            // Order has to be specified in strings_to_match -> equivalent to order in the XML [predifined]
+            // Order is maintained with insertion (from Rust 1.63 and on) -> we exploit it
+        let order_map: std::collections::HashMap<_, _> = strings_to_match
+                        .iter()
+                        .enumerate()
+                        .map(|(index, string)| (string.clone(), index))
+                        .collect();
+
+        // Iterate through the keys to retrieve which parameters are selected
+        for key in order_map.keys() {
+            // if match, pass a sub-set of values (aka pass the values associated to said parameter)
+            match key.as_str() {
+                "ScanNumber" => {
+                    generated_parameters.push(ScanFiltersParameters::ScanNumber(
+                        ScanNumber::generate(&values[1..=*order_map.get("BaseFilteringInteger").unwrap()]) // Adjust slice based on crop_index
+                    ));
+                }
+                "BaseFilteringInteger" => {
+                    generated_parameters.push(ScanFiltersParameters::BaseFilteringInteger(
+                        BaseFilteringInteger::generate(&values[*order_map.get("BaseFilteringInteger").unwrap()+1..=*order_map.get("RetentionTime").unwrap()])
+                    ));
+                }
+                "RetentionTime" => {
+                    generated_parameters.push(ScanFiltersParameters::RetentionTime(
+                        RetentionTime::generate(&values[*order_map.get("RetentionTime").unwrap()+1..=*order_map.get("Mobility").unwrap()])
+                    ));
+                }
+                "Mobility" => {
+                    generated_parameters.push(ScanFiltersParameters::Mobility(
+                        Mobility::generate(&values[*order_map.get("Mobility").unwrap()..=*order_map.get("MSLevelFilter").unwrap()])
+                    ));
+                }
+                "MSLevelFilter" => {
+                    generated_parameters.push(ScanFiltersParameters::MSLevelFilter(
+                        MSLevelFilter::generate(&values[*order_map.get("MSLevelFilter").unwrap()..=*order_map.get("ScanDefinition").unwrap()])
+                    ));
+                }
+                "ScanDefinition" => {
+                    generated_parameters.push(ScanFiltersParameters::ScanDefinition(
+                        ScanDefinition::generate(&values[*order_map.get("ScanDefinition").unwrap()+1..=*order_map.get("Polarity").unwrap()])
+                    ));
+                }
+                "Polarity" => {
+                    generated_parameters.push(ScanFiltersParameters::Polarity(
+                        Polarity::generate(&values[*order_map.get("Polarity").unwrap()+1..=*order_map.get("SpectrumType").unwrap()])
+                    ));
+                }
+                "SpectrumType" => {
+                    generated_parameters.push(ScanFiltersParameters::SpectrumType(
+                        SpectrumType::generate(&values[*order_map.get("SpectrumType").unwrap()+1..])
+                    ));
+                }
+                _ => panic!("No matching parameter {}", values[0]),
+            }
+        }
+
+        ScanFilters {
+            name: "Scan filters".to_owned(),
+            selected: true,
+            parameters: generated_parameters,
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -187,6 +347,20 @@ impl ScanFiltersParameters{
         }
     }
 
+    /// Generate the sub parameters automatically from the parameters present passed to the method
+        pub fn generate(&self, values: &[String]) -> Self{
+        match self {
+            ScanFiltersParameters::ScanNumber(_f) => ScanFiltersParameters::ScanNumber(ScanNumber::generate(values)),
+            ScanFiltersParameters::BaseFilteringInteger(_f) => ScanFiltersParameters::BaseFilteringInteger(BaseFilteringInteger::generate(values)),
+            ScanFiltersParameters::RetentionTime(_f) => ScanFiltersParameters::RetentionTime(RetentionTime::generate(values)),
+            ScanFiltersParameters::Mobility(_f) => ScanFiltersParameters::Mobility(Mobility::generate(values)),
+            ScanFiltersParameters::MSLevelFilter(_f) => ScanFiltersParameters::MSLevelFilter(MSLevelFilter::generate(values)),
+            ScanFiltersParameters::ScanDefinition(_f) => ScanFiltersParameters::ScanDefinition(ScanDefinition::generate(values)),
+            ScanFiltersParameters::Polarity(_f) => ScanFiltersParameters::Polarity(Polarity::generate(values)),
+            ScanFiltersParameters::SpectrumType(_f) => ScanFiltersParameters::SpectrumType(SpectrumType::generate(values))
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         match self{
             ScanFiltersParameters::ScanNumber(_f) => _f.get_name(),
@@ -241,6 +415,13 @@ pub struct ScanNumber{
         }
     }
 
+    pub fn generate(value: &[String]) -> Self{
+        ScanNumber {
+            name: "Scan number".to_owned(),
+            value: value[0].parse::<u8>().ok(), // Parse the string to u8 and handle the result
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -272,6 +453,13 @@ pub struct BaseFilteringInteger{
         }
     }
 
+    pub fn generate(value: &[String]) -> Self{
+        BaseFilteringInteger {
+            name: "Base Filtering Integer".to_owned(),
+            value: value[0].parse::<u8>().ok(),
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -300,6 +488,17 @@ impl RetentionTime {
         RetentionTime {
             name: "Retention time".to_owned(),
             values: None,
+        }
+    }
+
+    pub fn generate(values: &[String]) -> Self{
+        RetentionTime {
+            name: "Retention time".to_owned(),
+            values: Some(vec![
+                //take the second and third element of string and convert it to u8 to create Min/Max values
+                RetentionTimeMinMax::RetentionTimeMin(RetentionTimeMin::new(values[0].parse::<u8>().unwrap())),
+                RetentionTimeMinMax::RetentionTimeMax(RetentionTimeMax::new(values[1].parse::<u8>().unwrap())),
+            ])
         }
     }
 
@@ -374,6 +573,13 @@ pub struct Mobility{
         }
     }
 
+    pub fn generate(value: &[String]) -> Self{
+        Mobility {
+            name: "Mobility".to_owned(),
+            value: value[0].parse::<u8>().ok(),
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -416,6 +622,14 @@ pub struct MSLevelFilter{
             name: "MS level filter".to_owned(),
             selected: "".to_owned(),
             value: None,
+        }
+    }
+
+    pub fn generate(value: &[String]) -> Self{
+        MSLevelFilter {
+            name: "MS level filter".to_owned(),
+            selected: "".to_owned(),
+            value: value[0].parse::<u8>().ok(),
         }
     }
 
@@ -463,6 +677,13 @@ pub struct MSLevelFilter{
         }
     }
 
+    pub fn generate(value: &[String]) -> Self{
+        ScanDefinition {
+            name: "Scan definition".to_owned(),
+            value: value[0].parse::<u8>().ok(),
+        }
+    }
+
     pub fn get_name(&self) -> &str{
        &self.name
     }
@@ -501,6 +722,13 @@ pub struct Polarity{
         }
     }
 
+    pub fn generate(value:&[String]) -> Self{
+        Polarity {
+            name: "Polarity".to_owned(),
+            value: value[0].clone(),
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -525,9 +753,9 @@ pub struct SpectrumType{
  }
 
 impl Default for SpectrumType{
-fn default() -> Self{
-    SpectrumType { name: "Spectrum type".to_owned(), value: "ANY".to_owned() }
-}
+    fn default() -> Self{
+        SpectrumType { name: "Spectrum type".to_owned(), value: "ANY".to_owned() }
+    }
 }
 
 impl SpectrumType {
@@ -535,6 +763,13 @@ impl SpectrumType {
         SpectrumType {
             name: "Spectrum type".to_owned(),
             value: "".to_owned(),
+        }
+    }
+
+    pub fn generate(value: &[String]) -> Self{
+        SpectrumType {
+            name: "Spectrum type".to_owned(),
+            value: value[0].clone(),
         }
     }
 
@@ -572,6 +807,14 @@ impl CropMS1mz {
             name: "Crop MS1 m/z".to_owned(),
             selected: false,
             value: None
+        }
+    }
+
+    pub fn generate(values: &[String]) -> Self{
+        CropMS1mz {
+            name: "Crop MS1 m/z".to_owned(),
+            selected: values[0].parse::<bool>().unwrap(),
+            value: values[1].parse::<u8>().ok()
         }
     }
 
@@ -644,6 +887,91 @@ impl MSDetectorAdvanced {
         MSDetectorAdvanced {
             name: "".to_owned(),
             selected: Some(true),
+            selected_item: "Factor of lowest signal".to_owned(),
+            modules: Vec::new(),
+        }
+    }
+
+    pub fn generate(values: &[String]) -> Self{
+        let mut generated_modules: Vec<MSDetectorAdvancedModules> = Vec::new();
+
+        // Vec to associate parameter's modules/parameters to positions in the array
+        let mut parameter_indexes: Vec<(String, usize)> = Vec::new();
+
+        //parameters that are present in advanced parameter
+        let strings_to_match = vec![
+            "ScanNumber".to_string(),
+            "BaseFilteringInteger".to_string(),
+            "RetentionTime".to_string(),
+            "Mobility".to_string(),
+            "MSLevelFilter".to_string(),
+            "ScanDefinition".to_string(),
+            "Polarity".to_string(),
+            "SpectrumType".to_string(),
+        ];
+
+        // Search for the modules
+        for (index, string) in values.iter().enumerate() {
+            if strings_to_match.contains(string) {
+                parameter_indexes.push((string.clone(), index));
+            }
+        }
+
+        // Create a mapping of strings to their order
+            // Order has to be specified in strings_to_match -> equivalent to order in the XML [predifined]
+            // Order is maintained with insertion (from Rust 1.63 and on) -> we exploit it
+        let order_map: std::collections::HashMap<_, _> = strings_to_match
+                        .iter()
+                        .enumerate()
+                        .map(|(index, string)| (string.clone(), index))
+                        .collect();
+
+        // Iterate through the keys to retrieve which parameters are selected
+        for key in order_map.keys() {
+            // if match, pass a sub-set of values (aka pass the values associated to said parameter)
+            match key.as_str() {
+                "FactorOfLowestSignal" => {
+                    generated_modules.push(MSDetectorAdvancedModules::FactorOfLowestSignal(
+                        FactorOfLowestSignal::generate(&values[1..=*order_map.get("Auto").unwrap()]) // Adjust slice based on crop_index
+                    ));
+                }
+                "Auto" => {
+                    generated_modules.push(MSDetectorAdvancedModules::Auto(
+                        Auto::generate(&values[*order_map.get("Auto").unwrap()+1..=*order_map.get("Centroid").unwrap()])
+                    ));
+                }
+                "Centroid" => {
+                    generated_modules.push(MSDetectorAdvancedModules::Centroid(
+                        Centroid::generate(&values[*order_map.get("Centroid").unwrap()+1..=*order_map.get("ExactMass").unwrap()])
+                    ));
+                }
+                "ExactMass" => {
+                    generated_modules.push(MSDetectorAdvancedModules::ExactMass(
+                        ExactMass::generate(&values[*order_map.get("ExactMass").unwrap()..=*order_map.get("LocalMaxima").unwrap()])
+                    ));
+                }
+                "LocalMaxima" => {
+                    generated_modules.push(MSDetectorAdvancedModules::LocalMaxima(
+                        LocalMaxima::generate(&values[*order_map.get("LocalMaxima").unwrap()..=*order_map.get("RecursiveThreshold").unwrap()])
+                    ));
+                }
+                "RecursiveThreshold" => {
+                    generated_modules.push(MSDetectorAdvancedModules::RecursiveThreshold(
+                        RecursiveThreshold::generate(&values[*order_map.get("RecursiveThreshold").unwrap()+1..=*order_map.get("WaveletTransform").unwrap()])
+                    ));
+                }
+                "WaveletTransform" => {
+                    generated_modules.push(MSDetectorAdvancedModules::WaveletTransform(
+                        WaveletTransform::generate(&values[*order_map.get("WaveletTransform").unwrap()+1..])
+                    ));
+                }
+                _ => panic!("No matching parameter {}", values[0]),
+            }
+        }
+
+        MSDetectorAdvanced {
+            name: "".to_owned(),
+            selected: values[0].parse::<bool>().ok(),
             selected_item: "Factor of lowest signal".to_owned(),
             modules: Vec::new(),
         }
@@ -747,7 +1075,6 @@ pub enum MSDetectorAdvancedModules {
 }
 
 impl MSDetectorAdvancedModules {
-
     pub fn get_name(&self) -> &str{
         match self {
             MSDetectorAdvancedModules::FactorOfLowestSignal(f) => f.get_name(),
@@ -800,6 +1127,13 @@ impl FactorOfLowestSignal{
         }
     }
 
+    pub fn generate(value: &[String]) -> Self{
+        FactorOfLowestSignal{
+            name: "Factor of lowest signal".to_owned(),
+            parameter: ParameterFactorOfLowestSignal::generate(value.get(0).and_then(|v| v.parse::<f32>().ok()))
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -831,6 +1165,13 @@ impl ParameterFactorOfLowestSignal {
         ParameterFactorOfLowestSignal{
             name: "Noise factor".to_owned(),
             value: None,
+        }
+    }
+
+    pub fn generate(value: Option<f32>) -> Self{
+        ParameterFactorOfLowestSignal{
+            name: "Noise factor".to_owned(),
+            value: value,
         }
     }
 
@@ -870,6 +1211,13 @@ impl Auto{
         Auto { 
             name: "Auto".to_owned(), 
             parameter: ParameterAuto::new() 
+        }
+    }
+
+    pub fn generate(value:&[String]) -> Self{
+        Auto { 
+            name: "Auto".to_owned(), 
+            parameter: ParameterAuto::generate(value.get(0).and_then(|v| v.parse::<f32>().ok()))
         }
     }
 
@@ -918,6 +1266,13 @@ impl ParameterAuto{
         }
     }
 
+    pub fn generate(value: Option<f32>) -> Self{
+        ParameterAuto{
+            name: "Noise level".to_owned(),
+            value: value,
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -946,6 +1301,13 @@ impl Centroid{
         Centroid{
             name: "Centroid".to_owned(),
             parameter: ParameterCentroid::new()
+        }
+    }
+
+    pub fn generate(value: &[String]) -> Self{
+        Centroid{
+            name: "Centroid".to_owned(),
+            parameter: ParameterCentroid::generate(value.get(0).and_then(|v| v.parse::<f32>().ok()))
         }
     }
 
@@ -984,6 +1346,13 @@ impl ParameterCentroid{
         }
     }
 
+    pub fn generate(value: Option<f32>) -> Self{
+        ParameterCentroid{
+            name: "Noise level".to_owned(),
+            value: value,
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -1011,6 +1380,13 @@ impl ExactMass{
         ExactMass{
             name: "Exact mass".to_owned(),
             parameter: ParameterExactMass::new(),
+        }
+    }
+
+    pub fn generate(value: &[String]) -> Self{
+        ExactMass{
+            name: "Exact mass".to_owned(),
+            parameter: ParameterExactMass::generate(value.get(0).and_then(|v| v.parse::<f32>().ok())),
         }
     }
 
@@ -1048,6 +1424,13 @@ impl ParameterExactMass{
         }
     }
 
+    pub fn generate(value: Option<f32>) -> Self{
+        ParameterExactMass{
+            name: "Noise level".to_owned(),
+            value: value,
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -1075,6 +1458,13 @@ impl LocalMaxima{
         LocalMaxima{
             name: "Local maxima".to_owned(),
             parameter: ParameterLocalMaxima::new(),
+        }
+    }
+
+    pub fn generate(value:&[String]) -> Self{
+        LocalMaxima{
+            name: "Local maxima".to_owned(),
+            parameter: ParameterLocalMaxima::generate(value.get(0).and_then(|v| v.parse::<f32>().ok())),
         }
     }
 
@@ -1108,6 +1498,13 @@ impl ParameterLocalMaxima{
         ParameterLocalMaxima{
             name: "Noise level".to_owned(),
             value: None
+        }
+    }
+
+    pub fn generate(value: Option<f32>) -> Self{
+        ParameterLocalMaxima{
+            name: "Noise level".to_owned(),
+            value: value
         }
     }
 
@@ -1153,6 +1550,19 @@ impl RecursiveThreshold{
         RecursiveThreshold{
             name: "Recursive threshold".to_owned(),
             parameters: Vec::new(),
+        }
+    }
+
+    /// Generate the object following the order of the elements listed
+    /// Order is: \n->\t RTNoiseLevel \n->\t MinMZPeakWidth \n->\t MaxMZPeakWidth
+    pub fn generate(values: &[String]) -> Self{
+        RecursiveThreshold{
+            name: "Recursive threshold".to_owned(),
+            parameters: vec![
+                RecursiveThresholdParameters::RTNoiseLevel(RTNoiseLevel::generate(values.get(0).and_then(|v| v.parse::<f32>().ok()))),
+                RecursiveThresholdParameters::MinMZPeakWidth(MinMZPeakWidth::generate(values.get(1).and_then(|v| v.parse::<f32>().ok()))),
+                RecursiveThresholdParameters::MaxMZPeakWidth(MaxMZPeakWidth::generate(values.get(2).and_then(|v| v.parse::<f32>().ok())))
+            ],
         }
     }
 
@@ -1208,6 +1618,14 @@ impl RecursiveThresholdParameters{
             RecursiveThresholdParameters::MaxMZPeakWidth(_f) => RecursiveThresholdParameters::MaxMZPeakWidth(MaxMZPeakWidth::new())
         }
     }
+
+    pub fn generate(&self, value: Option<f32>) -> RecursiveThresholdParameters{
+        match self {
+            RecursiveThresholdParameters::RTNoiseLevel(_f) => RecursiveThresholdParameters::RTNoiseLevel(RTNoiseLevel::generate(value)),
+            RecursiveThresholdParameters::MinMZPeakWidth(_f) => RecursiveThresholdParameters::MinMZPeakWidth(MinMZPeakWidth::generate(value)),
+            RecursiveThresholdParameters::MaxMZPeakWidth(_f) => RecursiveThresholdParameters::MaxMZPeakWidth(MaxMZPeakWidth::generate(value))
+        }
+    }
     
     pub fn get_value(&self) -> &Option<f32>{
         match self{
@@ -1243,6 +1661,13 @@ impl RTNoiseLevel{
         }
     }
 
+    pub fn generate(value: Option<f32>) -> Self{
+        RTNoiseLevel{
+            name: "Noise level".to_owned(),
+            value: value,
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -1273,6 +1698,13 @@ impl MinMZPeakWidth{
         }
     }
 
+    pub fn generate(value: Option<f32>) -> Self{
+        MinMZPeakWidth{
+            name: "Min m/z peak width".to_owned(),
+            value: value,
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -1300,6 +1732,13 @@ impl MaxMZPeakWidth {
         MaxMZPeakWidth {
             name: "Max m/z peak width".to_owned(),
             value: None,
+        }
+    }
+
+    pub fn generate(value: Option<f32>) -> Self{
+        MaxMZPeakWidth {
+            name: "Max m/z peak width".to_owned(),
+            value: value,
         }
     }
 
@@ -1347,41 +1786,113 @@ impl WaveletTransform {
         }
     }
 
-    pub fn get_name(&self) -> &str{
+    pub fn generate(values: &[String]) -> Self {
+        let mut generated_parameters: Vec<WaveletTransformParameters> = Vec::new();
+
+        // Vec to associate parameter's modules/parameters to positions in the array
+        let mut parameter_indexes: Vec<(String, usize)> = Vec::new();
+
+        // Parameters that are present in advanced parameter
+        let strings_to_match = vec![
+            "WTNoiseLevel".to_string(),
+            "ScaleLevel".to_string(),
+            "WaveletWindowSize".to_string(),
+        ];
+
+        // Search for the modules
+        for (index, string) in values.iter().enumerate() {
+            if strings_to_match.contains(string) {
+                parameter_indexes.push((string.clone(), index));
+            }
+        }
+
+        // Create a mapping of strings to their order
+        // Order has to be specified in strings_to_match -> equivalent to order in the XML [predefined]
+        // Order is maintained with insertion (from Rust 1.63 and on) -> we exploit it
+        let order_map: std::collections::HashMap<_, _> = strings_to_match
+            .iter()
+            .enumerate()
+            .map(|(index, string)| (string.clone(), index))
+            .collect();
+
+        // Iterate through the keys to retrieve which parameters are selected
+        for key in order_map.keys() {
+            // If match, pass a sub-set of values (aka pass the values associated to said parameter)
+            match key.as_str() {
+                "WTNoiseLevel" => {
+                    generated_parameters.push(WaveletTransformParameters::WTNoiseLevel(
+                        WTNoiseLevel::generate(values.get(0).and_then(|v| v.parse::<f32>().ok()))
+                    ));
+                }
+                "ScaleLevel" => {
+                    generated_parameters.push(WaveletTransformParameters::ScaleLevel(
+                        ScaleLevel::generate(values.get(1).and_then(|v| v.parse::<f32>().ok()))
+                    ));
+                }
+                "WaveletWindowSize" => {
+                    generated_parameters.push(WaveletTransformParameters::WaveletWindowSize(
+                        WaveletWindowSize::generate(values.get(2).and_then(|v| v.parse::<f32>().ok()))
+                    ));
+                }
+                _ => panic!("No matching key {} found", key),
+            }
+        }
+        
+
+        WaveletTransform {
+            name: "Wavelet transform".to_owned(),
+            parameters: generated_parameters,
+        }
+    }
+
+    pub fn get_name(&self) -> &str {
         &self.name
     }
 
-    pub fn add_parameter(&mut self, parameter:WaveletTransformParameters){
+    pub fn add_parameter(&mut self, parameter: WaveletTransformParameters) {
         self.parameters.push(parameter);
     }
 
-    pub fn parameters_length(&self) -> usize{
+    pub fn parameters_length(&self) -> usize {
         self.parameters.len()
     }
 
-    pub fn set_parameter_value(&mut self, target: &str, value: Option<f32>){
+    pub fn set_parameter_value(&mut self, target: &str, value: Option<f32>) {
         for param in &mut self.parameters {
             match param {
-                WaveletTransformParameters::WTNoiseLevel(_f) if target == "WTNoiseLevel" => return _f.set_value(value),
-                WaveletTransformParameters::ScaleLevel(_f) if target == "ScaleLevel" => return _f.set_value(value),
-                WaveletTransformParameters::WaveletWindowSize(_f) if target == "WaveletWindowSize" => return _f.set_value(value),
+                WaveletTransformParameters::WTNoiseLevel(f) if target == "WTNoiseLevel" => {
+                    return f.set_value(value);
+                }
+                WaveletTransformParameters::ScaleLevel(f) if target == "ScaleLevel" => {
+                    return f.set_value(value);
+                }
+                WaveletTransformParameters::WaveletWindowSize(f) if target == "WaveletWindowSize" => {
+                    return f.set_value(value);
+                }
                 _ => continue,
             }
         }
     }
 
-    pub fn get_parameter_value(&self, target: &str) -> &Option<f32>{
+    pub fn get_parameter_value(&self, target: &str) -> &Option<f32> {
         for param in &self.parameters {
             match param {
-                WaveletTransformParameters::WTNoiseLevel(_f) if target == "WTNoiseLevel" => return _f.get_value(),
-                WaveletTransformParameters::ScaleLevel(_f) if target == "ScaleLevel" => return _f.get_value(),
-                WaveletTransformParameters::WaveletWindowSize(_f) if target == "WaveletWindowSize" => return _f.get_value(),
+                WaveletTransformParameters::WTNoiseLevel(f) if target == "WTNoiseLevel" => {
+                    return f.get_value();
+                }
+                WaveletTransformParameters::ScaleLevel(f) if target == "ScaleLevel" => {
+                    return f.get_value();
+                }
+                WaveletTransformParameters::WaveletWindowSize(f) if target == "WaveletWindowSize" => {
+                    return f.get_value();
+                }
                 _ => continue,
             }
         }
         &None
     }
 }
+
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(untagged)]
@@ -1392,6 +1903,16 @@ pub enum WaveletTransformParameters{
 }
 
 impl WaveletTransformParameters{
+    /// Generate the object but caution, it needs all of the three to set their parameters
+    pub fn generate(&self, values: &[String]) -> Self{
+        assert_eq!(values.len(), 3, "Not all parameters are inputted");
+        match self{
+            WaveletTransformParameters::WTNoiseLevel(_f) => WaveletTransformParameters::WTNoiseLevel(WTNoiseLevel::generate(values.get(0).and_then(|v| v.parse::<f32>().ok()))),
+            WaveletTransformParameters::ScaleLevel(_f) => WaveletTransformParameters::ScaleLevel(ScaleLevel::generate(values.get(1).and_then(|v| v.parse::<f32>().ok()))),
+            WaveletTransformParameters::WaveletWindowSize(_f) => WaveletTransformParameters::WaveletWindowSize(WaveletWindowSize::generate(values.get(2).and_then(|v| v.parse::<f32>().ok()))),
+        }
+    }
+
     pub fn get_value(&self) -> &Option<f32> {
         match self{
             WaveletTransformParameters::WTNoiseLevel(f) => f.get_value(),
@@ -1426,6 +1947,13 @@ impl WTNoiseLevel {
         }
     }
 
+    pub fn generate(value: Option<f32>) -> Self{
+        WTNoiseLevel {
+            name: "Noise level".to_owned(),
+            value: value,
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -1456,6 +1984,13 @@ impl ScaleLevel {
         }
     }
 
+    pub fn generate(value: Option<f32>) -> Self{
+        ScaleLevel {
+            name: "Scale level".to_owned(),
+            value: value,
+        }
+    }
+
     pub fn get_name(&self) -> &str{
         &self.name
     }
@@ -1483,6 +2018,13 @@ impl WaveletWindowSize {
         WaveletWindowSize {
             name: "Wavelet window size (%)".to_owned(),
             value: None,
+        }
+    }
+
+    pub fn generate(value: Option<f32>) -> Self{
+        WaveletWindowSize {
+            name: "Wavelet window size (%)".to_owned(),
+            value: value,
         }
     }
 

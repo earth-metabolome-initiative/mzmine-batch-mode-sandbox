@@ -16,7 +16,7 @@ mod tests {
         let mut file_names = FileNames::new();
         assert_eq!(file_names.files_length(), 0);                      // test it was empty
     
-        let mut new_file = InputFile::new();
+        let mut new_file = InputFile::default();
         new_file.set_name("This");
         
         file_names.add_file_name(new_file);
@@ -32,14 +32,28 @@ mod tests {
     fn file_names_serialization() ->  Result<(), Box<dyn std::error::Error>>{
         let mut file_names = FileNames::new();
 
-        let mut file_1 = InputFile::new();
+        let mut file_1 = InputFile::default();
         file_1.set_name("file1");
 
-        let mut file_2 = InputFile::new();
+        let mut file_2 = InputFile::default();
         file_2.set_name("file2");
 
         file_names.add_file_name(file_1);
         file_names.add_file_name(file_2);
+    
+        let mut buffer = "".to_owned(); // Create the string buffer for the XML content
+        quick_xml::se::to_writer(&mut buffer, &file_names)?;
+        
+        let expected = r#"<parameter name="File names"><file>file1</file><file>file2</file></parameter>"#;
+        
+        assert_eq!(buffer, expected);
+        
+        Ok(())
+    }
+
+    #[test]
+    fn file_names_generate_serialization() ->  Result<(), Box<dyn std::error::Error>>{
+        let file_names = FileNames::generate(vec!["file1".to_string(), "file2".to_string()]);
     
         let mut buffer = "".to_owned(); // Create the string buffer for the XML content
         quick_xml::se::to_writer(&mut buffer, &file_names)?;
